@@ -28,7 +28,7 @@ We empower volunteers to discover meaningful opportunities with trusted organiza
 
             <p> <br></br></p>
             <button className="secondary-button">
-                Browse Opportunies <FiArrowRight />
+                Browse Opportunities <FiArrowRight />
             </button>
             <p><br></br></p>
             <button className="secondary-button">

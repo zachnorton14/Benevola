@@ -21,7 +21,7 @@ const NavBar = () => {
             icon:<InfoIcon/>
         },
         {
-            text:"Opportunies",
+            text:"Opportunities",
             icon:<HandshakeIcon/>
         },
         {
