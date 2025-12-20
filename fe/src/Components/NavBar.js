@@ -8,8 +8,19 @@ import InfoIcon from "@mui/icons-material/Info";
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { useNavigate } from 'react-router-dom';
 
 const NavBar = () => {
+    const navigate = useNavigate();
+
+    const handleVolunteer = () => {
+      navigate('/myfeed');
+    };
+
+    const handleHome = () => {
+      navigate('/');
+    };
+
     const [openMenu, setOpenMenu] = useState(false);
     const menuOptions = [
         {
@@ -37,14 +48,14 @@ const NavBar = () => {
   return (
     <nav>
       <div className="nav-logo-container">
-        <img src={Logo} alt="Benevola Logo" />
+        <img src={Logo} alt="Benevola Logo" onClick={handleHome}/>
       </div>
       <div className="navbar-links-container" >
-        <a href="">Home</a>
+        <a href="" onClick={handleHome}>Home</a>
         <a href="">Our Mission</a>
         <a href="">Companies</a>
         <a href="">My Profile</a>
-        <button className="primary-button"> Volunteer </button>
+        <button className="primary-button" onClick={handleVolunteer}> Volunteer </button>
       </div>
       <div className="navbar-menu-container" >
         <HiOutlineBars3 onClick={() => setOpenMenu(true)} />

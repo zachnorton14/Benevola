@@ -1,18 +1,18 @@
-import './App.css';
-import Home from "./Components/Home"
-
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-const theme = createTheme();
+// App.js
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from '../src/Pages/LandingPage';
+import UserFeedPage from '../src/Pages/UserFeedPage';
+import NotFoundPage from '../src/Pages/NotFoundPage';
 
 function App() {
   return (
-    <ThemeProvider theme = {theme}>
-      <div className="App">
-        <Home/>
-      </div>
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/myfeed" element={<UserFeedPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
   );
 }
 

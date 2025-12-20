@@ -1,10 +1,21 @@
 import React from 'react'
 import NavBar from "./NavBar";
-//import BannerBackground from "../Assets/benevolaHomeBackgroundV1.png";
 import BannerImage from "../Assets/handsTogetherImageFromGoogle.jpeg";
 import {FiArrowRight } from "react-icons/fi";
 
+import { useNavigate } from 'react-router-dom';
+
 const Home = () => {
+  const navigate = useNavigate();
+
+    const handleVolunteer = () => {
+      navigate('/myfeed');
+    };
+
+    const handleHome = () => {
+      navigate('/');
+    };
+
   return (
     <div className="home-container">
       <NavBar/>
@@ -27,7 +38,7 @@ We empower volunteers to discover meaningful opportunities with trusted organiza
             </button>
 
             <p> <br></br></p>
-            <button className="secondary-button">
+            <button className="secondary-button" onClick={handleVolunteer}>
                 Browse Opportunities <FiArrowRight />
             </button>
             <p><br></br></p>
