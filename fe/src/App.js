@@ -1,7 +1,7 @@
 // App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from '../src/Pages/LandingPage';
-import UserFeedPage from '../src/Pages/UserFeedPage';
+import OppListPage from './Pages/OppListPage';
 import NotFoundPage from '../src/Pages/NotFoundPage';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/myfeed" element={<UserFeedPage />} />
+        <Route path="/myfeed" element={<OppListPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
