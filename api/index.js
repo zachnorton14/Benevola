@@ -1,19 +1,11 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const app = express();
+app.use(express.json()); //Lets the API read JSON data sent to it
+const sqlite3 = require('sqlite3').verbose();
 const PORT = process.env.PORT || 3000;
 
-// HOME
-app.get('/', (req, res) => {
-    res.send("Hello world")
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
 //Connects to the database file
-const db = new sqlite3.Database('./BenevaolaDB', (err) => {
+const db = new sqlite3.Database('./data/BenevolaDB.db', (err) => {
   if (err) {
     console.error("There was an error opening the database: ", err.message);
   } else {
@@ -22,12 +14,12 @@ const db = new sqlite3.Database('./BenevaolaDB', (err) => {
   // This creates the table if it's missing a table of events
         db.run(`CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            location TEXT,
+            name TEXT NOT NULL,
+            location TEXT NOT NULL,
             longitude REAL,
             latitude REAL,
             description TEXT,
-            date_time DATETIME DEFAULT CURRENT_TIMESTAMP
+            date_time TEXT DEFAULT (datetime('now')) NOT NULL
         )`, (err) => {
             if (err) {
                 console.error("Table creation failed:", err.message);
@@ -37,7 +29,10 @@ const db = new sqlite3.Database('./BenevaolaDB', (err) => {
         });
 });
 
-app.use(express.json()); //Lets the API read JSON data sent to it
+// HOME
+app.get('/', (req, res) => {
+    res.send("Hello world")
+});
 
 //Okay trying to implement a GET route
 app.get('/api/events', (req, res) => {
@@ -57,9 +52,16 @@ app.get('/api/events', (req, res) => {
 
 app.post('/api/events', (req, res) => {
     const { name, location, longitude, latitude, description } = req.body;
+    const event = { name, location, longitude, latitude, description };
     const sql = `INSERT INTO events (name, location, longitude, latitude, description) 
-                 VALUES (?, ?, ?, ?, ?)`;
+                 VALUES (?, ?, ?, ?, ?)
+                 CHECK (longitude IS NULL OR (longitude >= -180 AND longitude <= 180)),
+                 CHECK (latitude  IS NULL OR (latitude  >=  -90 AND latitude  <=  90))`;
     const params = [name, location, longitude, latitude, description];
+
+    if ( !name || !location ) {
+        return res.status(400).json({ error: "name and location are required" });
+    }
 
     db.run(sql, params, function (err) {
         if (err) {
@@ -68,14 +70,14 @@ app.post('/api/events', (req, res) => {
         }
         res.json({
             "message": "success",
-            "data": { id: this.lastID, ...req.body }
+            "data": { id: this.lastID, ...event  }
         });
     });
 });
 
 app.delete('/api/events/:id', (req, res) => {
-    const sql = "DELETE FROM events WHERE id = ?";
     const params = [req.params.id];
+    const sql = "DELETE FROM events WHERE id = ?";
 
     db.run(sql, params, function (err) {
         if (err) {
@@ -90,5 +92,6 @@ app.delete('/api/events/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('Server is running at http://localhost:${port}')
-})
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+  
