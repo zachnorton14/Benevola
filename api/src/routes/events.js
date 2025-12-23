@@ -15,6 +15,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+// // GET event by id
+// router.get('/:id', async (req, res) => {
+//     try {
+//         const events = await Event.findOne();
+//         res.json({
+//             "message": "success",
+//             "data": events
+//         });
+//     } catch (err) {
+//         res.status(500).json({ "error": err.message });
+//     }
+// });
+
 // CREATE a new event
 router.post('/', async (req, res) => {
     try {
