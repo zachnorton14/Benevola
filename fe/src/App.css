@@ -123,14 +123,14 @@ nav {
 }
 
 /* The user feed title container */
-.user-feed-title-container {
+.opp-list-title-container {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.user-feed-title-text {
+.opp-list-title-text {
   font-size: clamp(2rem, 3vw, 5.5rem);
   max-width: 800px;
   color: #6a6a6a;
@@ -142,7 +142,7 @@ nav {
   text-align: center;
 }
 
-.user-feed-title-secondary-text {
+.opp-list-title-secondary-text {
   font-size: clamp(1rem, 3vw, 1.5rem);
   max-width: 500px;
   color: #6a6a6a;
@@ -150,7 +150,7 @@ nav {
 }
 
 /* the style of the user feed list (we want it to first move horiztonalyl */
-.user-feed-list {
+.opp-list-list {
   list-style: none;
   display: flex;
   margin: 10px;
@@ -160,13 +160,13 @@ nav {
 }
 
 /* The box / positioning / style of the entire feed */
-.user-feed-container {
+.opp-list-container {
   justify-content: center;
   text-align: center;
 }
 
 /* the size of a singular post in your feed */
-.user-feed-singular-post-container {
+.opp-list-singular-post-container {
   background-color: var(--opportunity-post-background-color);
   width: 450px;
   height: 580px;
@@ -182,7 +182,7 @@ nav {
 }
 
 /* SP = singular post */
-.user-feed-SP-image-container {
+.opp-list-SP-image-container {
   width: 449px;
   height: 200px;
   border-right: var(--opportunity-post-border-color);
@@ -191,7 +191,7 @@ nav {
   padding: 0px;
 }
 
-.user-feed-SP-image {
+.opp-list-SP-image {
   border-color: var(--opportunity-post-border-color);
   border-width: var(--opportunity-post-border-width);
   border-radius: var(--opportunity-post-border-radius);
@@ -201,11 +201,11 @@ nav {
   z-index: 1;
 }
 
-.user-feed-SP-title-margin {
+.opp-list-SP-title-margin {
   height: 15px;
 }
 
-.user-feed-SP-title-container {
+.opp-list-SP-title-container {
   background-color:  var(--opportunity-post-background-color);
   width: 449px;
   height: 365px;
@@ -218,20 +218,20 @@ nav {
   z-index: 3;
 }
 
-.user-feed-org-logo-container {
+.opp-list-org-logo-container {
   width: 100px;
   height: 100px;
   padding: 20px;
 }
 
-.user-feed-org-logo {
+.opp-list-org-logo {
   border:#b0b0b0;
   border-width: 2px;
   border-style: solid;
   border-radius: 100%;
 }
 
-.user-feed-SP-title-text {
+.opp-list-SP-title-text {
   position:relative;
   justify-content: left;
   text-align: left;
@@ -239,18 +239,18 @@ nav {
   top: -91px;
   padding: 10px;
 }
-.user-feed-SP-title-font {
+.opp-list-SP-title-font {
   font-size: var(--opportunity-post-primary-font-size);
   color: var(--opportunity-post-primary-font-color);
 }
 
-.user-feed-SP-org-font {
+.opp-list-SP-org-font {
   margin-top: 5px;
   font-size: var(--opportunity-post-secondary-font-size);
   color: var(--opportunity-post-secondary-font-color);
 }
 
-.user-feed-SP-description-font {
+.opp-list-SP-description-font {
   position: relative;
   left: -80px;
   top: 10px;
@@ -259,7 +259,7 @@ nav {
   font-size: 15px;
   color: var(--opportunity-post-secondary-font-color);
 }
-.user-feed-SP-icon-info {
+.opp-list-SP-icon-info {
   position: relative;
   left:-80px;
   margin: 10px;
@@ -269,14 +269,72 @@ nav {
   text-align: left;
 }
 
-.user-feed-SP-RSVP-button {
-  position: relative;
-  top: -60px;
+.opp-list-SP-RSVP-button-container {
+  position: absolute;
+  top: 320px;
+  left: 0px;
+
+  width: 100px;
+  height: 25px;
+
+}
+
+.opp-list-SP-Learn-More-button-container {
+  position: absolute;
+  top: 320px;
+  left: 290px;
+
+  width: 100px;
+  height: 35px;
+}
+
+.opp-list-SP-Learn-More-button {
+  font-size: var(--opportunity-post-secondary-font-size);
+  
+  color: var(--opportunity-post-primary-font-color);
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: var(--accent-color);
+
+  position: absolute;
+  left: 10px;
+  top: 10px;
+
+  width: 135px;
+  height: 35px;
+
   border-radius: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(171, 171, 171);
+}
+
+.opp-list-SP-RSVP-button {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: var(--opportunity-post-primary-font-size);
+  color: white;
+
+
+  position: absolute;
+
+  left: 10px;
+  top: 10px;
+
+  width: 280px;
+  height: 35px;
+  
+  background-color: var(--accent-color);
+  border-style: none;
+  border-radius: 10px;
+}
+
+.opp-list-SP-icon-text {
+  flex: 0;
+  position: absolute;
+  top: 0px;
+  left: 32px;
 }
 
 /* Not being used at the moment, keeping here for learning for now, will delete later */
