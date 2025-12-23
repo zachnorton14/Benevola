@@ -9,11 +9,9 @@ const Event = sequelize.define('Event', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: true
     },
     location: {
         type: DataTypes.STRING,
-        allowNull: true
     },
     longitude: {
         type: DataTypes.FLOAT,
@@ -27,13 +25,12 @@ const Event = sequelize.define('Event', {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    date_time: {
+    event_start_time: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+    },
+    event_end_time: {
+        type: DataTypes.DATE,
     }
-}, {
-    tableName: 'events', // Explicitly telling Sequelize to use the existing 'events' table
-    timestamps: false    // We already have date_time, and don't strictly need createdAt/updatedAt unless desired
 });
 
 module.exports = Event;
