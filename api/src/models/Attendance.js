@@ -4,12 +4,10 @@ const sequelize = require("../db/database");
 const Attendance = sequelize.define("Attendance", {
   userId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     primaryKey: true,
   },
   eventId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     primaryKey: true,
   },
 }, {
