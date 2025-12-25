@@ -14,7 +14,7 @@ const NavBar = () => {
     const navigate = useNavigate();
 
     const handleVolunteer = () => {
-      navigate('/myfeed');
+      navigate('/opp-list');
     };
 
     const handleHome = () => {

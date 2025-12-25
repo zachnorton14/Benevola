@@ -1,6 +1,7 @@
 import React from 'react'
 import NavBar from "./NavBar";
 import BannerImage from "../Assets/handsTogetherImageFromGoogle.jpeg";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {FiArrowRight } from "react-icons/fi";
 
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +10,11 @@ const Home = () => {
   const navigate = useNavigate();
 
     const handleVolunteer = () => {
-      navigate('/myfeed');
+      navigate('/opp-list');
+    };
+
+    const handleCreateEvent = () => {
+      navigate('/create-event');
     };
 
     const handleHome = () => {
@@ -33,8 +38,8 @@ const Home = () => {
             <p className="primary-text" >
 We empower volunteers to discover meaningful opportunities with trusted organizations, offering the flexibility to engage on their own terms, on their own schedule.
             </p>
-            <button className="secondary-button">
-                Manage My Schedule <FiArrowRight />
+            <button className="secondary-button"  onClick={handleCreateEvent}>
+                Register Event <AddCircleOutlineIcon />
             </button>
 
             <p> <br></br></p>
