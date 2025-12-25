@@ -213,6 +213,7 @@ nav {
   height: 365px;
   border: var(--opportunity-post-background-color);
   
+  
   border-right: var(--opportunity-post-border-color);
   border-width: var(--opportunity-post-border-width);
   border-style: solid;
@@ -244,12 +245,23 @@ nav {
 .opp-list-SP-title-font {
   font-size: var(--opportunity-post-primary-font-size);
   color: var(--opportunity-post-primary-font-color);
+  width: 320px;
+  height: 30px;
+  white-space: nowrap;
+  overflow: hidden;
 }
-
+#map {
+  height: 400px;
+  width: 100%;
+}
 .opp-list-SP-org-font {
-  margin-top: 5px;
+  margin-top: 0px;
   font-size: var(--opportunity-post-secondary-font-size);
   color: var(--opportunity-post-secondary-font-color);
+  width: 320px;
+  white-space: nowrap;
+  height: 25px;
+  overflow: hidden;
 }
 
 .opp-list-SP-description-font {
@@ -257,7 +269,9 @@ nav {
   left: -80px;
   top: 10px;
   width: 400px;
-  height: 100px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  height: 90px;
   font-size: 15px;
   color: var(--opportunity-post-secondary-font-color);
 }
@@ -386,6 +400,35 @@ nav {
   font-size: calc(var(--form-textbox-font-size) - 8px);
 }
 
+.opp-tags-list {
+  display: flex;
+  list-style: none;
+  width:200px;
+  padding: 10px;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.opp-list-tags-format {
+  background-color: var(--accent-color);
+  font-size: calc(var(--form-textbox-font-size) - 6px);
+  color:white;
+  border-radius: 40px;
+  padding-left: 6px;
+  max-height: 25px;
+  padding-right: 6px;
+  overflow: hidden;
+}
+
+.opp-list-tags-container {
+  position: relative;
+  top: -250px;
+  left: 230px;
+  width: 200px;
+  height: 130px;
+  overflow: hidden;
+}
+
 .input-form-submit-button {
   background-color: var(--accent-color);
   border-radius: 40px;
@@ -420,16 +463,19 @@ nav {
   min-width: 80px;
   height: 20px;
   padding-left: 4px;
-  padding-right: 4px;
+  padding-right: 6px;
+  padding-bottom: 26px;
   background-color: var(--accent-color);
-  border-radius: 10px;
+  border-radius: 40px;
   border-style: none;
   color:white;
   text-align: center;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  max-height: 25px;
   margin-right: 10px;
-  font-size: calc(var(--form-textbox-font-size) - 9px);
+  font-size: calc(var(--form-textbox-font-size) - 6px);
 
 }
 
