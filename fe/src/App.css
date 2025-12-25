@@ -15,6 +15,7 @@
   --opportunity-post-secondary-font-size: 17px;
   --opportunity-post-secondary-font-color: rgb(100,100,100);
   --opportunity-post-border-radius: 20px;
+  --form-textbox-font-size: 23px;
 }
 img {
   max-width: 100%;
@@ -92,7 +93,7 @@ nav {
   outline: none;
   border: none;
   border-radius: 5rem;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   cursor: pointer;
   font-weight: 600;
   color: white;
@@ -100,6 +101,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 370px;
 }
 .secondary-button svg {
   margin-left: 0.75rem;
@@ -336,6 +338,101 @@ nav {
   top: 0px;
   left: 32px;
 }
+
+
+.input-form-text-label {
+  font-size: var(--form-textbox-font-size);
+  font-style: italic;
+  text-decoration: none;
+  color: black;
+  margin-top: 15px;
+  margin-left: 15px;
+  border-radius: 10px;
+}
+
+.input-form-text-spacing {
+  margin-bottom: 100px;
+}
+
+
+.input-form-text-box-medium {
+  margin-left: 10px;
+  margin: 5px;
+  width: 400px;
+  font-size: calc(var(--form-textbox-font-size) - 8px);
+}
+
+.input-form-capacity {
+  margin-left: 10px;
+  margin: 5px;
+  width: 120px;
+  text-align: center;
+  font-size: calc(var(--form-textbox-font-size) - 5px);
+
+}
+
+.input-form-datetime {
+  margin-left: 10px;
+  margin: 5px;
+  width: 300px;
+  text-align: center;
+  font-size: calc(var(--form-textbox-font-size) - 2px);
+}
+
+.input-form-text-box-long {
+  margin-left: 10px;
+  margin: 5px;
+  width: 800px;
+  font-size: calc(var(--form-textbox-font-size) - 8px);
+}
+
+.input-form-submit-button {
+  background-color: var(--accent-color);
+  border-radius: 40px;
+  border-style: none;
+  width: 500px;
+  font-size: calc(var(--form-textbox-font-size) + 20px);
+  float: middle;
+  color:white;
+  text-align: center;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 50px;
+  justify-content: center;
+}
+
+.checkbox-format {
+  position: relative;
+  top: 2px;
+  padding-right: 10px;
+}
+
+.input-form-tags-list {
+  display: flex;
+  list-style: none;
+  padding: 10px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.tags-format {
+  max-width: 300px;
+  min-width: 80px;
+  height: 20px;
+  padding-left: 4px;
+  padding-right: 4px;
+  background-color: var(--accent-color);
+  border-radius: 10px;
+  border-style: none;
+  color:white;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: calc(var(--form-textbox-font-size) - 9px);
+
+}
+
 
 /* Not being used at the moment, keeping here for learning for now, will delete later */
 /* .home-image-section {
