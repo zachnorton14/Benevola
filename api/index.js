@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 3000;
 const eventsRouter = require('./src/routes/events');
 
 // Middleware to parse JSON bodies
+// owen changed this 12/25, testing fe -> be communication
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // HOME

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 
+//app.use(express.urlencoded({ extended: true }));
+
 // GET all events
 router.get('/', async (req, res) => {
     try {
@@ -31,19 +33,30 @@ router.get('/', async (req, res) => {
 // CREATE a new event
 router.post('/', async (req, res) => {
     try {
-        const { name, location, longitude, latitude, description } = req.body;
+        const { title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
+
+        console.log(req.body);
+        const formattedTags = "placeholder tag";
+
+        //const { name, location, longitude, latitude, description } = req.body;
         const newEvent = await Event.create({
-            name,
-            location,
-            longitude,
+            title,
+            description,
+            capacity,
+            time,
+            duration,
+            formattedTags,
             latitude,
-            description
+            longitude,
+            image
         });
         
-        res.json({
-            "message": "success",
-            "data": newEvent
-        });
+        // send the user to the page for a successful new event created
+        res.redirect("http://localhost:3001/success");
+        //res.json({
+        //    "message": "success",
+        //    "data": newEvent
+        //});
     } catch (err) {
         res.status(400).json({ "error": err.message });
     }
