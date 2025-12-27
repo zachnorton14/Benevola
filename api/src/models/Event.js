@@ -37,7 +37,7 @@ const Event = sequelize.define('Event', {
         // arrays are exclusive to PosgreSQL, I think we are using SQLlite
         //type: DataTypes.ARRAY(DataTypes.STRING),
         // trying out json for now
-        type: DataTypes.JSON,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     latitude: {
