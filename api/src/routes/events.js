@@ -38,9 +38,11 @@ router.get('/:id', async (req, res) => {
 // CREATE a new event
 router.post('/', async (req, res) => {
     try {
+        console.log(req.body);
+        
         const { title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
 
-        console.log(req.body);
+        
         const formattedTags = "placeholder tag";
 
         //const { name, location, longitude, latitude, description } = req.body;

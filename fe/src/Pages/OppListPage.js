@@ -68,9 +68,6 @@ function OppListPage() {
       <NavBar/>
       <hr></hr>
 
-      
-      Testing, Testing 123 
-
       {/* Title of the feed page*/}
       <div className="opp-list-title-container">
         <div className="opp-list-title-text">

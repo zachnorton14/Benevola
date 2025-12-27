@@ -3,6 +3,13 @@ const app = express();
 const sequelize = require('./src/db/database');
 const PORT = process.env.PORT || 3000;
 
+// required for fetch on frontend instead of using form POSTs
+// must come before express.json / express.urlencoded
+const cors = require("cors");
+app.use(cors({
+  origin: "http://localhost:3001"
+}));
+
 const eventsRouter = require('./src/routes/events');
 
 // Middleware to parse JSON bodies

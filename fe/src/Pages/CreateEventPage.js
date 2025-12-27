@@ -35,6 +35,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 // done 9. the location of the event (longitude and Latitude)
 
 function CreateEventPage() {
+
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -42,6 +43,7 @@ function CreateEventPage() {
     setLatitude(lat.toFixed(6));
     setLongitude(lng.toFixed(6));
   }
+
   // will be deleted later
   const tags = [
     {
@@ -61,6 +63,43 @@ function CreateEventPage() {
     },
   ]
 
+function handleSubmit(e) {
+  e.preventDefault(); // stop browser navigation
+  // e.target.title.value
+  const title = e.target.title.value;
+  const description = e.target.description.value;
+  const duration = e.target.durationH.value + ":" + e.target.durationM.value;
+
+
+  // Optional frontend validation
+  if (!title || !description) {
+    alert("Both title and description are required");
+    return;
+  }
+
+  fetch("http://localhost:3000/api/events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title,
+      description,
+      duration
+    })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Request failed");
+      return res.json();
+    })
+    .then(data => {
+      console.log("Success:", data);
+    })
+    .catch(err => {
+      console.error("Error:", err);
+    });
+}
+
   return (
     <div className="App">
       <NavBar/>
@@ -69,7 +108,7 @@ function CreateEventPage() {
         <h1 className="" >
             Register your event with Benevola</h1>
         
-        <form method="POST" action="http://localhost:3000/api/events/">
+        <form id="eventForm" method="POST" action="http://localhost:3000/api/events/" onSubmit={handleSubmit}>
 
           {/* The title of the event */}
           <label className="input-form-text-spacing">
@@ -97,8 +136,9 @@ function CreateEventPage() {
 
           {/* The duration of the event */}
           <label className="input-form-text-spacing">
-            <p className="input-form-text-label"> Event Duration (minutes): </p>
-            <input className="input-form-capacity" type="number" name="duration" required /> 
+            <p className="input-form-text-label"> Event Duration (hours, minutes): </p>
+            <input className="input-form-capacity" type="number" name="durationH" required /> 
+            <input className="input-form-capacity" type="number" name="durationM" required /> 
           </label> <br></br>
 
           {/* The tags of the event */}
