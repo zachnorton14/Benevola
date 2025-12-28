@@ -71,16 +71,10 @@ function handleSubmit(e) {
   const title = e.target.title.value;
   const description = e.target.description.value;
   const capacity = e.target.capacity.value;
-
-  // problem child
   const time = e.target.time.value;
   const tags = e.target.tags.value;
   const longitude = e.target.longitude.value;
   const latitude = e.target.latitude.value;
-  const image = null;
-
-  
-
   
   // first make sure the capacity of the event is at least 1
   if(capacity < 1) {
@@ -89,7 +83,18 @@ function handleSubmit(e) {
   }
 
   // make sure the date is in the future when creating the event
-  // ...
+  const eventDate = new Date(time);   // converts to Date
+  const now = new Date();
+
+  if (isNaN(eventDate.getTime())) {
+    alert("Invalid date");
+    return;
+  }
+
+  if (eventDate <= now) {
+    alert("Event must be in the future");
+    return;
+  }
 
   // validate the duration of the event
   if(Number(e.target.durationH.value) < 0 || Number(e.target.durationM.value) < 0 ) {
@@ -137,6 +142,7 @@ function handleSubmit(e) {
 
   // if all inputs are valid, upload the profile picture to the amazon bucket
   // ...
+  const image = null;
   
   // default organizationID
   const organizationId = 1;

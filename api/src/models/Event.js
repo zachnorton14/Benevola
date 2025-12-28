@@ -20,7 +20,7 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     capacity: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     time: {
