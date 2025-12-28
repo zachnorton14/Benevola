@@ -270,11 +270,12 @@ nav {
   top: 10px;
   width: 400px;
   overflow: hidden;
-  margin-bottom: 40px;
-  height: 90px;
+  margin-bottom: 25px;
+  height: 70px;
   font-size: 15px;
   color: var(--opportunity-post-secondary-font-color);
 }
+
 .opp-list-SP-icon-info {
   position: relative;
   left:-80px;

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import PlaceIcon from '@mui/icons-material/Place';
 import FrequencyIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 /**
  * The User Feed Page
@@ -14,74 +15,13 @@ import PeopleIcon from '@mui/icons-material/People';
  */
 
 function OppListPage() {
-  let feedOpportunities = [
-    {
-      image:"https://images.unsplash.com/photo-1615897570582-285ffe259530?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb29kJTIwYmFuayUyMGNoYXJpdHl8ZW58MXx8fHwxNzY1NzQzNDk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      orgLogo: "https://cdn-icons-png.flaticon.com/512/8611/8611393.png",
-      title:"Community Food Bank Assistant",
-      organization:"City Food Bank",
-      description:"Help sort and distribute food to families in need. Join our team...",
-      tags:"Placeholder tags",
-      location:"New York, NY",
-      frequency:"Weekly",
-      length:"3-4 hours",
-      spots:"10",
-      date:"11/17/2025",
-      page:"placeholder1",
-      tags:[{name: "In Person"}, {name: "Outside"}, {name: "loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonggggg taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaag"}],
-    },
-    {
-      image:"https://images.unsplash.com/photo-1758599667717-27c61bcdd14b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbnZpcm9ubWVudGFsJTIwY2xlYW51cCUyMHZvbHVudGVlcnN8ZW58MXx8fHwxNzY1ODI1NTc4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      orgLogo: "https://cdn-icons-png.flaticon.com/512/8611/8611393.png",
-      title:"Beach Cleanup Volunteer",
-      organization:"Ocean Conservation Society",
-      description:"Help clean our beaches Join our team...",
-      tags:"Placeholder tags",
-      location:"Wilmington, NC",
-      frequency:"Weekly",
-      length:"3 hours",
-      spots:"30",
-      date:"9/3/2025",
-      page:"placeholder2",
-      tags:[{name: "In Person"}, {name: "Dirty"}, { name: "Outside"}],
-    },
-    {
-      image:"https://plus.unsplash.com/premium_photo-1677567996070-68fa4181775a?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      orgLogo: "https://yt3.googleusercontent.com/ytc/AIdro_lx0bC3sO3-n_bl9JlKGphcyQS-LYB4tzpz80iMMRBD2bs=s160-c-k-c0x00ffffff-no-rj",
-      title:"Tutoring with David Sher",
-      organization:"Youtube loooooong ooooooooooooooooooooooooooorg",
-      description:"Help with teaching linked lists with David Sher. David Sher needs your help to educate the masses on linked lists. Long description with multiple lines for testing. This is too long, I'm running out of things to type. This should be cutoff at the end because it is so long.",
-      tags:"Placeholder tags",
-      location:"Charolette, NC",
-      frequency:"Monthly",
-      length:"67 hours",
-      spots:"1",
-      date:"2/13/2023",
-      page:"placeholder3",
-      tags:[{name: "Virtual"}, {name: "Tutoring"}, { name: "Inside"}],
-    },
-    {
-      id: 12,
-      organizationId: 1,
-      title: "asd",
-      description: "abc",
-      capacity: 1,
-      time: "2025-12-31T19:41:00.000Z",
-      duration: "04:01",
-      tags: null,
-      latitude: 35.770712,
-      longitude: -78.691355,
-      image: null,
-      createdAt: "2025-12-28T19:42:09.774Z",
-      updatedAt: "2025-12-28T19:42:09.774Z"
-    }
-  ]
-  
   const defaultOrgLog = "https://cdn-icons-png.flaticon.com/512/8611/8611393.png";
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [locations, setLocations] = useState({});
+
 
   useEffect(() => {
     fetch("http://localhost:3000/api/events")
@@ -101,6 +41,97 @@ function OppListPage() {
       });
   }, []);
 
+  // formats the time HH:MM into H hours and M minutes
+  function formatDuration(timeStr) {
+    if (!timeStr || typeof timeStr !== "string") return "";
+
+    const [hoursStr, minutesStr] = timeStr.split(":");
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) return "";
+
+    if (hours === 0 && minutes === 0) return "0 minutes";
+
+    if (hours === 0) return `${minutes} minutes`;
+    if (minutes === 0) return `${hours} hours`;
+
+    return `${hours} hours ${minutes} minutes`;
+  }
+
+  function formatEventTime(isoString) {
+    if (!isoString) return "";
+
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return "";
+
+    const datePart = date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+
+    const timePart = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    });
+
+    return `${datePart} at ${timePart}`;
+  }
+
+  // use cache so we dont have to get city every render
+  const geoCache = new Map();
+
+  async function getCityState(lat, lng) {
+    const key = `${lat},${lng}`;
+    if (geoCache.has(key)) return geoCache.get(key);
+
+    const res = await fetch(
+      `https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`
+    );
+
+    const data = await res.json();
+    const props = data.features?.[0]?.properties || {};
+
+    const result = {
+      city: props.city || props.town || props.village || "",
+      state: props.state || ""
+    };
+
+    geoCache.set(key, result);
+    return result;
+  }
+
+
+  useEffect(() => {
+  events.forEach(event => {
+    if (locations[event.id]) return;
+
+    getCityState(event.latitude, event.longitude)
+      .then(({ city, state }) => {
+        let label;
+
+        if (city && state) label = `${city}, ${state}`;
+        else if (state) label = state;
+        else label = "Unknown location";
+
+        setLocations(prev => ({
+          ...prev,
+          [event.id]: label
+        }));
+      })
+      .catch(() => {
+        setLocations(prev => ({
+          ...prev,
+          [event.id]: "Unknown location"
+        }));
+      });
+  });
+}, [events]);
+
+
+
   if (loading)  {
     console.log('Loading');
     return <p>Loading events...</p>;
@@ -110,7 +141,6 @@ function OppListPage() {
     console.log('Error');
     return <p>Error: {error}</p>;
   }
-
   
   return (
     /* Wraps everything with the correct size of margins*/
@@ -138,7 +168,7 @@ function OppListPage() {
         <List className="opp-list-list">
             {events.map((item) => (
                 // Make a box around each post
-                <div className="opp-list-singular-post-container">
+                <div className="opp-list-singular-post-container" key={item.id}>
 
                   {/* Now make the image at the top of each post */}
                   <div className="opp-list-SP-image-container">
@@ -164,11 +194,15 @@ function OppListPage() {
 
                 
                       <div className="opp-list-SP-icon-info">
-                        <PlaceIcon/> <div className="opp-list-SP-icon-text"> {item.longitude} </div>
+                        <PlaceIcon/> <div className="opp-list-SP-icon-text"> {locations[item.id] ?? "Loading location..."} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {item.duration} </div>
+                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {formatDuration(item.duration)} </div>
+                      </div>
+
+                      <div className="opp-list-SP-icon-info">
+                        <CalendarMonthIcon/> <div className="opp-list-SP-icon-text"> {formatEventTime(item.time)} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
