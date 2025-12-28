@@ -7,6 +7,7 @@ import L from 'leaflet';
 import { useState } from 'react';
 import LocationPickerMap from '../Components/LocationPickerMap.jsx';
 
+import { useNavigate } from 'react-router-dom';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -37,6 +38,9 @@ function CreateEventPage() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
+  // used to navigate the user after successful creation
+  const navigate = useNavigate();
+
   function handleLocationChange({ lat, lng }) {
     setLatitude(lat.toFixed(6));
     setLongitude(lng.toFixed(6));
@@ -65,8 +69,6 @@ function CreateEventPage() {
 function handleSubmit(e) {
   e.preventDefault(); // stop browser navigation
 
-  
-
   // all fields are required, so it cant be null
   const title = e.target.title.value;
   const description = e.target.description.value;
@@ -92,7 +94,7 @@ function handleSubmit(e) {
   }
 
   if (eventDate <= now) {
-    alert("Event must be in the future");
+    alert("Event date must be in the future");
     return;
   }
 
@@ -171,6 +173,9 @@ function handleSubmit(e) {
     })
     .then(data => {
       console.log("Success:", data);
+    })
+    .then(() => {
+        navigate("/success"); // indicate a successful creation
     })
     .catch(err => {
       console.error("Error:", err);

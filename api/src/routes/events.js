@@ -38,8 +38,6 @@ router.get('/:id', async (req, res) => {
 // CREATE a new event
 router.post('/', async (req, res) => {
     try {
-        console.log(req.body);
-
         const { organizationId, title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
 
         
@@ -59,14 +57,15 @@ router.post('/', async (req, res) => {
             image
         });
         
-        // send the user to the page for a successful new event created
-        //res.redirect("http://localhost:3001/success");
         res.json({
             "message": "success",
             "data": newEvent
         });
+        
+        // send the user to the page for a successful new event created
+        //res.redirect("http://localhost:3001/success");
     } catch (err) {
-        console.log("Invalid Request ^^^^^^^^^");
+        //console.log("Invalid Request ^^^^^^^^^");
         res.status(400).json({ "error": err.message });
     }
 });
@@ -75,9 +74,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const { title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
+        const { organizationId, title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
 
         const [updated] = await Event.update({
+            organizationId,
             title,
             description,
             capacity,

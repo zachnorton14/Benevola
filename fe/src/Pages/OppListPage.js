@@ -1,6 +1,7 @@
 import NavBar from "../Components/NavBar";
 import '../App.css';
 import { List } from "@mui/material";
+import { useState, useEffect } from 'react';
 
 import PlaceIcon from '@mui/icons-material/Place';
 import FrequencyIcon from '@mui/icons-material/AccessTime';
@@ -59,8 +60,58 @@ function OppListPage() {
       page:"placeholder3",
       tags:[{name: "Virtual"}, {name: "Tutoring"}, { name: "Inside"}],
     },
+    {
+      id: 12,
+      organizationId: 1,
+      title: "asd",
+      description: "abc",
+      capacity: 1,
+      time: "2025-12-31T19:41:00.000Z",
+      duration: "04:01",
+      tags: null,
+      latitude: 35.770712,
+      longitude: -78.691355,
+      image: null,
+      createdAt: "2025-12-28T19:42:09.774Z",
+      updatedAt: "2025-12-28T19:42:09.774Z"
+    }
   ]
+  
+  const defaultOrgLog = "https://cdn-icons-png.flaticon.com/512/8611/8611393.png";
 
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/events")
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        return res.json();
+      })
+      .then(data => {
+        setEvents(Array.isArray(data.data) ? data.data : []);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading)  {
+    console.log('Loading');
+    return <p>Loading events...</p>;
+  }
+
+  if (error) {
+    console.log('Error');
+    return <p>Error: {error}</p>;
+  }
+
+  
   return (
     /* Wraps everything with the correct size of margins*/
     <div className="App">
@@ -72,6 +123,8 @@ function OppListPage() {
       <div className="opp-list-title-container">
         <div className="opp-list-title-text">
           Find volunteer opportunities, perfect for you.
+          <br></br>
+          Displaying {events.length} events
         </div>
       </div>
       <div className="opp-list-title-container">
@@ -83,13 +136,13 @@ function OppListPage() {
       {/* Display all of the feeds on the page */}
       <div className="opp-list-container">
         <List className="opp-list-list">
-            {feedOpportunities.map((item) => (
+            {events.map((item) => (
                 // Make a box around each post
                 <div className="opp-list-singular-post-container">
 
                   {/* Now make the image at the top of each post */}
                   <div className="opp-list-SP-image-container">
-                    <img className="opp-list-SP-image" src={item.image} alt={item.title}></img>
+                    {/* <img className="opp-list-SP-image" src={item.logo} alt={item.title}></img>*/}
                   </div>
 
                   {/* Format the text section below the image to prevent overflow */}
@@ -100,26 +153,26 @@ function OppListPage() {
 
                     {/* Display the Organization's logo, to left of the title */}
                     <div className="opp-list-org-logo-container">
-                      <img className="opp-list-org-logo" src={item.orgLogo} alt={item.title}></img>
+                      <img className="opp-list-org-logo" src={defaultOrgLog} alt={item.title}></img>
                     </div>
 
                     {/* Add the title text for this opportunity */}
                     <div className="opp-list-SP-title-text">
                       <div className="opp-list-SP-title-font"> {item.title}  </div>
-                      <div className="opp-list-SP-org-font"> {item.organization} </div>
+                      <div className="opp-list-SP-org-font"> {item.organizationId} </div>
                       <div className="opp-list-SP-description-font">  {item.description} </div>
 
                 
                       <div className="opp-list-SP-icon-info">
-                        <PlaceIcon/> <div className="opp-list-SP-icon-text"> {item.location} </div>
+                        <PlaceIcon/> <div className="opp-list-SP-icon-text"> {item.longitude} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {item.frequency} , {item.length} </div>
+                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {item.duration} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <PeopleIcon/> <div className="opp-list-SP-icon-text"> {item.spots} volunteers needed </div>
+                        <PeopleIcon/> <div className="opp-list-SP-icon-text"> {item.capacity} volunteers needed </div>
                       </div>
 
                     </div> 
@@ -139,13 +192,13 @@ function OppListPage() {
 
                     {/* Finally, add the tags of this post to right of the information, above the buttons */}
                     <div className="opp-list-tags-container">
-                      <List className="opp-tags-list">
+                      {/*<List className="opp-tags-list">
                           {item.tags.map((tag) => (
                             <div className="opp-list-tags-format">
                               {tag.name}
                             </div>
                           ))}
-                      </List>
+                      </List>*/}
                     </div>
                   </div>
                 </div>
