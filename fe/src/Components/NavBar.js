@@ -1,6 +1,5 @@
 import React, {useState } from "react";
 import Logo from "../Assets/benevolaLogoRectangleVerticalSpacing.png";
-import { BsCart2 } from "react-icons/bs";
 import {HiOutlineBars3} from "react-icons/hi2";
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
@@ -19,6 +18,14 @@ const NavBar = () => {
 
     const handleHome = () => {
       navigate('/');
+    };
+
+    const handleProfile = () => {
+      navigate('/my-profile');
+    };
+
+    const handleOrgs = () => {
+      navigate('/organizations');
     };
 
     const [openMenu, setOpenMenu] = useState(false);
@@ -51,10 +58,10 @@ const NavBar = () => {
         <img src={Logo} alt="Benevola Logo" onClick={handleHome}/>
       </div>
       <div className="navbar-links-container" >
-        <a href="" onClick={handleHome}>Home</a>
-        <a href="">Our Mission</a>
-        <a href="">Companies</a>
-        <a href="">My Profile</a>
+        <a href="/" onClick={handleHome}>Home</a>
+        <a href="/" onClick={handleHome}>Our Mission</a>
+        <a href="/organizations" onClick={handleOrgs}>Companies</a>
+        <a href="my-profile" onClick={handleProfile}>My Profile</a>
         <button className="primary-button" onClick={handleVolunteer}> Volunteer </button>
       </div>
       <div className="navbar-menu-container" >

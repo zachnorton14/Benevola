@@ -1,8 +1,10 @@
 import React from 'react'
 import NavBar from "./NavBar";
 import BannerImage from "../Assets/handsTogetherImageFromGoogle.jpeg";
+
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {FiArrowRight } from "react-icons/fi";
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import BusinessIcon from '@mui/icons-material/Business';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -17,8 +19,8 @@ const Home = () => {
       navigate('/create-event');
     };
 
-    const handleHome = () => {
-      navigate('/');
+    const handleOrgs = () => {
+      navigate('/organizations');
     };
 
   return (
@@ -44,11 +46,11 @@ We empower volunteers to discover meaningful opportunities with trusted organiza
 
             <p> <br></br></p>
             <button className="secondary-button" onClick={handleVolunteer}>
-                Browse Opportunities <FiArrowRight />
+                Browse Opportunities <HandshakeIcon />
             </button>
             <p><br></br></p>
-            <button className="secondary-button">
-                Browse Organizations <FiArrowRight />
+            <button className="secondary-button" onClick={handleOrgs}>
+                Browse Companies <BusinessIcon />
             </button>
         </div>
 

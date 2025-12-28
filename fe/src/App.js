@@ -4,6 +4,9 @@ import LandingPage from '../src/Pages/LandingPage';
 import OppListPage from './Pages/OppListPage';
 import NotFoundPage from '../src/Pages/NotFoundPage';
 import CreateEventPage from '../src/Pages/CreateEventPage';
+import BrowseOrgsPage from './Pages/BrowseOrgsPage';
+import MyProfilePage from './Pages/MyProfilePage';
+
 
 function App() {
   return (
@@ -12,6 +15,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/opp-list" element={<OppListPage />} />
         <Route path="/create-event" element={<CreateEventPage />} />
+        <Route path="/organizations" element={<BrowseOrgsPage />} />
+        <Route path="/my-profile" element={<MyProfilePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
