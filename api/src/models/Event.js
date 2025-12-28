@@ -9,8 +9,7 @@ const Event = sequelize.define('Event', {
     },
     organizationId: {
         type: DataTypes.INTEGER,
-        // needs to be reuqired later, disabled for testing fe -> be communication
-        allowNull: true,
+        allowNull: false,
     },
     title: {
         type: DataTypes.STRING(120),
@@ -21,9 +20,8 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     capacity: {
-        type: DataTypes.SMALLINT,
+        type: DataTypes.STRING(255),
         allowNull: false,
-        validate: { min: 1 }
     },
     time: {
         type: DataTypes.DATE,
@@ -31,12 +29,10 @@ const Event = sequelize.define('Event', {
     },
     duration: {
         type: DataTypes.TIME,
-        allowNull: false
+        allowNull: false,
     },
     tags: {
-        // arrays are exclusive to PosgreSQL, I think we are using SQLlite
-        //type: DataTypes.ARRAY(DataTypes.STRING),
-        // trying out json for now
+        // each tag is separated by commas
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -53,6 +49,7 @@ const Event = sequelize.define('Event', {
     image: {
         // need to find a good way to store image, do we upload in frontend maybe, then store url?
         type: DataTypes.STRING,
+        // long term, not planned to be optional
         allowNull: true
     }
 }, {

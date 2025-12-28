@@ -39,14 +39,15 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         console.log(req.body);
-        
-        const { title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
+
+        const { organizationId, title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
 
         
         const formattedTags = "placeholder tag";
 
         //const { name, location, longitude, latitude, description } = req.body;
         const newEvent = await Event.create({
+            organizationId,
             title,
             description,
             capacity,
@@ -59,12 +60,13 @@ router.post('/', async (req, res) => {
         });
         
         // send the user to the page for a successful new event created
-        res.redirect("http://localhost:3001/success");
-        //res.json({
-        //    "message": "success",
-        //    "data": newEvent
-        //});
+        //res.redirect("http://localhost:3001/success");
+        res.json({
+            "message": "success",
+            "data": newEvent
+        });
     } catch (err) {
+        console.log("Invalid Request ^^^^^^^^^");
         res.status(400).json({ "error": err.message });
     }
 });

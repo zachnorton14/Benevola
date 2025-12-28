@@ -63,19 +63,85 @@ function CreateEventPage() {
     },
   ]
 
+
 function handleSubmit(e) {
   e.preventDefault(); // stop browser navigation
-  // e.target.title.value
+
+  
+
+  // all fields are required, so it cant be null
   const title = e.target.title.value;
   const description = e.target.description.value;
-  const duration = e.target.durationH.value + ":" + e.target.durationM.value;
+  const capacity = e.target.capacity.value;
 
+  // problem child
+  const time = e.target.time.value;
+  const tags = e.target.tags.value;
+  const longitude = e.target.longitude.value;
+  const latitude = e.target.latitude.value;
+  const image = null;
 
-  // Optional frontend validation
-  if (!title || !description) {
-    alert("Both title and description are required");
+  
+
+  
+  // first make sure the capacity of the event is at least 1
+  if(capacity < 1) {
+    alert("Capacity has to be at least one.");
     return;
   }
+
+  // make sure the date is in the future when creating the event
+  // ...
+
+  // validate the duration of the event
+  if(Number(e.target.durationH.value) < 0 || Number(e.target.durationM.value) < 0 ) {
+    alert("Duration cannot be negative.");
+    return;
+  }
+  if(Number(e.target.durationM.value) >= 60 ) {
+    alert("Duration minutes have to be less than 60.");
+    return;
+  }
+
+  // MINIMUM Duration
+  if(Number(e.target.durationH.value) === 0 && Number(e.target.durationM.value) < 10 ) {
+    alert("Duration cannot be less than 10 minutes.");
+    return;
+  }
+
+  // now pad the duration with zeroes
+  var durationHours = "";
+  if(e.target.durationH.value < 10) {
+    durationHours = "0" + e.target.durationH.value;
+  } else {
+    durationHours = e.target.durationH.value;
+  }
+  var durationMins = "";
+  if(e.target.durationM.value < 10) {
+    durationMins = "0" + e.target.durationM.value;
+  } else {
+    durationMins = e.target.durationM.value;
+  }
+  
+  // create duration
+  const duration = durationHours + ":" + durationMins;
+
+  // make sure longitude and latitude are valid values
+  if(e.target.latitude.value > 90 || e.target.latitude.value < -90) {
+    alert("Invalid latitude.");
+    return;
+  }
+
+  if(e.target.longitude.value > 180 || e.target.longitude.value < -180) {
+    alert("Invalid longitude.");
+    return;
+  }
+
+  // if all inputs are valid, upload the profile picture to the amazon bucket
+  // ...
+  
+  // default organizationID
+  const organizationId = 1;
 
   fetch("http://localhost:3000/api/events", {
     method: "POST",
@@ -83,9 +149,16 @@ function handleSubmit(e) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
+      organizationId,
       title,
       description,
-      duration
+      capacity,
+      duration,
+      time,
+      tags,
+      longitude,
+      latitude,
+      image
     })
   })
     .then(res => {
