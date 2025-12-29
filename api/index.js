@@ -1,12 +1,16 @@
+require("dotenv").config();
 const express = require('express');
 const app = express();
 const sequelize = require('./src/db/database');
+
+const PORT = process.env.PORT || 3000;
+const FE_PORT = process.env.FE_PORT || 5173;
 
 // required for fetch on frontend instead of using form POSTs
 // must come before express.json / express.urlencoded
 const cors = require("cors");
 app.use(cors({
-  origin: `http://localhost:${FE_PORT}`
+  origin: `http://localhost:${process.env.FE_PORT}`
 }));
 
 const eventsRouter = require('./src/routes/events');
@@ -29,7 +33,7 @@ app.use('/api/orgs', orgsRouter);
 sequelize.sync().then(() => {
     console.log('Database connected and synced.');
     app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Server is running on http://localhost:${process.env.PORT}`);
     });
 }).catch(err => {
     console.error('Unable to connect to the database:', err);
