@@ -9,6 +9,9 @@ const { orgParamsValidation } = require("../schemas/org.schema");
 // CREATE a new event
 router.post('/:orgId/events', async (req, res) => {
     try {
+        // debugging
+        console.log(req.body);
+
         const paramsResult = orgParamsValidation.safeParse(req.params);
         if (!paramsResult.success) return res.status(400).json({ error: paramsResult.error.issues });
 

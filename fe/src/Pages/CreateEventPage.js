@@ -11,27 +11,8 @@ import { useNavigate } from 'react-router-dom';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
-
-
-//import './leafletIconFix';
-
-// When creating an event:
-//   we have the user logged in, so thats the creation organization
-//   the number of attendees is alreayd known
-
-
-// What we need to ask the user
-// *** Required
-// BASIC
-// done 1. The title of the event 
-// done 2. The description of the event
-// done 3. the capacity of the event
-// done 4. the duration of the event
-// done 5. The start time of the event ( in military time )
-// done 6. the date of the event
-// done 7. Tags of the event
-// done 8. an image of the event.
-// done 9. the location of the event (longitude and Latitude)
+// env variables
+const API_URL = process.env.REACT_APP_API_URL;
 
 function CreateEventPage() {
 
@@ -72,7 +53,7 @@ function handleSubmit(e) {
   // all fields are required, so it cant be null
   const title = e.target.title.value;
   const description = e.target.description.value;
-  const capacity = e.target.capacity.value;
+  const capacity = Number(e.target.capacity.value);
   const time = e.target.time.value;
   const tags = e.target.tags.value;
   const longitude = e.target.longitude.value;
@@ -113,23 +94,9 @@ function handleSubmit(e) {
     alert("Duration cannot be less than 10 minutes.");
     return;
   }
-
-  // now pad the duration with zeroes
-  var durationHours = "";
-  if(e.target.durationH.value < 10) {
-    durationHours = "0" + e.target.durationH.value;
-  } else {
-    durationHours = e.target.durationH.value;
-  }
-  var durationMins = "";
-  if(e.target.durationM.value < 10) {
-    durationMins = "0" + e.target.durationM.value;
-  } else {
-    durationMins = e.target.durationM.value;
-  }
   
   // create duration
-  const duration = durationHours + ":" + durationMins;
+  const duration = Number(e.target.durationM.value) + Number(e.target.durationH.value * 60);
 
   // make sure longitude and latitude are valid values
   if(e.target.latitude.value > 90 || e.target.latitude.value < -90) {
@@ -147,15 +114,14 @@ function handleSubmit(e) {
   const image = e.target.image.value;
   
   // default organizationID
-  const organizationId = 1;
+  const orgId = 1;
 
-  fetch("http://localhost:3000/api/events", {
+  fetch(`${API_URL}/api/orgs/${orgId}/events`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      organizationId,
       title,
       description,
       capacity,
@@ -191,7 +157,7 @@ function handleSubmit(e) {
         <h1 className="" >
             Register your event with Benevola</h1>
         
-        <form id="eventForm" method="POST" action="http://localhost:3000/api/events/" onSubmit={handleSubmit}>
+        <form id="eventForm" method="POST" action={`${API_URL}/api/events/`} onSubmit={handleSubmit}>
 
           {/* The title of the event */}
           <label className="input-form-text-spacing">

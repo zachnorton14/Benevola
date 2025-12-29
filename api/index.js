@@ -3,8 +3,9 @@ const express = require('express');
 const app = express();
 const sequelize = require('./src/db/database');
 
-const PORT = process.env.PORT || 3000;
+const BE_PORT = process.env.BE_PORT || 3000;
 const FE_PORT = process.env.FE_PORT || 5173;
+const DOMAIN = process.env.DOMAIN;
 
 // required for fetch on frontend instead of using form POSTs
 // must come before express.json / express.urlencoded
@@ -32,8 +33,8 @@ app.use('/api/orgs', orgsRouter);
 // Sync database and start server
 sequelize.sync().then(() => {
     console.log('Database connected and synced.');
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${process.env.PORT}`);
+    app.listen(BE_PORT, () => {
+        console.log(`Server is running on ${DOMAIN}:${BE_PORT}`);
     });
 }).catch(err => {
     console.error('Unable to connect to the database:', err);
