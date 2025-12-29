@@ -7,8 +7,8 @@ const express = require('express');
 const app = express();
 const sequelize = require('./src/db/database');
 
-const BE_PORT = process.env.BE_PORT || 3000;
-const FE_PORT = process.env.FE_PORT || 5173;
+const BE_PORT = process.env.BE_PORT || 5173;
+const FE_PORT = process.env.FE_PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
 
 // required for fetch on frontend instead of using form POSTs
