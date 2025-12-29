@@ -40,7 +40,6 @@ router.post('/', async (req, res) => {
     try {
         const { organizationId, title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
 
-        
         const formattedTags = "placeholder tag";
 
         //const { name, location, longitude, latitude, description } = req.body;
