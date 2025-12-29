@@ -144,7 +144,7 @@ function handleSubmit(e) {
 
   // if all inputs are valid, upload the profile picture to the amazon bucket
   // ...
-  const image = null;
+  const image = e.target.image.value;
   
   // default organizationID
   const organizationId = 1;
@@ -178,6 +178,7 @@ function handleSubmit(e) {
         navigate("/success"); // indicate a successful creation
     })
     .catch(err => {
+      alert("Error creating event");
       console.error("Error:", err);
     });
 }

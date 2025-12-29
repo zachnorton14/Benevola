@@ -2,7 +2,7 @@ import NavBar from "../Components/NavBar";
 import '../App.css';
 import { List } from "@mui/material";
 import { useState, useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import PlaceIcon from '@mui/icons-material/Place';
 import FrequencyIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
@@ -22,6 +22,13 @@ function OppListPage() {
   const [error, setError] = useState(null);
   const [locations, setLocations] = useState({});
 
+  // used to navigate the user after successful creation
+  const navigate = useNavigate();
+
+  // used to handle when a user wants to view the details of one event
+  const handleViewEvent = (id) => {
+    navigate(`/event/${id}`);
+  };
 
   useEffect(() => {
     fetch("http://localhost:3000/api/events")
@@ -134,12 +141,32 @@ function OppListPage() {
 
   if (loading)  {
     console.log('Loading');
-    return <p>Loading events...</p>;
+    return (
+      <div className="App">
+        <NavBar/>
+        <hr></hr>
+        <div className="opp-list-title-container">
+          <div className="opp-list-title-text">
+            Loading Events...
+          </div>
+        </div>
+      </div>
+      );
   }
 
   if (error) {
     console.log('Error');
-    return <p>Error: {error}</p>;
+    return (
+      <div className="App">
+        <NavBar/>
+        <hr></hr>
+        <div className="opp-list-title-container">
+          <div className="opp-list-title-text">
+            Error Loading Events
+          </div>
+        </div>
+      </div>
+      );
   }
   
   return (
@@ -213,13 +240,13 @@ function OppListPage() {
 
                     {/* Add the two buttons at the bottom of the post */}
                     <div className="opp-list-SP-RSVP-button-container">
-                      <button className="opp-list-SP-RSVP-button">
+                      <button className="opp-list-SP-RSVP-button" onClick={() => handleViewEvent(item.id)}>
                         Reserve your spot
                       </button>
                     </div>
 
                     <div className="opp-list-SP-Learn-More-button-container">
-                      <button className="opp-list-SP-Learn-More-button">
+                      <button className="opp-list-SP-Learn-More-button" onClick={() => handleViewEvent(item.id)}>
                         Learn More
                       </button>
                     </div>
