@@ -1,4 +1,4 @@
-const { DataTypes, SMALLINT } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../db/database');
 
 const Event = sequelize.define('Event', {
@@ -17,24 +17,21 @@ const Event = sequelize.define('Event', {
     },
     description: {
         type: DataTypes.STRING(255),
-        allowNull: false
     },
     capacity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.INTEGER, 
     },
-    time: {
+    startTime: {
         type: DataTypes.DATE,
-        allowNull: false,
     },
-    duration: {
-        type: DataTypes.TIME,
-        allowNull: false,
+    duration: {         // length of event in minutes
+        type: DataTypes.SMALLINT,
     },
     tags: {
-        // each tag is separated by commas
         type: DataTypes.STRING,
-        allowNull: true,
+    },
+    address: {           // if leaflet fails and for screenreaders
+        type: DataTypes.STRING(150),
     },
     latitude: {
         type: DataTypes.FLOAT,
@@ -47,15 +44,11 @@ const Event = sequelize.define('Event', {
         validate: { min: -180, max: 180 },
     },
     image: {
-        // need to find a good way to store image, do we upload in frontend maybe, then store url?
         type: DataTypes.STRING,
-        // long term, not planned to be optional
-        allowNull: true
     }
 }, {
     tableName: 'events', // Explicitly telling Sequelize to use the existing 'events' table
-    timestamps: true,    // We already have date_time, and don't strictly need createdAt/updatedAt unless desired
-                         // Update: its easiest for a user to submit everything in one form, so I changed this to true - owen 12/25
+    timestamps: true,
     underscored: true
 });
 
