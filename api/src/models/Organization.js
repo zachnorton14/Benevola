@@ -13,7 +13,7 @@ const Organization = sequelize.define("Organization", {
         unique: true
     },
     description: {
-        type: DataTypes.TEXT, allowNull: true
+        type: DataTypes.TEXT,
     },
     email: {
         type: DataTypes.STRING(255), 
@@ -23,19 +23,18 @@ const Organization = sequelize.define("Organization", {
     },
     passwordHash: {
         type: DataTypes.STRING,
-        allowNull: true,
     },
     phone: { 
         type: DataTypes.STRING(30),
-        allowNull: true
+    },
+    address: {
+        type: DataTypes.STRING(150),
     },
     bannerImg: {
         type: DataTypes.STRING(255),
-        allowNull: true
     },
     iconImg: {
         type: DataTypes.STRING(255),
-        allowNull: true
     }
 }, {
     tableName: "organizations",

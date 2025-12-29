@@ -5,7 +5,8 @@
     "express": "^5.2.1",
     "nodemon": "^3.1.11",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "zod": "^4.2.1"
   },
   "name": "api",
   "version": "1.0.0",
