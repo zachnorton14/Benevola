@@ -8,6 +8,9 @@ import FrequencyIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
+const API_URL = process.env.REACT_APP_API_URL;
+const MAP_API = process.env.REACT_APP_MAP_API;
+
 /**
  * The User Feed Page
  * This page displays the opportunites relevant to the current user
@@ -31,7 +34,7 @@ function OppListPage() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/events")
+    fetch(`${API_URL}/api/events`)
       .then(res => {
         if (!res.ok) {
           throw new Error("Failed to fetch events");
@@ -95,7 +98,7 @@ function OppListPage() {
     if (geoCache.has(key)) return geoCache.get(key);
 
     const res = await fetch(
-      `https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`
+      `${MAP_API}/reverse?lat=${lat}&lon=${lng}`
     );
 
     const data = await res.json();

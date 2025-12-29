@@ -2,6 +2,9 @@ import { useLocation} from "react-router-dom";
 import { useState, useEffect } from 'react';
 import NavBar from "../Components/NavBar";
 
+
+const API_URL = process.env.REACT_APP_API_URL;
+
 // NotFoundPage.js
 function EventPage() {
   const location = useLocation();
@@ -18,7 +21,7 @@ function EventPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/events/${id}`)
+    fetch(`${API_URL}/api/events/${id}`)
       .then(res => {
         if (!res.ok) {
           throw new Error("Event not found");
