@@ -8,6 +8,8 @@ import BusinessIcon from '@mui/icons-material/Business';
 
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -16,7 +18,53 @@ const Home = () => {
     };
 
     const handleCreateEvent = () => {
-      navigate('/create-event');
+      // create the event with post then navigate to that page
+
+      // get the id of the organization
+      const oid = 1;
+
+      // Default values for a new event
+      const title = "New Event";
+      const description = null;
+      const capacity = null;
+      const date = null;
+      const duration = null;
+      const tags = null;
+      const address = null;
+      const longitude = 0.0;
+      const latitude = 0.0;
+      const image = null;
+
+      fetch(`${API_URL}/api/orgs/${oid}/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          capacity,
+          date,
+          duration,
+          tags,
+          address,
+          latitude,
+          longitude,
+          image
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Request failed");
+        return res.json();
+      })
+      .then(result => {
+        const eid = result.data.id;
+        navigate(`/event/${eid}`); // indicate a successful creation
+      })
+      .catch(err => {
+        alert("Error creating event");
+        console.error("Error:", err);
+      });
     };
 
     const handleOrgs = () => {
@@ -41,7 +89,7 @@ const Home = () => {
 We empower volunteers to discover meaningful opportunities with trusted organizations, offering the flexibility to engage on their own terms, on their own schedule.
             </p>
             <button className="secondary-button"  onClick={handleCreateEvent}>
-                Register Event <AddCircleOutlineIcon />
+                Create New Event <AddCircleOutlineIcon />
             </button>
 
             <p> <br></br></p>

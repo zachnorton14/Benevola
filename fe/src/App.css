@@ -16,6 +16,7 @@
   --opportunity-post-secondary-font-color: rgb(100,100,100);
   --opportunity-post-border-radius: 20px;
   --form-textbox-font-size: 23px;
+  --global-background-color: #f7f8f9;
 }
 img {
   max-width: 100%;
@@ -34,7 +35,7 @@ body {
 }
 
 body {
-  background-color: #f7f8f9;
+  background-color: var(--global-background-color);
 }
 
 nav {
@@ -44,13 +45,110 @@ nav {
   min-height: 90px;
 }
 
+.event-editing {
+  color: red;
+}
+
+.event-reading {
+  color: blue;
+  font-style: italic;
+}
+
+
 .event-page-title {
   display: flex;
   justify-content: center;
+  border-bottom: blue;
   text-align: center;
   font-size: 50px;
+  border-style: none;
+  background-color: var(--global-background-color);
 }
 
+.event-page-title:focus {
+  outline: none;
+  border-style: none;
+  box-shadow: none;
+}
+
+.event-edit-button-icon {
+  position: relative;
+  top: -27px;
+  left: 95px;
+}
+
+.event-save-button-icon {
+  position: relative;
+  top: -26px;
+  left: 120px;
+}
+.event-save-button {
+  position: relative;
+  left: -22px;
+  padding-left: 5px;
+}
+
+.event-discard-button {
+  position: relative;
+  display: flex;
+  right: -180px;
+  top: 0px;
+  float: right;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  width: 125px;
+
+  
+  height: 50px;
+  border-radius: 5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+
+  text-align: left;
+  padding-left: 17px;
+  padding-top: 13px;
+}
+
+.event-discard-icon {
+  position: relative;
+  top: 0.5px;
+  left: 10px;
+}
+
+.event-discard-button:hover {
+  background-color: rgb(0, 141, 77);
+}
+
+.event-edit-button {
+  position: relative;
+  display: flex;
+  top: -60px;
+  float: right;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  width: 180px;
+
+  
+  height: 50px;
+  border-radius: 5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+
+  text-align: left;
+  padding-left: 35px;
+  padding-top: 13px;
+}
+.event-edit-button:hover {
+  background-color: rgb(0, 141, 77);
+}
 
 .navbar-menu-container {
   display: none;
