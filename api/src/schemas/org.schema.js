@@ -1,7 +1,7 @@
 const { z } = require("zod");
 
-const orgParamValidation = z.object({
-    orgId: z.coerce.number().int().positive(),
+const orgParamsValidation = z.object({
+    oid: z.coerce.number().int().positive(),
 })
 
-module.exports = { orgParamValidation };
+module.exports = { orgParamsValidation };

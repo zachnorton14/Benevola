@@ -17,9 +17,9 @@ router.get('/', async (req, res) => {
 });
 
 // GET event by id
-router.get('/:id', async (req, res) => {
+router.get('/:eid', async (req, res) => {
     try {
-        const event = await Event.findByPk(req.params.id);
+        const event = await Event.findByPk(req.params.eid);
 
         if (!event) {
             return res.status(404).json({ "error": "Event not found" });
@@ -35,15 +35,15 @@ router.get('/:id', async (req, res) => {
 });
 
 // REPLACE an event
-router.put('/:id', async (req, res) => {
+router.put('/:eid', async (req, res) => {
     try {
-        const paramValidation = eventParamValidation.safeParse(req.params.id);
+        const paramValidation = eventParamValidation.safeParse(req.params.eid);
         if (!paramValidation.success) return res.status(400).json({ error: paramValidation.error.issues });
 
-        const id = Number(req.params.id);
+        const eid = Number(req.params.eid);
 
-        const event = await Event.findByPk(id);
-        if (!event) return res.status(404).json({ error: `Event with id ${id} not found` });
+        const event = await Event.findByPk(eid);
+        if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
 
         const bodyValidation = eventValidation.safeParse(req.body);
         if (!bodyValidation.success) return res.status(400).json({ error: bodyValidation.error.issues })
@@ -61,11 +61,11 @@ router.put('/:id', async (req, res) => {
             longitude,
             image
         }, {
-            where: { id: id }
+            where: { id: eid }
         });
 
         if (updated) {
-            const updatedEvent = await Event.findByPk(id);
+            const updatedEvent = await Event.findByPk(eid);
             return res.status(200).json({ "message": "success", "data": updatedEvent });
         } else {
             return res.status(200).json({ "message": "No changes applied; resource already up to date" });
@@ -75,46 +75,61 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// // UPDATE an event's fields
-// router.patch('/:id', async (req, res) => {
-//     try {
-//         const id = req.params.id;
+// UPDATE an event's fields
+router.patch('/:eid', async (req, res) => {
+    try {
+        // validate id route param
+        const paramValidation = eventParamValidation.safeParse(req.params.eid);
+        if (!paramValidation.success) return res.status(400).json({ error: paramValidation.error.issues });
 
-//         const event = await Event.findByPk(id);
-//         if (event == null) return res.status(404).json({ error: `Event with id ${id} not found` });
+        const eid = Number(req.params.eid);
 
-//         const { organizationId, title, description, capacity, time, duration, tags, latitude, longitude, image } = req.body;
+        // 
 
-//         const [updated] = await Event.update({
-//             organizationId,
-//             title,
-//             description,
-//             capacity,
-//             time,
-//             duration,
-//             tags,
-//             latitude,
-//             longitude,
-//             image
-//         }, {
-//             where: { id: id }
-//         });
+        const { ...body } = req.body
 
-//         if (updated) {
-//             const updatedEvent = await Event.findByPk(id);
-//             return res.status(200).json({ "message": "success", "data": updatedEvent });
-//         } else {
-//             return res.status(200).json({ "message": "No changes applied; resource already up to date" });
-//         }
-//     } catch (err) {
-//         res.status(500).json({ "error": err.message });
-//     }
-// });
+        const updates = Object.fromEntries(
+            Object.entries(body).filter(([_, v]) => v !== undefined)
+        );
+
+        if (Object.keys(updates).length === 0) return res.status(400).json({ error: "No fields provided to update" });
+
+        const event = await Event.findByPk(eid);
+        if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
+
+        const bodyValidation = updateEventValidation.safeParse(updates);
+        if (!bodyValidation.success) return res.status(400).json({ error: bodyValidation.error.issues })
+
+        const [updated] = await Event.update({
+            organizationId,
+            title,
+            description,
+            capacity,
+            time,
+            duration,
+            tags,
+            latitude,
+            longitude,
+            image
+        }, {
+            where: { id: eid }
+        });
+
+        if (updated) {
+            const updatedEvent = await Event.findByPk(eid);
+            return res.status(200).json({ "message": "success", "data": updatedEvent });
+        } else {
+            return res.status(200).json({ "message": "No changes applied; resource already up to date" });
+        }
+    } catch (err) {
+        res.status(500).json({ "error": err.message });
+    }
+});
 
 // DELETE an event
-router.delete('/:id', async (req, res) => {
+router.delete('/:eid', async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.params.eid;
         const deletedCount = await Event.destroy({
             where: { id: id }
         });
