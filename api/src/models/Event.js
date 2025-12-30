@@ -21,7 +21,7 @@ const Event = sequelize.define('Event', {
     capacity: {
         type: DataTypes.INTEGER, 
     },
-    time: {
+    date: {
         type: DataTypes.DATE,
     },
     duration: {         // length of event in minutes

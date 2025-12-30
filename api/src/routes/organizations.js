@@ -8,18 +8,19 @@ const { orgParamsValidation } = require("../schemas/org.schema");
 // CREATE a new event
 router.post('/:oid/events', async (req, res) => {
     try {
+        //console.log(req.body);
         const paramsResult = orgParamsValidation.safeParse(req.params);
         if (!paramsResult.success) return res.status(400).json({ error: paramsResult.error.issues });
 
         const organizationId = Number(req.params.oid);
 
+
         const bodyResult = eventValidation.safeParse(req.body);
 
-        
         if (!bodyResult.success) {
+            console.log(bodyResult.error.issues);
             return res.status(400).json({ error: bodyResult.error.issues });
         }
-
         const { title, description, capacity, date, duration, tags, address, latitude, longitude, image } = req.body;
 
         const newEvent = await Event.create({
@@ -36,14 +37,13 @@ router.post('/:oid/events', async (req, res) => {
             image
         });
 
-
-        
         res.json({
             "message": "success",
             "data": newEvent
         });
 
     } catch (err) {
+        console.log(" BE error: " + err);
         return res.status(400).json({ "error": err.message });
     }
 });

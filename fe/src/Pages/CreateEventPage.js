@@ -52,15 +52,16 @@ function handleSubmit(e) {
 
   // all fields are required, so it cant be null
   const title = e.target.title.value;
-  const description = e.target.description.value;
-  const capacity = Number(e.target.capacity.value);
-  const time = e.target.time.value;
-  const tags = e.target.tags.value;
-  const longitude = Number(e.target.longitude.value);
-  const latitude = Number(e.target.latitude.value);
-  
+  const description = null; //e.target.description.value;
+  const capacity = null; //Number(e.target.capacity.value);
+  const date = null; //e.target.time.value;
+  const tags = null; //e.target.tags.value;
+  const longitude = 1.2; //Number(e.target.longitude.value);
+  const latitude = 1.3; //Number(e.target.latitude.value);
+  const address = null;
+  const duration = null;
   // first make sure the capacity of the event is at least 1
-  if(capacity < 1) {
+  /*if(capacity < 1) {
     alert("Capacity has to be at least one.");
     return;
   }
@@ -103,11 +104,11 @@ function handleSubmit(e) {
   if(e.target.longitude.value > 180 || e.target.longitude.value < -180) {
     alert("Invalid longitude.");
     return;
-  }
+  }*/
 
   // if all inputs are valid, upload the profile picture to the amazon bucket
   // ...
-  const image = e.target.image.value;
+  const image = null; //e.target.image.value;
   
   // default organizationID
   const orgId = 723;
@@ -121,9 +122,10 @@ function handleSubmit(e) {
       title,
       description,
       capacity,
-      time,
+      date,
       duration,
       tags,
+      address,
       latitude,
       longitude,
       image
@@ -164,13 +166,13 @@ function handleSubmit(e) {
           {/* The Description of the event */}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Event Description: </p>
-            <input className="input-form-text-box-long" type="text" name="description" required /> 
+            <input className="input-form-text-box-long" type="text" name="description"  /> 
           </label> <br></br>
 
           {/* The capacity of the event */}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Event Capacity: </p>
-            <input className="input-form-capacity" type="number" name="capacity" required /> 
+            <input className="input-form-capacity" type="number" name="capacity"  /> 
           </label> <br></br>
           
             {/* The day and time of the event */}
@@ -182,8 +184,8 @@ function handleSubmit(e) {
           {/* The duration of the event */}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Event Duration (hours, minutes): </p>
-            <input className="input-form-capacity" type="number" name="durationH" required /> 
-            <input className="input-form-capacity" type="number" name="durationM" required /> 
+            <input className="input-form-capacity" type="number" name="durationH"  /> 
+            <input className="input-form-capacity" type="number" name="durationM" /> 
           </label> <br></br>
 
           {/* The tags of the event */}
@@ -209,7 +211,6 @@ function handleSubmit(e) {
                   type="hidden"
                   value={latitude}
                   readOnly
-                  required
                 />
               </label>
             </div>
@@ -220,7 +221,6 @@ function handleSubmit(e) {
                   name="longitude"
                   value={longitude}
                   readOnly
-                  required
                   type="hidden"
                 />
               </label>
@@ -242,7 +242,7 @@ function handleSubmit(e) {
           {/* An image of the event */}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Event Image: </p>
-            <input className="input-form-text-box-long" type="file"  accept="image/png, image/jpeg"  name="image" required /> 
+            <input className="input-form-text-box-long" type="file"  accept="image/png, image/jpeg"  name="image" /> 
           </label> <br></br>
 
           {/* The submit button */}
