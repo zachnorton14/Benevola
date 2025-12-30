@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
-const { eventValidation } = require("../schemas/event.schema");
+const { eventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation } = require("../schemas/org.schema");
-
-
 
 // CREATE a new event
 router.post('/:oid/events', async (req, res) => {
@@ -16,7 +14,11 @@ router.post('/:oid/events', async (req, res) => {
         const organizationId = Number(req.params.oid);
 
         const bodyResult = eventValidation.safeParse(req.body);
-        if (!bodyResult.success) return res.status(400).json({ error: bodyResult.error.issues });
+
+        
+        if (!bodyResult.success) {
+            return res.status(400).json({ error: bodyResult.error.issues });
+        }
 
         const { title, description, capacity, date, duration, tags, address, latitude, longitude, image } = req.body;
 
@@ -33,6 +35,8 @@ router.post('/:oid/events', async (req, res) => {
             longitude,
             image
         });
+
+
         
         res.json({
             "message": "success",

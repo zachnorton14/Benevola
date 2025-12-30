@@ -2,7 +2,6 @@ import { useLocation} from "react-router-dom";
 import { useState, useEffect } from 'react';
 import NavBar from "../Components/NavBar";
 
-
 const API_URL = process.env.REACT_APP_API_URL;
 
 // NotFoundPage.js

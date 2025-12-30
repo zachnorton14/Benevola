@@ -1,17 +1,21 @@
-require("dotenv").config();
+// npm install dotenv if erroring here
+// the env variables weren't working for me (owen) until I implemented this,
+// possibly a Windows vs iOS issue?
+require("dotenv").config({ quiet: true });
+
 const express = require('express');
 const app = express();
 const sequelize = require('./src/db/database');
 
-const BE_PORT = process.env.BE_PORT || 3000;
-const FE_PORT = process.env.FE_PORT || 5173;
+const BE_PORT = process.env.BE_PORT || 5173;
+const FE_PORT = process.env.FE_PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
 
 // required for fetch on frontend instead of using form POSTs
 // must come before express.json / express.urlencoded
 const cors = require("cors");
 app.use(cors({
-  origin: `http://localhost:${process.env.FE_PORT}`
+  origin: `${DOMAIN}:${FE_PORT}`
 }));
 
 const eventsRouter = require('./src/routes/events');

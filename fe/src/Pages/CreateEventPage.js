@@ -56,8 +56,8 @@ function handleSubmit(e) {
   const capacity = Number(e.target.capacity.value);
   const time = e.target.time.value;
   const tags = e.target.tags.value;
-  const longitude = e.target.longitude.value;
-  const latitude = e.target.latitude.value;
+  const longitude = Number(e.target.longitude.value);
+  const latitude = Number(e.target.latitude.value);
   
   // first make sure the capacity of the event is at least 1
   if(capacity < 1) {
@@ -69,12 +69,8 @@ function handleSubmit(e) {
   const eventDate = new Date(time);   // converts to Date
   const now = new Date();
 
-  if (isNaN(eventDate.getTime())) {
-    alert("Invalid date");
-    return;
-  }
 
-  if (eventDate <= now) {
+  if (!isNaN(eventDate.getTime()) && eventDate <= now) {
     alert("Event date must be in the future");
     return;
   }
@@ -114,7 +110,7 @@ function handleSubmit(e) {
   const image = e.target.image.value;
   
   // default organizationID
-  const orgId = 1;
+  const orgId = 723;
 
   fetch(`${API_URL}/api/orgs/${orgId}/events`, {
     method: "POST",
@@ -125,11 +121,11 @@ function handleSubmit(e) {
       title,
       description,
       capacity,
-      duration,
       time,
+      duration,
       tags,
-      longitude,
       latitude,
+      longitude,
       image
     })
   })
@@ -180,7 +176,7 @@ function handleSubmit(e) {
             {/* The day and time of the event */}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Event Date and Start Time: </p>
-            <input className="input-form-datetime" type="datetime-local" name="time" required /> 
+            <input className="input-form-datetime" type="datetime-local" name="time" /> 
           </label> <br></br>
 
           {/* The duration of the event */}
