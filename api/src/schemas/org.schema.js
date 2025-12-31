@@ -3,7 +3,7 @@ const { z } = require("zod");
 const orgParamsValidation = z.object({
     oid: z.coerce.number().int().positive(),
 })
-const orgValidation =z.object({
+const orgValidation = z.object({
     name: z.string(120).min(1),
     description: z.string().nullable(),
     email: z.string(255).email(),
@@ -14,7 +14,7 @@ const orgValidation =z.object({
     iconImg: z.url().nullable(),
 }).strict();
 
-const orgUpdateValidation =z.object({
+const orgUpdateValidation = z.object({
     name: z.string(120).min(1).optional(),
     description: z.string().nullable().optional(),
     email: z.string(255).email().optional(),
@@ -23,8 +23,9 @@ const orgUpdateValidation =z.object({
     address: z.string(150).nullable().optional(),
     bannerImg: z.url().nullable().optional(),
     iconImg: z.url().nullable().optional(),
-}).strict()
-  .refine((obj) => Object.keys(obj).length > 0, {
+})
+    .strict()
+    .refine((obj) => Object.keys(obj).length > 0, {
         message: "Provide at least one field to update",
     });
 
