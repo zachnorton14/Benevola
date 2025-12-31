@@ -19,11 +19,15 @@ router.get('/', async (req, res) => {
 // GET event by id
 router.get('/:eid', async (req, res) => {
     try {
-        const event = await Event.findByPk(req.params.eid);
+        // validate eid
+        const validatedId = eventParamValidation.safeParse(req.params);
+        if (!validatedId.success) return res.status(400).json({ paramValidationError: validatedId.error.issues });
+        const eid = validatedId.data.eid;
+        
+        // find event
+        const event = await Event.findByPk(eid);
 
-        if (!event) {
-            return res.status(404).json({ error: "Event not found" });
-        }
+        if (!event) return res.status(404).json({ error: "Event not found" });
 
         res.json({
             message: "success",
@@ -37,16 +41,18 @@ router.get('/:eid', async (req, res) => {
 // REPLACE an event
 router.put('/:eid', async (req, res) => {
     try {
+        // validate id route param
         const validatedId = eventParamValidation.safeParse(req.params);
         if (!validatedId.success) return res.status(400).json({ paramValidationError: validatedId.error.issues });
 
         const eid = validatedId.data.eid;
 
-        const event = await Event.findByPk(eid);
-        if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
-
+        // validate the request body
         const validatedBody = eventValidation.safeParse(req.body);
         if (!validatedBody.success) return res.status(400).json({ bodyValidationError: validatedBody.error.issues });
+
+        const event = await Event.findByPk(eid);
+        if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
 
        await Event.update(
             validatedBody.data, { where: { id: eid } }
@@ -65,13 +71,13 @@ router.patch('/:eid', async (req, res) => {
     try {
         // validate id route param
         const validatedId = eventParamValidation.safeParse(req.params);
-        if (!validatedId.success) return res.status(400).json({ error: validatedId.error.issues });
+        if (!validatedId.success) return res.status(400).json({ paramValidationError: validatedId.error.issues });
 
         const eid = validatedId.data.eid;
 
         // validate the request body
         const validatedBody = updateEventValidation.safeParse(req.body);
-        if (!validatedBody.success) return res.status(400).json({ error: validatedBody.error.issues });
+        if (!validatedBody.success) return res.status(400).json({ bodyValidationError: validatedBody.error.issues });
 
         // check if valid id
         const event = await Event.findByPk(eid);
@@ -92,21 +98,26 @@ router.patch('/:eid', async (req, res) => {
 // DELETE an event
 router.delete('/:eid', async (req, res) => {
     try {
-        const id = req.params.eid;
+        // validate eid
+        const validatedId = eventParamValidation.safeParse(req.params);
+        if (!validatedId.success) return res.status(400).json({ paramValidationError: validatedId.error.issues });
+        const eid = validatedId.data.eid;
+        
         const deletedCount = await Event.destroy({
-            where: { id: id }
+            where: { id: eid }
         });
 
         if (deletedCount === 0) {
-            return res.status(404).json({ "error": "Event not found" });
+            return res.status(404).json({ error: "Event not found" });
         }
 
         res.json({
-            "message": "deleted",
-            "changes": deletedCount
+            message: "deleted",
+            changes: deletedCount
         });
+        
     } catch (err) {
-        res.status(400).json({ "error": err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 
