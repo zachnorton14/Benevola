@@ -2,8 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
-const { eventValidation, } = require("../schemas/event.schema");
+const { updateEventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
+
+// CREATE a new org
+router.post('/', async (req, res) => {
+    try {
+        const bodyResult = orgValidation.safeParse(req.body);
+        if (!bodyResult.success) return res.status(400).json({ error: bodyResult.error.issues });
+        
+        const newOrg = await Organization.create(bodyResult.data);
+
+        res.json({
+            "message": "success",
+            "data": newOrg
+        });
+
+    } catch (err) {
+        console.log(" BE error: " + err);
+        return res.status(400).json({ "error": err.message });
+    }
+});
 
 router.get('/', async (req, res) => {
     try {
@@ -43,12 +62,12 @@ router.get('/:oid', async (req, res) => {
 router.post('/:oid/events', async (req, res) => {
     try {
         const validatedId = orgParamsValidation.safeParse(req.params);
-        if (!validatedId.success) return res.status(400).json({ error: validatedId.error.issues });
+        if (!validatedId.success) return res.status(400).json({ validateOrgParamError: validatedId.error.issues });
 
         const oid = validatedId.data.oid;
 
-        const bodyResult = eventValidation.safeParse(req.body);
-        if (!bodyResult.success) return res.status(400).json({ error: bodyResult.error.issues });
+        const bodyResult = updateEventValidation.safeParse(req.body);
+        if (!bodyResult.success) return res.status(400).json({ validateBodyError: bodyResult.error.issues });
         
         const newEvent = await Event.create({
             organizationId: oid,
@@ -66,22 +85,4 @@ router.post('/:oid/events', async (req, res) => {
     }
 });
 
-// CREATE a new event
-router.post('/', async (req, res) => {
-    try {
-        const bodyResult = eventValidation.safeParse(req.body);
-        if (!bodyResult.success) return res.status(400).json({ error: bodyResult.error.issues });
-        
-        const newEvent = await Event.create(bodyResult);
-
-        res.json({
-            "message": "success",
-            "data": newEvent
-        });
-
-    } catch (err) {
-        console.log(" BE error: " + err);
-        return res.status(400).json({ "error": err.message });
-    }
-});
 module.exports = router;
