@@ -4,8 +4,13 @@ const Attendance = require("./Attendance")
 const Organization = require("./Organization");
 const UserAvailability = require("./UserAvailibility");
 
-Organization.hasMany(Event, { foreignKey: "organizationId" });
-Event.belongsTo(Organization, { foreignKey: "organizationId" });
+Organization.hasMany(Event, { 
+  foreignKey: { name: "organizationId", allowNull: false },
+  onDelete: "CASCADE", 
+});
+Event.belongsTo(Organization, { 
+  foreignKey: { name: "organizationId", allowNull: false },
+});
 
 User.belongsToMany(Event, {
   through: Attendance,
