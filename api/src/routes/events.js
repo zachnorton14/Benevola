@@ -63,6 +63,9 @@ router.put('/:eid', async (req, res) => {
 // UPDATE an event's fields
 router.patch('/:eid', async (req, res) => {
     try {
+        // print for debugging
+        console.log(req.body);
+
         // validate id route param
         const validatedId = eventParamValidation.safeParse(req.params);
         if (!validatedId.success) return res.status(400).json({ error: validatedId.error.issues });

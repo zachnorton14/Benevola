@@ -201,7 +201,7 @@ function handleSubmit(e) {
             </List>
           </span> <br></br>
           
-            {/* The Location of the Event - PlaceHolder until I can get location input down / plan with API*/}
+          {/* The Location of the Event - PlaceHolder until I can get location input down / plan with API*/}
           <label className="input-form-text-spacing">
             <p className="input-form-text-label"> Click on the map to choose the location of the event:</p>
             <div>

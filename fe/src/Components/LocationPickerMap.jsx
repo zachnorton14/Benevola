@@ -1,6 +1,23 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useEffect } from 'react';
 import markerIcon from '../Assets/mapMarker.png';
+
+function RecenterMap({ value }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!value) return
+
+    map.setView(
+      [value.lat, value.lng],
+      map.getZoom(),
+      { animate: true }
+    )
+  }, [value, map])
+
+  return null
+}
 
 export const customMarkerIcon = L.icon({
   iconUrl: markerIcon,
@@ -8,6 +25,7 @@ export const customMarkerIcon = L.icon({
   iconAnchor: [16, 32],    // point of the icon which corresponds to marker position
   popupAnchor: [0, -32],   // popup position relative to iconAnchor
 });
+
 
 function ClickHandler({ onSelect }) {
   useMapEvents({
@@ -28,6 +46,9 @@ export default function LocationPickerMap({ value, onChange }) {
       zoom={13}
       style={{ height: '400px', width: '100%' }}
     >
+
+    <RecenterMap value={value} />
+
       <TileLayer
         attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

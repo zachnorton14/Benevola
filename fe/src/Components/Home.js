@@ -31,8 +31,8 @@ const Home = () => {
       const duration = null;
       const tags = null;
       const address = null;
-      const longitude = 0.0;
-      const latitude = 0.0;
+      const longitude = 35.7796;
+      const latitude = -78.6382;
       const image = null;
 
       fetch(`${API_URL}/api/orgs/${oid}/events`, {
