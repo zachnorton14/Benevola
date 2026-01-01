@@ -6,7 +6,7 @@ const orgParamsValidation = z.object({
 const orgValidation = z.object({
     name: z.string(120).min(1),
     description: z.string().nullable(),
-    email: z.string(255).email(),
+    email: z.email(),
     passwordHash: z.string(),
     phone: z.string().nullable(),
     address: z.string(150).nullable(),
@@ -17,7 +17,7 @@ const orgValidation = z.object({
 const orgUpdateValidation = z.object({
     name: z.string(120).min(1).optional(),
     description: z.string().nullable().optional(),
-    email: z.string(255).email().optional(),
+    email: z.email().optional(),
     passwordHash: z.string().optional(),
     phone: z.string().nullable().optional(),
     address: z.string(150).nullable().optional(),

@@ -20,6 +20,8 @@ app.use(cors({
 
 const eventsRouter = require('./src/routes/events');
 const orgsRouter = require('./src/routes/organizations');
+const usersRouter = require('./src/routes/users');
+
 
 // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
@@ -33,6 +35,7 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/events', eventsRouter);
 app.use('/api/orgs', orgsRouter);
+app.use('/api/users', usersRouter);
 
 // Sync database and start server
 sequelize.sync().then(() => {
