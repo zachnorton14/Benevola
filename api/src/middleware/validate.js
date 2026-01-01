@@ -10,7 +10,7 @@ const validate = ({ params, body, query }) => {
         //validate body
         if (body) {
             const validatedBody = body.safeParse(req.body);
-            if (!validatedBody.success) return res.status(400).json({ paramValidationError: validatedBody.error.issues });
+            if (!validatedBody.success) return res.status(400).json({ bodyValidationError: validatedBody.error.issues });
 
             req.validatedBody = validatedBody.data;
         }

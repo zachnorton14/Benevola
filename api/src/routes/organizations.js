@@ -42,7 +42,7 @@ router.post('/',
 // GET organization by id
 router.get('/:oid', 
     validate({
-        params: orgParamsValidation
+        params: orgParamsValidation,
     }),
     async (req, res) => {
         try {
@@ -62,6 +62,7 @@ router.get('/:oid',
         }
     }
 );
+
 // REPLACE an event
 router.put('/:oid', 
     validate({
@@ -148,7 +149,6 @@ router.delete('/:oid',
     }
 );
 
-
 // GET events by organizations
 router.get('/:oid/events',
     validate({
@@ -173,7 +173,6 @@ router.get('/:oid/events',
         }
     }
 );
-
 
 // CREATE a new event
 router.post('/:oid/events',

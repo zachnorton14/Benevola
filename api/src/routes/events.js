@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
-const { eventValidation, eventParamValidation, updateEventValidation, } = require("../schemas/event.schema");
+const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation } = require("../schemas/event.schema");
 const validate = require("../middleware/validate")
 
 // GET all events
@@ -16,6 +16,16 @@ router.get('/', async (req, res) => {
         res.status(500).json({ findError: err.message });
     }
 });
+
+// GET events by query
+router.get('/',
+    validate({
+        query: eventQueryValidation
+    }),
+    async (req, res) => {
+
+    }
+);
 
 // GET event by id
 router.get('/:eid',

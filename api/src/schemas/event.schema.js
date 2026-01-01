@@ -34,4 +34,8 @@ const updateEventValidation = z.object({
         message: "Provide at least one field to update",
     });
 
+const eventQueryValidation = z.object({
+    
+})
+
 module.exports = { eventValidation, updateEventValidation, eventParamValidation };
