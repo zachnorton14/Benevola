@@ -80,16 +80,6 @@ router.put('/:eid',
 );
 
 // UPDATE an event's fields
-<<<<<<< HEAD
-router.patch('/:eid', async (req, res) => {
-    try {
-        // print for debugging
-        console.log(req.body);
-
-        // validate id route param
-        const validatedId = eventParamValidation.safeParse(req.params);
-        if (!validatedId.success) return res.status(400).json({ error: validatedId.error.issues });
-=======
 router.patch('/:eid',
     validate({
         params: eventParamValidation,
@@ -99,7 +89,6 @@ router.patch('/:eid',
         try {
             const eid = req.validatedId.eid;
             const body = req.validatedBody;
->>>>>>> 8ff0a78001d559ca1d5c5c8821d263905ee67416
 
             const event = await Event.findByPk(eid);
             if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
