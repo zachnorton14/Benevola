@@ -38,4 +38,4 @@ const eventQueryValidation = z.object({
     
 })
 
-module.exports = { eventValidation, updateEventValidation, eventParamValidation };
+module.exports = { eventValidation, updateEventValidation, eventParamValidation, eventQueryValidation };
