@@ -16,6 +16,7 @@
   --opportunity-post-secondary-font-color: rgb(100,100,100);
   --opportunity-post-border-radius: 20px;
   --form-textbox-font-size: 23px;
+  --global-background-color: #f7f8f9;
 }
 img {
   max-width: 100%;
@@ -27,6 +28,7 @@ img {
   width: 85vw;
   max-width: 1900px;
   margin: 0rem auto;
+  overflow: hidden;
 }
 body {
   max-width: 100%;
@@ -34,7 +36,7 @@ body {
 }
 
 body {
-  background-color: #f7f8f9;
+  background-color: var(--global-background-color);
 }
 
 nav {
@@ -44,13 +46,392 @@ nav {
   min-height: 90px;
 }
 
+.event-editing {
+  color:#000000;
+  border-top: 0;
+  outline-style: solid;
+  outline-color: rgb(187, 187, 187);
+  outline-width: 1px;
+}
+
+.event-editing:focus {
+  
+  color: var(--accent-color);
+  outline-style: solid;
+  outline-width: 3px;
+  
+  background-color: rgb(234, 234, 234);
+}
+
+.event-editing:invalid {
+  color: red;
+}
+
+.event-reading {
+  color: black;
+}
+
+.event-reading:focus {
+  outline: none;
+  border-style: none;
+  box-shadow: none;
+}
+
+.event-org-container {
+  position: relative;
+  top: 10px;
+  left: -15px;
+  width: 28%;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+}
+
+.event-basic-info-container {
+  position: relative;
+  top: 20px;
+  width: 532px;
+  height: 95px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.event-duration-spacing {
+  position: relative;
+  top: 5px;
+}
+
+.event-reserve-button {
+  position: relative;
+  top: -570px;
+  left: 5px;
+  padding: 0.9rem 1.75rem;
+  padding-right: 28px;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  border-radius: 5rem;
+  font-size: 2.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.event-reserve-button:hover {
+  background-color: rgb(0, 141, 77);
+}
+
+.opp-list-SP-RSVP-button:hover {
+  background-color: rgb(0, 141, 77);
+}
+.opp-list-SP-Learn-More-button:hover {
+  background-color: rgb(171, 171, 171);
+}
+.address-search {
+
+}
+.address-results {
+  position: relative;
+  left: 20px;
+  top: 10px;
+  width: 570px;
+  list-style-type: square;
+}
+.address-textbox {
+  position: relative;
+  top: 7px;
+  display: flex;
+  width: 595px;
+  left: 5px;
+  height: 30px;
+  justify-content: left;
+  text-align: left;
+  font-size: 18px;
+  border-style: none;
+  background-color: var(--global-background-color);
+}
+
+.event-basic-info-title {
+  position: relative;
+  left: 42px;
+  font-size: 30px;
+}
+
+.event-basic-info-icon {
+  position: relative;
+  left: -37px;
+  top: -42px;
+}
+
+.event-basic-info-number-desc {
+  position: relative;
+  top: -102px;
+  left: 34px;
+  font-size: 24px;
+}
+
+.event-basic-info-number {
+  position: relative;
+  top: -50px;
+  left: -40px;
+  display: flex;
+  padding-left: 5px;
+  max-width: 70px;
+  height: 30px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+
+  justify-content: right;
+  text-align: right;
+  font-size: 25px;
+  border-style: none;
+  background-color: var(--global-background-color);
+}
+
+
+.event-basic-info-hour-spacing {
+  position: relative;
+  top: -100px;
+}
+
+.event-basic-info-hour-label-spacing {
+  position: relative;
+  top: -152px;
+}
+
+
+.event-basic-info-text {
+  position: relative;
+  top: -50px;
+  left: -40px;
+  display: flex;
+  padding-left: 5px;
+  width: 300px;
+  height: 50px;
+  justify-content: left;
+  text-align: left;
+  font-size: 22px;
+  border-style: none;
+  background-color: var(--global-background-color);
+}
+
+.event-org-title-text {
+  font-size: 30px;
+  position: absolute;
+  top: -35px;
+  left: 15px;
+  padding: 0px;
+}
+
+.event-org-text {
+  position: relative;
+  left: 85px;
+  top: -70px;
+  white-space: wrap;
+  font-size: 25px;
+  width: 325px;
+}
+
+#map {
+  height: 400px;
+  width: 607px;
+}
+
+.event-image-location-container {
+  position: relative;
+  top: -440px;
+  left: 325px;
+  width: 607px;
+  height: 600px;
+}
+
+.event-tags-container {
+  position: relative;
+  top: -840px;
+  left: 950px;
+  width: 607px;
+}
+
+.event-tags-title {
+  position: relative;
+  left: 42px;
+  font-size: 30px;
+}
+
+.event-tags-icon {
+  position: relative;
+  left: 3px;
+  top: -41px;
+}
+
+.event-image-container {
+  position: absolute;
+  top: 305px;
+  left: 1070px;
+  border-radius: 25px;
+  height: 250px;
+  width: 500px;
+  overflow: hidden;
+}
+
+.event-icon-shifter {
+  position: relative;
+  left: 3px;
+  top: -42px;
+}
+
+.event-about-container {
+  position: relative;
+  top: -30px;
+  font-size: 30px;
+  width: calc(100% - 125px);
+  height: 90px;
+  overflow: hidden;
+  text-align: left;
+  justify-content: left;
+  align-items: left;
+  padding: 0px;
+}
+
+.event-about-text {
+  position: relative;
+  display: flex;
+  width: 90%;
+  left: 3px;
+  height: 30px;
+  justify-content: left;
+  text-align: left;
+  font-size: 18px;
+  border-style: none;
+  background-color: var(--global-background-color);
+}
+
 .event-page-title {
+  position: relative;
+  top: 10px;
   display: flex;
   justify-content: center;
   text-align: center;
-  font-size: 50px;
+  font-size: 60px;
+  border-style: none;
+  background-color: var(--global-background-color);
 }
 
+.event-edit-button-icon {
+  position: relative;
+  top: -27px;
+  left: 95px;
+}
+
+.event-save-button-icon {
+  position: relative;
+  top: -26px;
+  left: 120px;
+}
+.event-save-button {
+  position: relative;
+  left: -22px;
+  padding-left: 5px;
+}
+
+.event-delete-button {
+  position: absolute;
+  display: flex;
+  top: 116px;
+  float: left;
+  background-color: rgb(219, 78, 56);
+  color: white;
+  outline: none;
+  border: none;
+  width: 170px;
+
+  
+  height: 50px;
+  border-radius: 5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+
+  text-align: left;
+  padding-left: 18px;
+  padding-top: 13px;
+}
+
+.event-delete-icon {
+  position: relative;
+  top: 0.5px;
+  left: 10px;
+}
+
+.event-delete-button:hover {
+  background-color: rgb(161, 28, 8);
+}
+
+
+.event-discard-button {
+  position: relative;
+  display: flex;
+  right: -180px;
+  top: 0px;
+  float: right;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  width: 125px;
+
+  
+  height: 50px;
+  border-radius: 5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+
+  text-align: left;
+  padding-left: 17px;
+  padding-top: 13px;
+}
+
+.event-discard-icon {
+  position: relative;
+  top: 0.5px;
+  left: 10px;
+}
+
+.event-discard-button:hover {
+  background-color: rgb(0, 141, 77);
+}
+
+.event-edit-button {
+  position: relative;
+  display: flex;
+  top: -60px;
+  float: right;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  width: 180px;
+
+  
+  height: 50px;
+  border-radius: 5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+
+  text-align: left;
+  padding-left: 35px;
+  padding-top: 13px;
+}
+.event-edit-button:hover {
+  background-color: rgb(0, 141, 77);
+}
 
 .navbar-menu-container {
   display: none;
@@ -259,10 +640,7 @@ nav {
   white-space: nowrap;
   overflow: hidden;
 }
-#map {
-  height: 400px;
-  width: 100%;
-}
+
 .opp-list-SP-org-font {
   margin-top: 0px;
   font-size: var(--opportunity-post-secondary-font-size);

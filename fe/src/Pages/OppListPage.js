@@ -8,6 +8,8 @@ import FrequencyIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
+
+
 const API_URL = process.env.REACT_APP_API_URL;
 const MAP_API = process.env.REACT_APP_MAP_API;
 
@@ -53,11 +55,10 @@ function OppListPage() {
 
   // formats the time HH:MM into H hours and M minutes
   function formatDuration(timeStr) {
-    if (!timeStr || typeof timeStr !== "string") return "";
+    if (!timeStr) return "";
 
-    const [hoursStr, minutesStr] = timeStr.split(":");
-    const hours = Number(hoursStr);
-    const minutes = Number(minutesStr);
+    const hours = Math.floor(Number(timeStr) / 60);
+    const minutes = Number(timeStr) % 60;
 
     if (Number.isNaN(hours) || Number.isNaN(minutes)) return "";
 
@@ -220,7 +221,7 @@ function OppListPage() {
                     <div className="opp-list-SP-title-text">
                       <div className="opp-list-SP-title-font"> {item.title}  </div>
                       <div className="opp-list-SP-org-font"> {item.organizationId} </div>
-                      <div className="opp-list-SP-description-font">  {item.description} </div>
+                      <div className="opp-list-SP-description-font">  {item.description || "A description about this event. "} </div>
 
                 
                       <div className="opp-list-SP-icon-info">
@@ -228,15 +229,15 @@ function OppListPage() {
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {formatDuration(item.duration)} </div>
+                        <FrequencyIcon/> <div className="opp-list-SP-icon-text"> {formatDuration(item.duration) || "The length of this event is unknown."} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <CalendarMonthIcon/> <div className="opp-list-SP-icon-text"> {formatEventTime(item.time)} </div>
+                        <CalendarMonthIcon/> <div className="opp-list-SP-icon-text"> {formatEventTime(item.date) || "The date of this event is unknown."} </div>
                       </div>
 
                       <div className="opp-list-SP-icon-info">
-                        <PeopleIcon/> <div className="opp-list-SP-icon-text"> {item.capacity} volunteers needed </div>
+                        <PeopleIcon/> <div className="opp-list-SP-icon-text"> {item.capacity || 10} {item.capacity === 1 ? "volunteer needed" : "volunteers needed"} </div>
                       </div>
 
                     </div> 
