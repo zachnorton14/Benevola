@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
-const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation } = require("../schemas/event.schema");
+const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation, searchQueryValidation } = require("../schemas/event.schema");
 const validate = require("../middleware/validate")
+const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
 
 // GET all events
 router.get('/', async (req, res) => {
@@ -24,6 +25,25 @@ router.get('/',
     }),
     async (req, res) => {
 
+    }
+);
+
+// GET search events
+router.get('/search',
+    validate({
+        query: searchQueryValidation
+    }),
+    async (req, res) => {
+        try {
+            const { q } = req.validatedQuery;
+            const results = await searchEvents(q);
+            return res.status(200).json({
+                message: "success",
+                data: results,
+            });
+        } catch (err) {
+            res.status(500).json({ searchError: err.message });
+        }
     }
 );
 
@@ -68,6 +88,10 @@ router.put('/:eid',
             );
 
             const updatedEvent = await Event.findByPk(eid);
+
+            // Sync with Elasticsearch
+            await indexEvent(updatedEvent);
+
             return res.status(200).json({
                 message: "success",
                 "data": updatedEvent
@@ -98,6 +122,10 @@ router.patch('/:eid',
             );
             
             const updatedEvent = await Event.findByPk(eid);
+
+            // Sync with Elasticsearch
+            await indexEvent(updatedEvent);
+
             return res.status(200).json({ 
                 message: "success",
                 "data": updatedEvent
@@ -125,6 +153,9 @@ router.delete('/:eid',
             if (deletedCount === 0) {
                 return res.status(404).json({ error: "Event not found" });
             }
+
+            // Sync with Elasticsearch
+            await removeEvent(eid);
 
             return res.status(200).json({
                 message: "deleted",
