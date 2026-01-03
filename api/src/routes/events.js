@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const Tag = require('../models/Tag');
-const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation } = require("../schemas/event.schema");
+const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation, searchQueryValidation } = require("../schemas/event.schema");
 const { createTagValidation, tagSlugValidation } = require('../schemas/tag.schema');
 const validate = require("../middleware/validate")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
@@ -56,6 +56,8 @@ router.post('/tags',
             
             return res.status(200).json({
                 message: "success",
+
+                
                 data: newTag
             });
         } catch (err) {
@@ -87,6 +89,25 @@ router.delete('/tags/:slug',
     }
 });
 
+
+// SEARCH events
+router.get('/search',
+    validate({
+        query: searchQueryValidation
+    }),
+    async (req, res) => {
+        try {
+            const { q } = req.validatedQuery;
+            const results = await searchEvents(q);
+            return res.status(200).json({
+                message: "success",
+                data: results
+            });
+        } catch (err) {
+            res.status(500).json({ searchError: err.message });
+        }
+    }
+);
 
 // GET event by id
 router.get('/:eid',
