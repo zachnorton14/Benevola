@@ -8,6 +8,7 @@ const createIndex = async () => {
     if (!indexExists) {
       await esClient.indices.create({
         index: INDEX_NAME,
+        id: { type:'integer' },
         body: {
           mappings: {
             properties: {
