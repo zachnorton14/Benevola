@@ -10,7 +10,7 @@ const eventValidation = z.object({
     capacity: z.number().int().positive().nullable(),
     date: z.coerce.date().nullable(),
     duration: z.number().int().positive().nullable(),
-    tags: z.array(z.string()).nullable(),
+    tags: z.array(z.string()).nullable().optional(),
     address: z.string(150).nullable(),
     latitude: z.coerce.number().min(-90).max(90),
     longitude: z.coerce.number().min(-180).max(180),

@@ -28,7 +28,7 @@ const Event = sequelize.define('Event', {
         type: DataTypes.SMALLINT,
     },
     tags: {
-        type: DataTypes.STRING,
+        type: DataTypes.JSON,
     },
     address: {           // if leaflet fails and for screenreaders
         type: DataTypes.STRING(150),
