@@ -10,13 +10,15 @@ const { searchEvents, indexEvent, removeEvent } = require('../services/searchSer
 // GET all events
 router.get('/', async (req, res) => {
     try {
-        const events = await Event.findAll();
+        const events = await Event.findAll({
+            include: [{ model: Tag, through: { attributes: [] } }],
+          });
         return res.status(200).json({
             message: "success",
             data: events,
         });
     } catch (err) {
-        res.status(500).json({ findError: err.message });
+        return res.status(500).json({ findError: err.message });
     }
 });
 
@@ -27,6 +29,25 @@ router.get('/',
     }),
     async (req, res) => {
 
+    }
+);
+
+// SEARCH events
+router.get('/search',
+    validate({
+        query: searchQueryValidation
+    }),
+    async (req, res) => {
+        try {
+            const { q } = req.validatedQuery;
+            const results = await searchEvents(q);
+            return res.status(200).json({
+                message: "success",
+                data: results
+            });
+        } catch (err) {
+            return res.status(500).json({ searchError: err.message });
+        }
     }
 );
 
@@ -41,7 +62,7 @@ router.get('/tags', async (req, res) => {
             tags: tags,
         })
     } catch (err) {
-        res.status(500).json({ findError: err.message });
+        return res.status(500).json({ findError: err.message });
     }
 });
 
@@ -61,7 +82,7 @@ router.post('/tags',
                 data: newTag
             });
         } catch (err) {
-            res.status(500).json({ createError: err.message });
+            return res.status(500).json({ createError: err.errors });
         }
     }
 );
@@ -73,9 +94,14 @@ router.delete('/tags/:slug',
     }),
     async (req, res) => {
     try {
+        const slug = req.validatedId.slug;
+
+        const tag = await Tag.findOne({ where: { slug: slug } });
+        if (!tag) return res.status(404).json({ error: "Tag not found" });
+
         const deleted = await Tag.destroy({
             where: {
-                id: req.validatedId
+                slug: slug
             }
         });
         if (deleted < 1) return res.status(400).json({ message: "Nothing was deleted" });
@@ -85,29 +111,9 @@ router.delete('/tags/:slug',
             changes: deleted
         })
     } catch (err) {
-        res.status(500).json({ destroyError: err.message });
+        return res.status(500).json({ destroyError: err.message });
     }
 });
-
-
-// SEARCH events
-router.get('/search',
-    validate({
-        query: searchQueryValidation
-    }),
-    async (req, res) => {
-        try {
-            const { q } = req.validatedQuery;
-            const results = await searchEvents(q);
-            return res.status(200).json({
-                message: "success",
-                data: results
-            });
-        } catch (err) {
-            res.status(500).json({ searchError: err.message });
-        }
-    }
-);
 
 // GET event by id
 router.get('/:eid',
@@ -118,15 +124,17 @@ router.get('/:eid',
         try {
             const eid = req.validatedId.eid;
             
-            const event = await Event.findByPk(eid);
-            if (!event) return res.status(404).json({ error: "Event not found" });
+            const event = await Event.findByPk(eid, {
+                include: [{ model: Tag, through: { attributes: [] } }],
+              });
+            if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
 
             return res.status(200).json({
                 message: "success",
                 data: event
             });
         } catch (err) {
-            res.status(500).json({ findError: err.message });
+            return res.status(500).json({ findError: err.message });
         }
     }
 );
@@ -141,6 +149,7 @@ router.put('/:eid',
         try {
             const eid = req.validatedId.eid;
             const body = req.validatedBody;
+            const { tags: tags } = body;
 
             const event = await Event.findByPk(eid);
             if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
@@ -150,6 +159,7 @@ router.put('/:eid',
             );
 
             const updatedEvent = await Event.findByPk(eid);
+            updatedEvent.setTags(tags);
 
             // Sync with Elasticsearch
             await indexEvent(updatedEvent);
@@ -160,7 +170,7 @@ router.put('/:eid',
             });
 
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -194,7 +204,7 @@ router.patch('/:eid',
             });
 
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -225,7 +235,7 @@ router.delete('/:eid',
             });
             
         } catch (err) {
-            res.status(500).json({ destroyError: err.message });
+            return res.status(500).json({ destroyError: err.message });
         }
     }
 );

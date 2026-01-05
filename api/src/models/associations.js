@@ -27,11 +27,13 @@ Event.belongsToMany(User, {
 
 Event.belongsToMany(Tag, {
   through: EventTag,
-  foreignKey: "eventId"
+  foreignKey: "eventId",
+  otherKey: "tagId",
 });
 Tag.belongsToMany(Event, {
   through: EventTag,
-  foreignKey: "tagId"
+  foreignKey: "tagId",
+  otherKey: "eventId",
 });
 
 User.hasMany(UserAvailability, { foreignKey: "userId" });

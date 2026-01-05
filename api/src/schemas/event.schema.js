@@ -10,7 +10,7 @@ const eventValidation = z.object({
     capacity: z.number().int().positive().nullable(),
     date: z.coerce.date().nullable(),
     duration: z.number().int().positive().nullable(),
-    tags: z.array(z.string()).nullable(),
+    tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).max(5).default([]),
     address: z.string(150).nullable(),
     latitude: z.coerce.number().min(-90).max(90),
     longitude: z.coerce.number().min(-180).max(180),
@@ -23,19 +23,19 @@ const updateEventValidation = z.object({
     capacity: z.coerce.number().int().positive().nullable().optional(),
     date: z.coerce.date().nullable().optional(),
     duration: z.coerce.number().int().positive().nullable().optional(),
-    tags: z.array(z.string()).nullable().optional(),
+    tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).max(5).optional(),
     address: z.string(150).nullable().optional(),
     latitude: z.coerce.number().min(-90).max(90).optional(),
     longitude: z.coerce.number().min(-180).max(180).optional(),
     image: z.url().nullable().optional(),
-  })
-    .strict() // can also try .strip()
+})
+    .strict()
     .refine((obj) => Object.keys(obj).length > 0, {
         message: "Provide at least one field to update",
-    });
+});
 
 const eventQueryValidation = z.object({
-    
+    tags: z.array(z.string()).optional(),
 })
 
 const searchQueryValidation = z.object({

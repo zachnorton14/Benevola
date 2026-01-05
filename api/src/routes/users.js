@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
             data: users,
         });
     } catch (err) {
-        res.status(500).json({ findError: err.message });
+        return res.status(500).json({ findError: err.message });
     }
 });
 
@@ -57,7 +57,7 @@ router.get('/:uid',
                 data: user
             });
         } catch (err) {
-            res.status(500).json({ findError: err.message });
+            return res.status(500).json({ findError: err.message });
         }
     }
 );
@@ -85,7 +85,7 @@ router.put('/:uid',
                 data: updatedUser
             });
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -115,7 +115,7 @@ router.patch('/:uid',
             });
 
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -142,7 +142,7 @@ router.delete('/:uid',
                 changes: deletedCount
             });
         } catch (err) {
-            res.status(400).json({ destroyError: err.message });
+            return res.status(400).json({ destroyError: err.message });
         }
     }
 );
@@ -174,7 +174,7 @@ router.get('/:uid/events',
                 data: events,
             });
         } catch (err) {
-            res.status(500).json({ findError: err.message });
+            return res.status(500).json({ findError: err.message });
         }
     }
 );

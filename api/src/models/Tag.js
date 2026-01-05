@@ -17,8 +17,11 @@ const Tag = sequelize.define("Tag", {
         unique: true,
         allowNull: false,
         validate: {
-            is: /^[a-z0-9-]+$/,
-            msg: "Slug must contain only lowercase letters, numbers, and hyphens",
+            notEmpty: { msg: "Slug cannot be empty" },
+            is: {
+                args: /^[a-z0-9-]+$/,
+                msg: 'Slug must contain only lowercase letters, numbers, and hyphens',
+            }
         }
     }
 }, {

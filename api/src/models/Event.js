@@ -27,9 +27,6 @@ const Event = sequelize.define('Event', {
     duration: {         // length of event in minutes
         type: DataTypes.SMALLINT,
     },
-    tags: {
-        type: DataTypes.STRING,
-    },
     address: {           // if leaflet fails and for screenreaders
         type: DataTypes.STRING(150),
     },

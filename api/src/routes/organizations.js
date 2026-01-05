@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const sequelize = require('../db/database');
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
+const Tag = require("../models/Tag");
 const { updateEventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
+const parseTags = require("../middleware/parseTags");
 
 // GET organizations
 router.get('/', async (req, res) => {
@@ -15,7 +18,7 @@ router.get('/', async (req, res) => {
             data: orgs,
         });
     } catch (err) {
-        res.status(500).json({ findError: err.message });
+        return res.status(500).json({ findError: err.message });
     }
 });
 
@@ -58,7 +61,7 @@ router.get('/:oid',
                 data: org
             });
         } catch (err) {
-            res.status(500).json({ findError: err.message });
+            return res.status(500).json({ findError: err.message });
         }
     }
 );
@@ -87,7 +90,7 @@ router.put('/:oid',
                 data: updatedOrganization
             });
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -117,7 +120,7 @@ router.patch('/:oid',
             });
 
         } catch (err) {
-            res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err.message });
         }
     }
 );
@@ -144,7 +147,7 @@ router.delete('/:oid',
                 changes: deletedCount
             });
         } catch (err) {
-            res.status(400).json({ destroyError: err.message });
+            return res.status(400).json({ destroyError: err.message });
         }
     }
 );
@@ -169,7 +172,7 @@ router.get('/:oid/events',
                 data: events,
             });
         } catch (err) {
-            res.status(500).json({ findError: err.message });
+            return res.status(500).json({ findError: err.message });
         }
     }
 );
@@ -180,24 +183,31 @@ router.post('/:oid/events',
         params: orgParamsValidation,
         body: updateEventValidation,
     }),
+    parseTags(Tag, false),
     async (req, res) => {
-        try {
-            const oid = req.validatedId.oid;
-            const body = req.validatedBody;
-            
-            const newEvent = await Event.create({
-                organizationId: oid,
-                ...body,     
-            });
+        const oid = req.validatedId.oid;
+        const body = req.validatedBody;
+        const tags = req.parsedTags;
 
-            return res.status(200).json({
+        const t = await sequelize.transaction();
+        try {
+            
+            const newEvent = await Event.create(
+                { organizationId: oid, ...body, },
+                { transaction: t }
+            );
+
+            await newEvent.setTags(tags, { transaction: t });
+            await t.commit();
+
+            return res.status(201).json({
                 "message": "success",
-                "data": newEvent
+                "data": newEvent,
             });
 
         } catch (err) {
-            console.log(" BE error: " + err);
-            return res.status(400).json({ createError: err.message });
+            await t.rollback();
+            return res.status(500).json({ createError: err.message });
         }
     }
 );
