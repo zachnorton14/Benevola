@@ -38,10 +38,6 @@ const indexEvent = async (event) => {
         title: event.title,
         description: event.description,
         tags: event.tags ? event.tags.split(',') : [],
-        date: event.date,
-        latitude: event.latitude,
-        longitude: event.longitude,
-        address: event.address
       }
     });
   } catch (error) {
