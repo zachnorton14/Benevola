@@ -15,6 +15,7 @@ const EventTag = sequelize.define("EventTag", {
 }, {
     tableName: "event_tags",
     timestamps: false,
+    underscored: true,
 });
 
 module.exports = EventTag;

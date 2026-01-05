@@ -8,6 +8,7 @@ const { updateEventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
 const parseTags = require("../middleware/parseTags");
+const preload = require("../middleware/preload");
 
 // GET organizations
 router.get('/', async (req, res) => {
@@ -130,13 +131,18 @@ router.delete('/:oid',
     validate({
         params: orgParamsValidation
     }),
+    preload(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
+    }),
     async (req, res) => {
+        const org = req.org;
+
         try {
-            const oid = req.validatedId.oid;
-            
-            const deletedCount = await Organization.destroy({
-                where: { id: oid }
-            });
+            const deletedCount = await Organization.destroy(
+                { where: { id: org.id } },
+            );
 
             if (deletedCount === 0) {
                 return res.status(404).json({ error: "Event not found" });
@@ -157,15 +163,20 @@ router.get('/:oid/events',
     validate({
         params: orgParamsValidation
     }),
+    preload(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
+    }),
     async (req, res) => {
-        try {
-            const oid = req.validatedId.oid;
+        const org = req.org;
 
+        try {
             const events = await Event.findAll({
-                where: { organizationId: oid }
+                where: { organizationId: org.id }
             });
 
-            if (events.length < 1) return res.status(404).json({ error: "Events not found" });
+            if (events.length < 1) return res.status(404).json({ error: "No events found under this organization" });
 
             return res.status(200).json({
                 message: "success",
@@ -179,21 +190,23 @@ router.get('/:oid/events',
 
 // CREATE a new event
 router.post('/:oid/events',
-    validate({
-        params: orgParamsValidation,
-        body: updateEventValidation,
+    validate({ params: orgParamsValidation }),
+    preload(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
     }),
+    validate({ body: updateEventValidation }),
     parseTags(Tag, false),
     async (req, res) => {
-        const oid = req.validatedId.oid;
+        const org = req.org;
         const body = req.validatedBody;
         const tags = req.parsedTags;
 
         const t = await sequelize.transaction();
         try {
-            
             const newEvent = await Event.create(
-                { organizationId: oid, ...body, },
+                { organizationId: org.id, ...body, },
                 { transaction: t }
             );
 

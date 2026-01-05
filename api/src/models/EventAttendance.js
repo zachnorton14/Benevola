@@ -1,14 +1,16 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db/database");
 
-const Attendance = sequelize.define("Attendance", {
+const EventAttendance = sequelize.define("Attendance", {
   userId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
+    allowNull: false,
   },
   eventId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
+    allowNull: false,
   },
 }, {
   tableName: "event_attendees",
@@ -16,4 +18,4 @@ const Attendance = sequelize.define("Attendance", {
   underscored: true,
 });
 
-module.exports = Attendance;
+module.exports = EventAttendance;

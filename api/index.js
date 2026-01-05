@@ -6,6 +6,7 @@ require("dotenv").config({ quiet: true });
 const express = require('express');
 const app = express();
 const sequelize = require('./src/db/database');
+require("./src/models/associations");
 
 const BE_PORT = process.env.BE_PORT || 5173;
 const FE_PORT = process.env.FE_PORT || 3000;
@@ -37,9 +38,17 @@ app.use('/api/events', eventsRouter);
 app.use('/api/orgs', orgsRouter);
 app.use('/api/users', usersRouter);
 
-// Sync database and start server
-sequelize.sync().then(() => {
-    console.log('Database connected and synced.');
+sequelize.addHook("afterConnect", async (connection) => {
+    await new Promise((resolve, reject) => {
+        connection.run("PRAGMA foreign_keys = ON;", (err) =>
+            err ? reject(err) : resolve()
+        );
+    });
+});
+
+// Start server
+sequelize.authenticate().then(() => {
+    console.log('Database connected.');
     app.listen(BE_PORT, () => {
         console.log(`Server is running on ${DOMAIN}:${BE_PORT}`);
     });

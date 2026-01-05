@@ -1,18 +1,25 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
+require("dotenv").config()
+
+const env = process.env.NODE_ENV || "development";
+
+const storageFromEnv =
+  env === "production"
+    ? process.env.SQLITE_STORAGE_PROD
+    : process.env.SQLITE_STORAGE_DEV;
+
+const fallbackStorage = path.resolve(
+    process.cwd(),
+    "data",
+    env === "production" ? "prod.sqlite" : "dev.sqlite"
+);
 
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: path.join(__dirname, 'benevola.db'), // Path to your SQLite file
-    logging: false // Set to console.log to see the raw SQL queries
+    storage: storageFromEnv || fallbackStorage,
+    logging: false
 });
-
-// enables cascading and connects to db immediately
-(async () => {
-    await sequelize.authenticate();
-    await sequelize.query("PRAGMA foreign_keys = ON;");
-}
-)();
 
 module.exports = sequelize;

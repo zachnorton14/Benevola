@@ -2,8 +2,8 @@ function preload(Model, {
     identifier,                // field name inside req.validatedParams
     modelField,                // field name in DB/model (often same as identifier)
     reqKey,                    // where to attach instance on req, e.g. "event"
-    notFoundStatus = 404,           // string OR (ctx) => string
-    findMethod,                // "findByPk" or "findOne" (auto if not provided)
+    notFoundStatus = 404,      // string OR (ctx) => string
+    findMethod = "findByPk",   // "findByPk" or "findOne" (auto if not provided)
     include,
 } = {}) {
     const key = reqKey ?? (Model.name[0].toLowerCase() + Model.name.slice(1));
@@ -31,7 +31,7 @@ function preload(Model, {
                         ...(include ? { include } : {}),
                     });
     
-            if (!instance) return res.status(notFoundStatus).json({ error: `Could not find ${reqKey} with ${identifier} ${value}` });
+            if (!instance) return res.status(notFoundStatus).json({ error: `Could not find ${reqKey} with ${modelField} ${value}` });
     
             req[key] = instance;
             return next();
@@ -41,4 +41,4 @@ function preload(Model, {
     };
 }
 
-module.exports = { preload };
+module.exports = preload;

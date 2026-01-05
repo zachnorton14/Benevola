@@ -2,25 +2,25 @@ const User = require("./User");
 const Event = require("./Event");
 const Tag = require("./Tag");
 const EventTag = require("./EventTag");
-const Attendance = require("./Attendance")
+const EventAttendance = require("./EventAttendance")
 const Organization = require("./Organization");
 const UserAvailability = require("./UserAvailibility");
 
 Organization.hasMany(Event, { 
-  foreignKey: { name: "organizationId", allowNull: false },
+  foreignKey: { name: "organizationId" },
   onDelete: "CASCADE", 
 });
 Event.belongsTo(Organization, { 
-  foreignKey: { name: "organizationId", allowNull: false },
+  foreignKey: { name: "organizationId"},
 });
 
 User.belongsToMany(Event, {
-  through: Attendance,
+  through: EventAttendance,
   foreignKey: "userId",
   otherKey: "eventId",
 });
 Event.belongsToMany(User, {
-  through: Attendance,
+  through: EventAttendance,
   foreignKey: "eventId",
   otherKey: "userId",
 });
@@ -40,4 +40,4 @@ User.hasMany(UserAvailability, { foreignKey: "userId" });
 UserAvailability.belongsTo(User, { foreignKey: "userId" });
 
 
-module.exports = { User, Event, Tag, EventTag, Attendance, Organization, UserAvailability };
+module.exports = { User, Event, Tag, EventTag, EventAttendance, Organization, UserAvailability };

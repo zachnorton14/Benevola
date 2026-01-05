@@ -32,6 +32,7 @@ const UserAvailability = sequelize.define("UserAvailability", {
   }, {
     tableName: "user_availabilities",
     underscored: true,
+    timestamps: true,
   });
 
 module.exports = UserAvailability

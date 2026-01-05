@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { User, Event } = require('../models/associations');
+const Event = require('../models/Event');
+const User = require('../models/User');
 const { updateEventValidation, } = require("../schemas/event.schema");
 const { userParamsValidation, userValidation, userUpdateValidation, } = require("../schemas/user.schema");
 const validate = require("../middleware/validate");
