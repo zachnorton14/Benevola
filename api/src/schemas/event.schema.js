@@ -42,4 +42,21 @@ const searchQueryValidation = z.object({
     q: z.string().min(1),
 })
 
-module.exports = { eventValidation, updateEventValidation, eventParamValidation, eventQueryValidation, searchQueryValidation };
+const attendeeBodyValidation = z.object({
+    userId: z.coerce.number().int().positive(),
+}).strict();
+
+const attendeeParamValidation = z.object({
+    eid: z.coerce.number().int().positive(),
+    uid: z.coerce.number().int().positive(),
+});
+
+module.exports = { 
+    eventValidation, 
+    updateEventValidation, 
+    eventParamValidation, 
+    eventQueryValidation, 
+    searchQueryValidation,
+    attendeeBodyValidation,
+    attendeeParamValidation
+};

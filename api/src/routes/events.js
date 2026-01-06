@@ -2,7 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const Tag = require('../models/Tag');
-const { eventValidation, eventParamValidation, updateEventValidation, eventQueryValidation, searchQueryValidation } = require("../schemas/event.schema");
+const User = require('../models/User');
+const Attendance = require('../models/EventAttendance');
+const { 
+    eventValidation, 
+    eventParamValidation, 
+    updateEventValidation, 
+    eventQueryValidation, 
+    searchQueryValidation,
+    attendeeBodyValidation,
+    attendeeParamValidation
+} = require("../schemas/event.schema");
 const { createTagValidation, tagSlugValidation } = require('../schemas/tag.schema');
 const validate = require("../middleware/validate")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
@@ -239,5 +249,99 @@ router.delete('/:eid',
         }
     }
 );
+
+// GET event attendees
+router.get('/:eid/attendees',
+    validate({
+        params: eventParamValidation,
+    }),
+    async (req, res) => {
+        try {
+            const eid = req.validatedParams ? req.validatedParams.eid : req.validatedId.eid;
+            const event = await Event.findByPk(eid, {
+                include: [{
+                    model: User,
+                    attributes: ['id', 'username', 'displayName', 'profilePic'],
+                    through: { attributes: [] }
+                }]
+            });
+
+            if (!event) return res.status(404).json({ error: "Event not found" });
+
+            return res.status(200).json({
+                message: "success",
+                data: event.Users
+            });
+        } catch (err) {
+            return res.status(500).json({ findError: err.message });
+        }
+    }
+);
+
+// ADD attendee
+router.post('/:eid/attendees',
+    validate({
+        params: eventParamValidation,
+        body: attendeeBodyValidation
+    }),
+    async (req, res) => {
+        try {
+            const eid = req.validatedParams ? req.validatedParams.eid : req.validatedId.eid;
+            const { userId } = req.validatedBody;
+
+            const event = await Event.findByPk(eid);
+            if (!event) return res.status(404).json({ error: "Event not found" });
+
+            const user = await User.findByPk(userId);
+            if (!user) return res.status(404).json({ error: "User not found" });
+
+            const [attendance, created] = await Attendance.findOrCreate({
+                where: { eventId: eid, userId: userId }
+            });
+
+            if (!created) {
+                return res.status(409).json({ error: "User is already attending this event" });
+            }
+
+            return res.status(201).json({
+                message: "success",
+                data: attendance
+            });
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+);
+
+// REMOVE attendee
+router.delete('/:eid/attendees/:uid',
+    validate({
+        params: attendeeParamValidation
+    }),
+    async (req, res) => {
+        try {
+            const { eid, uid } = req.validatedParams || req.validatedId; // Fallback for safety
+
+            const deleted = await Attendance.destroy({
+                where: {
+                    eventId: eid,
+                    userId: uid
+                }
+            });
+
+            if (deleted === 0) {
+                return res.status(404).json({ error: "Attendance record not found" });
+            }
+
+            return res.status(200).json({
+                message: "success",
+                changes: deleted
+            });
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+);
+
 
 module.exports = router;
