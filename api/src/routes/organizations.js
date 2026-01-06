@@ -129,9 +129,7 @@ router.patch('/:oid',
 
 // DELETE an org
 router.delete('/:oid',
-    validate({
-        params: orgParamsValidation
-    }),
+    validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
         modelField: "id",
@@ -151,9 +149,7 @@ router.delete('/:oid',
 
 // GET events by organizations
 router.get('/:oid/events',
-    validate({
-        params: orgParamsValidation
-    }),
+    validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
         modelField: "id",
@@ -164,8 +160,6 @@ router.get('/:oid/events',
 
         try {
             const events = await org.getEvents();
-
-            if (events.length < 1) return [];
 
             return res.status(200).json({
                 message: "success",
