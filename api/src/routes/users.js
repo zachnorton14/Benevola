@@ -5,6 +5,7 @@ const User = require('../models/User');
 const { updateEventValidation, } = require("../schemas/event.schema");
 const { userParamsValidation, userValidation, userUpdateValidation, } = require("../schemas/user.schema");
 const validate = require("../middleware/validate");
+const load = require("../middleware/load")
 
 // GET users
 router.get('/', async (req, res) => {
@@ -44,46 +45,46 @@ router.get('/:uid',
     validate({
         params: userParamsValidation
     }),
+    load(User, {
+        identifier: "uid",
+        modelField: "id",
+        reqKey: "user",
+    }),
+    async (req, res) => {
+        return res.status(200).json({
+            message: "success",
+            data: req.user
+        });
+    }
+);
+// REPLACE a user
+router.put('/:uid', 
+    validate({ params: userParamsValidation }),
+    load(User, {
+        identifier: "uid",
+        modelField: "id",
+        reqKey: "user",
+    }),
+    validate({ body: userValidation }),
     async (req, res) => {
         try {
-            const uid = req.validatedId.uid;
-            const user = await User.findByPk(uid);
+            const user = req.user;
+            const body = req.validatedBody;
 
-            if (!user) {
-                return res.status(404).json({ error: "Event not found" });
+            user.set(body);
+
+            if (!user.changed()) {
+                return res.status(200).json({
+                    message: "No changes were made",
+                    data: user
+                })
             }
+
+            await user.save();
 
             return res.status(200).json({
                 message: "success",
                 data: user
-            });
-        } catch (err) {
-            return res.status(500).json({ findError: err.message });
-        }
-    }
-);
-// REPLACE an event
-router.put('/:uid', 
-    validate({
-        params: userParamsValidation,
-        body: userValidation,
-    }),
-    async (req, res) => {
-        try {
-            const uid = req.validatedId.uid;
-            const body = req.validatedBody;
-
-            const user = await User.findByPk(uid);
-            if (!user) return res.status(404).json({ error: `User with id ${uid} not found` });
-
-            await User.update(
-                body, { where: { id: uid } }
-            );
-
-            const updatedUser = await User.findByPk(uid);
-            return res.status(200).json({
-                message: "success",
-                data: updatedUser
             });
         } catch (err) {
             return res.status(500).json({ updateError: err.message });
@@ -91,30 +92,35 @@ router.put('/:uid',
     }
 );
 
-// UPDATE an user's fields
+// UPDATE a user's fields
 router.patch('/:uid',
-    validate({
-        params: userParamsValidation,
-        body: userUpdateValidation,
+    validate({ params: userParamsValidation }),
+    load(User, {
+        identifier: "uid",
+        modelField: "id",
+        reqKey: "user",
     }),
+    validate({ body: userUpdateValidation }),
     async (req, res) => {
         try {
-            const uid = req.validatedId.uid;
+            const user = req.user;
             const body = req.validatedBody;
 
-            const user = await User.findByPk(uid);
-            if (!user) return res.status(404).json({ error: `User with id ${uid} not found` });
+            await user.set(body);
 
-            await User.update(
-                body, { where: { id: uid } }
-            );
+            if (!user.changed()) {
+                return res.status(200).json({
+                    message: "No changes were made",
+                    data: user
+                })
+            }
 
-            const updatedUser = await User.findByPk(uid);
+            await user.save();
+
             return res.status(200).json({
                 message: "success",
-                data: updatedUser
+                data: user
             });
-
         } catch (err) {
             return res.status(500).json({ updateError: err.message });
         }
@@ -123,52 +129,37 @@ router.patch('/:uid',
 
 // DELETE a user
 router.delete('/:uid',
-    validate({
-        params: userParamsValidation
+    validate({ params: userParamsValidation }),
+    load(User, {
+        identifier: "uid",
+        modelField: "id",
+        reqKey: "user",
     }),
     async (req, res) => {
+        const user = req.user;
+
         try {
-            const uid = req.validatedId.uid;
-            
-            const deletedCount = await User.destroy({
-                where: { id: uid }
-            });
-
-            if (deletedCount === 0) {
-                return res.status(404).json({ error: "Event not found" });
-            }
-
-            return res.status(200).json({
-                message: "deleted",
-                changes: deletedCount
-            });
+            await user.destroy();
+            return res.status(204).end()
         } catch (err) {
             return res.status(400).json({ destroyError: err.message });
         }
     }
 );
 
-// GET events by user
+// GET events user is attending
 router.get('/:uid/events',
-    validate({
-        params: userParamsValidation
+    validate({ params: userParamsValidation }),
+    load(User, {
+        identifier: "uid",
+        modelField: "id",
+        reqKey: "user",
+        include: { model: Event }
     }),
     async (req, res) => {
         try {
-            const uid = req.validatedId.uid;
-
-            const user = await User.findByPk(uid, {
-                include: {
-                    model: Event,
-                    through: { attributes: [] }
-                }
-            });
-
-            if (!user) return res.status(404).json({ error: "User not found" });
-
+            const user = req.user;
             const events = user.Events;
-
-            if (!events || events.length < 1) return res.status(404).json({ error: "Events not found" });
 
             return res.status(200).json({
                 message: "success",
