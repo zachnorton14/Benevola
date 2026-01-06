@@ -4,7 +4,7 @@ const sequelize = require('../db/database');
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
 const Tag = require("../models/Tag");
-const { updateEventValidation, } = require("../schemas/event.schema");
+const { eventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
 const parseTags = require("../middleware/parseTags");
@@ -25,16 +25,14 @@ router.get('/', async (req, res) => {
 
 // CREATE a new org
 router.post('/',
-    validate({
-        body: orgValidation,
-    }),
+    validate({ body: orgValidation }),
     async (req, res) => {
         try {
             const newOrg = await Organization.create(req.validatedBody);
 
             return res.status(200).json({
-                "message": "success",
-                "data": newOrg
+                message: "success",
+                data: newOrg
             });
 
         } catch (err) {
@@ -45,50 +43,48 @@ router.post('/',
 
 // GET organization by id
 router.get('/:oid', 
-    validate({
-        params: orgParamsValidation,
+    validate({ params: orgParamsValidation }),
+    load(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
     }),
     async (req, res) => {
-        try {
-            const oid = req.validatedId.oid;
-            const org = await Organization.findByPk(oid);
+        return res.status(200).json({
+            message: "success",
+            data: req.org
+        })
+    }
+);
 
-            if (!org) {
-                return res.status(404).json({ error: "Event not found" });
+// REPLACE an org
+router.put('/:oid', 
+    validate({ params: orgParamsValidation }),
+    load(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
+    }),
+    validate({ body: orgValidation }),
+    async (req, res) => {
+        const org = req.org;
+        const body = req.validatedBody;
+
+        try {
+            org.set(body);
+
+            if (!org.changed()) {
+                return res.status(200).json({
+                    message: "no changes were made",
+                    data: org
+                });
             }
+
+            await org.save();
 
             return res.status(200).json({
                 message: "success",
                 data: org
-            });
-        } catch (err) {
-            return res.status(500).json({ findError: err.message });
-        }
-    }
-);
-
-// REPLACE an event
-router.put('/:oid', 
-    validate({
-        params: orgParamsValidation,
-        body: orgValidation,
-    }),
-    async (req, res) => {
-        try {
-            const oid = req.validatedId.oid;
-            const body = req.validatedBody;
-
-            const org = await Organization.findByPk(oid);
-            if (!org) return res.status(404).json({ error: `Org with id ${oid} not found` });
-
-            await Organization.update(
-                body, { where: { id: oid } }
-            );
-
-            const updatedOrganization = await Organization.findByPk(oid);
-            return res.status(200).json({
-                message: "success",
-                data: updatedOrganization
             });
         } catch (err) {
             return res.status(500).json({ updateError: err.message });
@@ -108,17 +104,23 @@ router.patch('/:oid',
     async (req, res) => {
         const org = req.org;
         const body = req.validatedBody;
-        try {
-            await Organization.update(
-                body, { where: { id: org.id } }
-            );
 
-            const updatedOrganization = await Organization.findByPk(org.id);
+        try {
+            org.set(body);
+
+            if (!org.changed()) {
+                return res.status(200).json({
+                    message: "no changes were made",
+                    data: org
+                });
+            }
+
+            await org.save();
+
             return res.status(200).json({
                 message: "success",
-                data: updatedOrganization
+                data: org
             });
-
         } catch (err) {
             return res.status(500).json({ updateError: err.message });
         }
@@ -139,20 +141,10 @@ router.delete('/:oid',
         const org = req.org;
 
         try {
-            const deletedCount = await Organization.destroy(
-                { where: { id: org.id } },
-            );
-
-            if (deletedCount === 0) {
-                return res.status(404).json({ error: "Event not found" });
-            }
-
-            return res.status(200).json({
-                message: "deleted",
-                changes: deletedCount
-            });
+            await org.destroy();
+            return res.status(204).end();
         } catch (err) {
-            return res.status(400).json({ destroyError: err.message });
+            return res.status(500).json({ destroyError: err.message });
         }
     }
 );
@@ -171,11 +163,9 @@ router.get('/:oid/events',
         const org = req.org;
 
         try {
-            const events = await Event.findAll({
-                where: { organizationId: org.id }
-            });
+            const events = await org.getEvents();
 
-            if (events.length < 1) return res.status(404).json({ error: "No events found under this organization" });
+            if (events.length < 1) return [];
 
             return res.status(200).json({
                 message: "success",
@@ -195,7 +185,7 @@ router.post('/:oid/events',
         modelField: "id",
         reqKey: "org"
     }),
-    validate({ body: updateEventValidation }),
+    validate({ body: eventValidation }),
     parseTags(Tag, false),
     async (req, res) => {
         const org = req.org;
@@ -204,17 +194,18 @@ router.post('/:oid/events',
 
         const t = await sequelize.transaction();
         try {
-            const newEvent = await Event.create(
-                { organizationId: org.id, ...body, },
-                { transaction: t }
-            );
+            const newEvent = await org.createEvent( body, { transaction: t });
 
             await newEvent.setTags(tags, { transaction: t });
+            const newTags = await newEvent.getTags({ transaction: t });
             await t.commit();
 
             return res.status(201).json({
-                "message": "success",
-                "data": newEvent,
+                message: "success",
+                data: {
+                    event: newEvent,
+                    tags: newTags
+                }
             });
 
         } catch (err) {
