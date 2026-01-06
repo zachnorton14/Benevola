@@ -1,4 +1,4 @@
-function preload(Model, {
+function load(Model, {
     identifier,                // field name inside req.validatedParams
     modelField,                // field name in DB/model (often same as identifier)
     reqKey,                    // where to attach instance on req, e.g. "event"
@@ -41,4 +41,4 @@ function preload(Model, {
     };
 }
 
-module.exports = preload;
+module.exports = load;

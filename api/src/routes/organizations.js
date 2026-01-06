@@ -8,7 +8,7 @@ const { updateEventValidation, } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
 const parseTags = require("../middleware/parseTags");
-const preload = require("../middleware/preload");
+const load = require("../middleware/load");
 
 // GET organizations
 router.get('/', async (req, res) => {
@@ -98,23 +98,22 @@ router.put('/:oid',
 
 // UPDATE an org's fields
 router.patch('/:oid',
-    validate({
-        params: orgParamsValidation,
-        body: orgUpdateValidation,
+    validate({ params: orgParamsValidation }),
+    load(Organization, {
+        identifier: "oid",
+        modelField: "id",
+        reqKey: "org"
     }),
+    validate({ body: orgUpdateValidation }),
     async (req, res) => {
+        const org = req.org;
+        const body = req.validatedBody;
         try {
-            const oid = req.validatedId.oid;
-            const body = req.validatedBody;
-
-            const org = await Organization.findByPk(oid);
-            if (!org) return res.status(404).json({ error: `Org with id ${oid} not found` });
-
             await Organization.update(
-                body, { where: { id: oid } }
+                body, { where: { id: org.id } }
             );
 
-            const updatedOrganization = await Organization.findByPk(oid);
+            const updatedOrganization = await Organization.findByPk(org.id);
             return res.status(200).json({
                 message: "success",
                 data: updatedOrganization
@@ -131,7 +130,7 @@ router.delete('/:oid',
     validate({
         params: orgParamsValidation
     }),
-    preload(Organization, {
+    load(Organization, {
         identifier: "oid",
         modelField: "id",
         reqKey: "org"
@@ -163,7 +162,7 @@ router.get('/:oid/events',
     validate({
         params: orgParamsValidation
     }),
-    preload(Organization, {
+    load(Organization, {
         identifier: "oid",
         modelField: "id",
         reqKey: "org"
@@ -191,7 +190,7 @@ router.get('/:oid/events',
 // CREATE a new event
 router.post('/:oid/events',
     validate({ params: orgParamsValidation }),
-    preload(Organization, {
+    load(Organization, {
         identifier: "oid",
         modelField: "id",
         reqKey: "org"

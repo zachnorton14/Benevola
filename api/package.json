@@ -16,7 +16,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:migrate": "sequelize-cli db:migrate --env development",
+    "db:seed": "sequelize-cli db:seed:all --env development",
+    "db:fresh": "rm -f data/dev.sqlite && sequelize-cli db:migrate --env development && sequelize-cli db:seed:all --env development"
   },
   "keywords": [],
   "author": "",
