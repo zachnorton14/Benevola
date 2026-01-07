@@ -28,23 +28,7 @@ function CreateEventPage() {
   }
 
   // will be deleted later
-  const tags = [
-    {
-      name: "Outside",
-    },
-    {
-      name: "Inside",
-    },
-    {
-      name: "Virtual",
-    },
-    {
-      name: "In Person",
-    },
-    {
-      name: "Super Long Tag for testing",
-    },
-  ]
+  const [tags, setTags] = useState('');
 
 
 function handleSubmit(e) {
