@@ -1,7 +1,17 @@
 import NavBar from "../Components/NavBar";
+import { useNavigate } from 'react-router-dom';
 
-// MyProfilePage.js
+import { useEffect } from 'react';
+
 function MyProfilePage() {
+  const navigate = useNavigate();
+
+  // automatically navigate user
+   useEffect(() => {
+    // code runs on page load 
+    navigate('/orgs/profile/3');
+  }, []); 
+
   return (
     <div className="App">
         <div className="home-container">
@@ -9,8 +19,7 @@ function MyProfilePage() {
             <hr></hr>
             <div className="home-text-section" >
                 <h1 className="primary-heading" >
-                    Your Profile</h1>
-                <p className="primary-text"> Placeholder page for the time being </p>
+                     Loading...</h1>
             </div>
         </div>
     </div>

@@ -71,6 +71,32 @@ function EventPage() {
   // does this person have editing permissions
   const canEdit = true;
 
+  const [tags, setTags] = useState(null);
+
+   // fetch all of the tags
+  // need to un comment once tags arent behind anymore
+   /*const fetchTags = () => {
+    setLoading(true);
+
+    fetch(`${API_URL}/api/events/tags`, 
+      {method: "GET"}
+    )
+      
+      .then(res => {
+        if (!res.ok) throw new Error("Tags not found");
+        return res.json();
+      })
+      .then(tags => {
+        console.log("Printing Tags: ");
+        setTags(tags);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  };*/
+
   // fetch event function, used for refreshing the page / discarding changes
   const fetchEvent = () => {
     setLoading(true);
@@ -93,6 +119,7 @@ function EventPage() {
 
   // toggle editing
   const toggleEditing = () => {
+
     // refresh event to displayed edited title
     if(editing) {
       fetchEvent();
@@ -144,8 +171,6 @@ function EventPage() {
   if(id === NaN) {
     id = "Invalid event"
   }
-
-  
 
 useEffect(() => {
   fetchEvent();
@@ -236,7 +261,9 @@ function handleSubmit(e) {
     }
 
     const tags = null; // e.target.tags.value;
-    const address = null;
+
+    // address is always required
+    const address = e.target.address.value;
 
     var latitude = position.lat;
     var longitude = position.lng;
@@ -451,6 +478,8 @@ function handleSubmit(e) {
             </div>
             <div className="event-tags-icon">
               <StyleIcon fontSize="large" />
+
+              <div> {tags} </div>
             </div>
           </div>
           
