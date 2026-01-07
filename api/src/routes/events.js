@@ -147,7 +147,7 @@ router.put('/:eid',
             const updated = await sequelize.transaction(async (t) => {
                 event.set(body);
                 await event.save({ transaction: t });
-                await event.setTags(req.tags, { transaction: t });
+                await event.setTags(req.parsedTags, { transaction: t });
                 const tags = await event.getTags({ transaction: t });
                 return { event, tags };
             })
@@ -184,7 +184,7 @@ router.patch('/:eid',
                     await event.save({ transaction: t });
                 }
                 if (tags !== undefined){
-                    await event.setTags(req.tags, { transaction: t });
+                    await event.setTags(req.parsedTags, { transaction: t });
                 }
                 const tags = await event.getTags({ transaction: t });
                 return { event, tags };

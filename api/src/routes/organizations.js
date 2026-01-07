@@ -185,10 +185,12 @@ router.post('/:oid/events',
         const org = req.org;
         const body = req.validatedBody;
 
+        console.log(req.tags);
+
         try {
             const updated = await sequelize.transaction(async (t) => {
                 const event = await org.createEvent( body, { transaction: t });
-                await event.setTags(req.tags, { transaction: t });
+                await event.setTags(req.parsedTags, { transaction: t });
 
                 const tags = await event.getTags({ transaction: t });
                 return { event, tags };
@@ -200,7 +202,7 @@ router.post('/:oid/events',
             });
 
         } catch (err) {
-            return res.status(500).json({ createError: err.message });
+            return res.status(500).json({ createError: err });
         }
     }
 );
