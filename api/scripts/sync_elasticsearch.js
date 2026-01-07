@@ -1,5 +1,5 @@
 require("dotenv").config({ quiet: true });
-const sequelize = require('../src/db/database');
+const sequelize = require('../src/db/database.js');
 const Event = require('../src/models/Event');
 const { createIndex, indexEvent } = require('../src/services/searchService');
 
