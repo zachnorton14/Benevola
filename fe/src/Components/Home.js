@@ -29,7 +29,7 @@ const Home = () => {
       const capacity = null;
       const date = null;
       const duration = null;
-      const tags = null;
+      const tags = [];
       const address = null;
       const longitude = 35.7796;
       const latitude = -78.6382;
@@ -58,7 +58,8 @@ const Home = () => {
         return res.json();
       })
       .then(result => {
-        const eid = result.data.id;
+        const eid = result.data.event.id;
+        console.log(result);
         navigate(`/event/${eid}`); // indicate a successful creation
       })
       .catch(err => {
@@ -98,7 +99,7 @@ We empower volunteers to discover meaningful opportunities with trusted organiza
             </button>
             <p><br></br></p>
             <button className="secondary-button" onClick={handleOrgs}>
-                Browse Companies <BusinessIcon />
+                Make Company Profile<BusinessIcon />
             </button>
         </div>
 

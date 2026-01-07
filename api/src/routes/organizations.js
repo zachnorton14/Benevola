@@ -4,7 +4,7 @@ const sequelize = require('../db/database');
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
 const Tag = require("../models/Tag");
-const { eventValidation, } = require("../schemas/event.schema");
+const { eventValidation, updateEventValidation } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
 const parseTags = require("../middleware/parseTags");
@@ -179,7 +179,7 @@ router.post('/:oid/events',
         modelField: "id",
         reqKey: "org"
     }),
-    validate({ body: eventValidation }),
+    validate({ body: updateEventValidation }),
     parseTags(Tag, false),
     async (req, res) => {
         const org = req.org;
@@ -203,6 +203,8 @@ router.post('/:oid/events',
             });
 
         } catch (err) {
+            // console.log(req.body);
+            // console.log(req.params);
             await t.rollback();
             return res.status(500).json({ createError: err.message });
         }

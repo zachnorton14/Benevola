@@ -8,8 +8,6 @@ import FrequencyIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-
-
 const API_URL = process.env.REACT_APP_API_URL;
 const MAP_API = process.env.REACT_APP_MAP_API;
 
@@ -18,7 +16,6 @@ const MAP_API = process.env.REACT_APP_MAP_API;
  * This page displays the opportunites relevant to the current user
  * Author: Owen Voorhees 
  */
-
 function OppListPage() {
   const defaultOrgLog = "https://cdn-icons-png.flaticon.com/512/8611/8611393.png";
 
@@ -140,9 +137,6 @@ function OppListPage() {
       });
   });
 }, [events]);
-
-
-
   if (loading)  {
     console.log('Loading');
     return (
@@ -155,7 +149,7 @@ function OppListPage() {
           </div>
         </div>
       </div>
-      );
+    );
   }
 
   if (error) {
