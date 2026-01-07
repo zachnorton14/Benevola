@@ -152,7 +152,8 @@ router.get('/:eid',
     load(Event, {
         identifier: "eid",
         modelField: "id",
-        reqKey: "event"
+        reqKey: "event",
+        include: [{ model: Tag, through: { attributes: [] } }]
     }),
     async (req, res) => {
         return res.status(200).json({
@@ -289,64 +290,53 @@ router.post('/:eid/attendees',
         modelField: "id",
         reqKey: "event",
     }),
-    validate({ body: attendeeBodyValidation }),
+    validate({ body: attendeeBodyValidation }), // user validation and load will go away once auth is set up
+    load(User, {
+        identifier: "userId",
+        modelField: "id",
+        reqKey: "user",
+        origin: "validatedBody"
+    }),
     async (req, res) => {
+        const event = req.event;
+        const user = req.user;
+
         try {
-
-
-            const eid = req.validatedParams ? req.validatedParams.eid : req.validatedId.eid;
-            const { userId } = req.validatedBody;
-
-            const event = await Event.findByPk(eid);
-            if (!event) return res.status(404).json({ error: "Event not found" });
-
-            const user = await User.findByPk(userId);
-            if (!user) return res.status(404).json({ error: "User not found" });
-
-            const [attendance, created] = await Attendance.findOrCreate({
-                where: { eventId: eid, userId: userId }
-            });
-
-            if (!created) {
-                return res.status(409).json({ error: "User is already attending this event" });
-            }
-
-            return res.status(201).json({
-                message: "success",
-                data: attendance
-            });
+            await event.addUser(user.id);
+            return res.status(201).json({ message: "joined" });
         } catch (err) {
-            return res.status(500).json({ error: err.message });
+            if (err.name === "SequelizeUniqueConstraintError") {
+              return res.status(409).json({ error: "already attending" });
+            }
+            return res.status(500).json({ joinError: err.message });
         }
     }
 );
 
 // REMOVE attendee
-router.delete('/:eid/attendees/:uid',
-    validate({
-        params: attendeeParamValidation
+router.delete('/:eid/attendees/me',
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event",
+    }),
+    validate({ body: attendeeBodyValidation }), // user validation will go away once auth is set up
+    load(User, {
+        identifier: "userId",
+        modelField: "id",
+        reqKey: "user",
+        origin: "validatedBody"
     }),
     async (req, res) => {
+        const event = req.event;
+        const user = req.user;
+
         try {
-            const { eid, uid } = req.validatedParams || req.validatedId; // Fallback for safety
-
-            const deleted = await Attendance.destroy({
-                where: {
-                    eventId: eid,
-                    userId: uid
-                }
-            });
-
-            if (deleted === 0) {
-                return res.status(404).json({ error: "Attendance record not found" });
-            }
-
-            return res.status(200).json({
-                message: "success",
-                changes: deleted
-            });
+            await event.removeUser(user.id);
+            return res.status(200).json({ message: "removed" });
         } catch (err) {
-            return res.status(500).json({ error: err.message });
+            return res.status(500).json({ joinError: err.message });
         }
     }
 );

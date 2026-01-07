@@ -5,17 +5,18 @@ function load(Model, {
     notFoundStatus = 404,      // string OR (ctx) => string
     findMethod = "findByPk",   // "findByPk" or "findOne" (auto if not provided)
     include,
+    origin = "validatedParams",
 } = {}) {
     const key = reqKey ?? (Model.name[0].toLowerCase() + Model.name.slice(1));
   
     return async (req, res, next) => {
         try {
-            const value = req.validatedParams?.[identifier];
+            const value = req[origin]?.[identifier];
   
             // if validate middleware was forgotten/mis-ordered, fail loudly (dev-time bug)
             if (value === undefined) {
                 return res.status(500).json({
-                    error: `loadOne misconfigured: missing req.validatedParams.${identifier}`,
+                    error: `loadOne misconfigured: invalid origin (${origin}) or identifier (${identifier})`,
                 });
             }
     
