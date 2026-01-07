@@ -12,7 +12,8 @@ const {
     eventQueryValidation, 
     searchQueryValidation,
     attendeeBodyValidation,
-    attendeeParamValidation
+    attendeeParamValidation,
+    addTagValidation
 } = require("../schemas/event.schema");
 const { createTagValidation, tagSlugValidation } = require('../schemas/tag.schema');
 const validate = require("../middleware/validate");
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
     try {
         const events = await Event.findAll({
             include: [{ model: Tag, through: { attributes: [] } }],
-        });
+          });
         return res.status(200).json({
             message: "success",
             data: events,
@@ -40,6 +41,38 @@ router.get('/',
     validate({ query: eventQueryValidation }),
     async (req, res) => {
 
+    }
+);
+
+// GET events by tag slug
+router.get('/tags/:slug',
+    validate({
+        params: tagSlugValidation
+    }),
+    async (req, res) => {
+        try {
+            const { slug } = req.validatedParams;
+            const tag = await Tag.findOne({ 
+                where: { slug: slug },
+                include: [{
+                    model: Event,
+                    through: { attributes: [] },
+                    include: [{
+                        model: Tag,
+                        through: { attributes: [] }
+                    }]
+                }]
+            });
+
+            if (!tag) return res.status(404).json({ error: "Tag not found" });
+
+            return res.status(200).json({
+                message: "success",
+                data: tag.Events
+            });
+        } catch (err) {
+            return res.status(500).json({ findError: err.message });
+        }
     }
 );
 

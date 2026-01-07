@@ -51,6 +51,10 @@ const attendeeParamValidation = z.object({
     uid: z.coerce.number().int().positive(),
 });
 
+const addTagValidation = z.object({
+    slug: z.string().regex(/^[a-z0-9-]+$/)
+}).strict();
+
 module.exports = { 
     eventValidation, 
     updateEventValidation, 
@@ -58,5 +62,6 @@ module.exports = {
     eventQueryValidation, 
     searchQueryValidation,
     attendeeBodyValidation,
-    attendeeParamValidation
+    attendeeParamValidation,
+    addTagValidation
 };
