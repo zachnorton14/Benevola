@@ -227,26 +227,24 @@ router.get('/:eid/attendees',
     validate({
         params: eventParamValidation,
     }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event",
+        include: [{
+            model: User,
+            attributes: ['id', 'username', 'displayName', 'profilePic'],
+            through: { attributes: [] }
+        }]
+    }),
     async (req, res) => {
-        try {
-            const eid = req.validatedParams ? req.validatedParams.eid : req.validatedId.eid;
-            const event = await Event.findByPk(eid, {
-                include: [{
-                    model: User,
-                    attributes: ['id', 'username', 'displayName', 'profilePic'],
-                    through: { attributes: [] }
-                }]
-            });
+        const event = req.event;
 
-            if (!event) return res.status(404).json({ error: "Event not found" });
-
-            return res.status(200).json({
-                message: "success",
-                data: event.Users
-            });
-        } catch (err) {
-            return res.status(500).json({ findError: err.message });
-        }
+        console.log(event);
+        return res.status(200).json({
+            message: "success",
+            data: event.Users
+        });
     }
 );
 

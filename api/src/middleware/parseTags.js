@@ -5,7 +5,7 @@ function parseTags(TagModel, optional = true) {
 
             if (slugs === undefined) {
                 if (optional) {
-                    req.tags = [];
+                    req.parsedTags = [];
                     return next();
                 }
                 return res.status(400).json({ error: "request body is missing tags" });
