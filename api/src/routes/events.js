@@ -248,14 +248,19 @@ router.get('/:eid/attendees',
     }
 );
 
-// ADD attendee
+// ADD an attendee
 router.post('/:eid/attendees',
-    validate({
-        params: eventParamValidation,
-        body: attendeeBodyValidation
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event",
     }),
+    validate({ body: attendeeBodyValidation }),
     async (req, res) => {
         try {
+
+
             const eid = req.validatedParams ? req.validatedParams.eid : req.validatedId.eid;
             const { userId } = req.validatedBody;
 
