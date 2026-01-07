@@ -186,7 +186,7 @@ router.post('/:oid/events',
         const body = req.validatedBody;
 
         try {
-            const updated = await sequelize.transaction(async () => {
+            const updated = await sequelize.transaction(async (t) => {
                 const event = await org.createEvent( body, { transaction: t });
                 await event.setTags(req.tags, { transaction: t });
 
