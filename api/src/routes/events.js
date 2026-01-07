@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const sequelize = require('../db/database');
 const Event = require('../models/Event');
 const Tag = require('../models/Tag');
 const User = require('../models/User');
@@ -14,7 +15,9 @@ const {
     attendeeParamValidation
 } = require("../schemas/event.schema");
 const { createTagValidation, tagSlugValidation } = require('../schemas/tag.schema');
-const validate = require("../middleware/validate")
+const validate = require("../middleware/validate");
+const load = require("../middleware/load");
+const parseTags = require("../middleware/parseTags")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
 
 // GET all events
@@ -22,7 +25,7 @@ router.get('/', async (req, res) => {
     try {
         const events = await Event.findAll({
             include: [{ model: Tag, through: { attributes: [] } }],
-          });
+        });
         return res.status(200).json({
             message: "success",
             data: events,
@@ -34,9 +37,7 @@ router.get('/', async (req, res) => {
 
 // GET events by query
 router.get('/',
-    validate({
-        query: eventQueryValidation
-    }),
+    validate({ query: eventQueryValidation }),
     async (req, res) => {
 
     }
@@ -44,9 +45,7 @@ router.get('/',
 
 // SEARCH events
 router.get('/search',
-    validate({
-        query: searchQueryValidation
-    }),
+    validate({ query: searchQueryValidation }),
     async (req, res) => {
         try {
             const { q } = req.validatedQuery;
@@ -78,17 +77,13 @@ router.get('/tags', async (req, res) => {
 
 // POST a tag
 router.post('/tags',
-    validate({
-        body: createTagValidation,
-    }),
+    validate({ body: createTagValidation }),
     async (req, res) => {
         try {
             const newTag = await Tag.create(req.validatedBody);
             
             return res.status(200).json({
                 message: "success",
-
-                
                 data: newTag
             });
         } catch (err) {
@@ -99,120 +94,107 @@ router.post('/tags',
 
 // DELETE tag by slug
 router.delete('/tags/:slug',
-    validate({
-        params: tagSlugValidation
+    validate({ params: tagSlugValidation }),
+    load(Tag, {
+        identifier: "slug",
+        modelField: "slug",
+        reqKey: "tag",
+        findMethod: "findOne"
     }),
     async (req, res) => {
-    try {
-        const slug = req.validatedId.slug;
+        const tag = req.tag;
 
-        const tag = await Tag.findOne({ where: { slug: slug } });
-        if (!tag) return res.status(404).json({ error: "Tag not found" });
-
-        const deleted = await Tag.destroy({
-            where: {
-                slug: slug
-            }
-        });
-        if (deleted < 1) return res.status(400).json({ message: "Nothing was deleted" });
-
-        return res.status(200).json({
-            message: "success",
-            changes: deleted
-        })
-    } catch (err) {
-        return res.status(500).json({ destroyError: err.message });
+        try {
+            await tag.destroy();
+            return res.status(204).end();
+        } catch (err) {
+            return res.status(500).json({ destroyError: err.message });
+        }
     }
-});
+);
 
 // GET event by id
 router.get('/:eid',
-    validate({
-        params: eventParamValidation,
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event"
     }),
     async (req, res) => {
-        try {
-            const eid = req.validatedId.eid;
-            
-            const event = await Event.findByPk(eid, {
-                include: [{ model: Tag, through: { attributes: [] } }],
-              });
-            if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
-
-            return res.status(200).json({
-                message: "success",
-                data: event
-            });
-        } catch (err) {
-            return res.status(500).json({ findError: err.message });
-        }
+        return res.status(200).json({
+            message: "success",
+            data: req.event
+        });
     }
 );
 
 // REPLACE an event
 router.put('/:eid',
-    validate({
-        params: eventParamValidation,
-        body: eventValidation,
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event"
     }),
+    validate({ body: eventValidation }),
+    parseTags(Tag, false),
     async (req, res) => {
+        const event = req.event;
+        const body = req.validatedBody;
+
         try {
-            const eid = req.validatedId.eid;
-            const body = req.validatedBody;
-            const { tags: tags } = body;
+            const updated = await sequelize.transaction(async (t) => {
+                event.set(body);
+                await event.save({ transaction: t });
+                await event.setTags(req.tags, { transaction: t });
+                const tags = await event.getTags({ transaction: t });
+                return { event, tags };
+            })
 
-            const event = await Event.findByPk(eid);
-            if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
-
-            await Event.update(
-                body, { where: { id: eid } }
-            );
-
-            const updatedEvent = await Event.findByPk(eid);
-            updatedEvent.setTags(tags);
-
-            // Sync with Elasticsearch
-            await indexEvent(updatedEvent);
-
+            await indexEvent(updated.event);
             return res.status(200).json({
                 message: "success",
-                "data": updatedEvent
+                "data": updated
             });
-
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            return res.status(500).json({ updateError: err });
         }
     }
 );
 
 // UPDATE an event's fields
 router.patch('/:eid',
-    validate({
-        params: eventParamValidation,
-        body: updateEventValidation,
-    }), 
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event"
+    }),
+    validate({ body: updateEventValidation }),
+    parseTags(Tag),
     async (req, res) => {
+        const event = req.event;
+        const body = req.validatedBody;
+
         try {
-            const eid = req.validatedId.eid;
-            const body = req.validatedBody;
-
-            const event = await Event.findByPk(eid);
-            if (!event) return res.status(404).json({ error: `Event with id ${eid} not found` });
-
-            await Event.update(
-                body, { where: { id: eid } }
-            );
-            
-            const updatedEvent = await Event.findByPk(eid);
-
-            // Sync with Elasticsearch
-            await indexEvent(updatedEvent);
-
-            return res.status(200).json({ 
-                message: "success",
-                "data": updatedEvent
+            const updated = await sequelize.transaction(async (t) => {
+                if (body && Object.keys(body).length > 0) {
+                    event.set(body);
+                    await event.save({ transaction: t });
+                }
+                if (tags !== undefined){
+                    await event.setTags(req.tags, { transaction: t });
+                }
+                const tags = await event.getTags({ transaction: t });
+                return { event, tags };
             });
 
+            await indexEvent(updated.event);
+            return res.status(200).json({
+                message: "success",
+                "data": updated
+            });
         } catch (err) {
             return res.status(500).json({ updateError: err.message });
         }
@@ -221,29 +203,19 @@ router.patch('/:eid',
 
 // DELETE an event
 router.delete('/:eid',
-    validate({
-        params: eventParamValidation,
+    validate({ params: eventParamValidation }),
+    load(Event, {
+        identifier: "eid",
+        modelField: "id",
+        reqKey: "event"
     }),
     async (req, res) => {
+        const event = req.event;
+
         try {
-            const eid = req.validatedId.eid;
-            
-            const deletedCount = await Event.destroy({
-                where: { id: eid }
-            });
-
-            if (deletedCount === 0) {
-                return res.status(404).json({ error: "Event not found" });
-            }
-
-            // Sync with Elasticsearch
-            await removeEvent(eid);
-
-            return res.status(200).json({
-                message: "deleted",
-                changes: deletedCount
-            });
-            
+            await removeEvent(event.id);
+            await event.destroy();
+            return res.status(204).end();
         } catch (err) {
             return res.status(500).json({ destroyError: err.message });
         }

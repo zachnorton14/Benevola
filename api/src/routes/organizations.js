@@ -184,26 +184,22 @@ router.post('/:oid/events',
     async (req, res) => {
         const org = req.org;
         const body = req.validatedBody;
-        const tags = req.parsedTags;
 
-        const t = await sequelize.transaction();
         try {
-            const newEvent = await org.createEvent( body, { transaction: t });
+            const updated = await sequelize.transaction(async () => {
+                const event = await org.createEvent( body, { transaction: t });
+                await event.setTags(req.tags, { transaction: t });
 
-            await newEvent.setTags(tags, { transaction: t });
-            const newTags = await newEvent.getTags({ transaction: t });
-            await t.commit();
-
+                const tags = await event.getTags({ transaction: t });
+                return { event, tags };
+            });
+            
             return res.status(201).json({
                 message: "success",
-                data: {
-                    event: newEvent,
-                    tags: newTags
-                }
+                data: updated
             });
 
         } catch (err) {
-            await t.rollback();
             return res.status(500).json({ createError: err.message });
         }
     }
