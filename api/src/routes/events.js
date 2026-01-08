@@ -4,12 +4,11 @@ const sequelize = require('../db/database');
 const Event = require('../models/Event');
 const Tag = require('../models/Tag');
 const User = require('../models/User');
-const Attendance = require('../models/EventAttendance');
 const { 
     eventValidation, 
     eventParamValidation, 
     updateEventValidation, 
-    eventQueryValidation, 
+    EventsQuerySchema, 
     searchQueryValidation,
     attendeeBodyValidation,
     attendeeParamValidation,
@@ -20,56 +19,21 @@ const validate = require("../middleware/validate");
 const load = require("../middleware/load");
 const parseTags = require("../middleware/parseTags")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
+const { getEvents } = require("../services/buildEventQuery");
 
-// GET all events
-router.get('/', async (req, res) => {
-    try {
-        const events = await Event.findAll({
-            include: [{ model: Tag, through: { attributes: [] } }],
-          });
-        return res.status(200).json({
-            message: "success",
-            data: events,
-        });
-    } catch (err) {
-        return res.status(500).json({ findError: err.message });
-    }
-});
-
-// GET events by query
+// GET events
 router.get('/',
-    validate({ query: eventQueryValidation }),
+    validate({ query: EventsQuerySchema }),
     async (req, res) => {
+        const query = req.validatedQuery
 
-    }
-);
-
-// GET events by tag slug
-router.get('/tags/:slug',
-    validate({
-        params: tagSlugValidation
-    }),
-    async (req, res) => {
         try {
-            const { slug } = req.validatedParams;
-            const tag = await Tag.findOne({ 
-                where: { slug: slug },
-                include: [{
-                    model: Event,
-                    through: { attributes: [] },
-                    include: [{
-                        model: Tag,
-                        through: { attributes: [] }
-                    }]
-                }]
-            });
-
-            if (!tag) return res.status(404).json({ error: "Tag not found" });
+            const events = await getEvents(query);
 
             return res.status(200).json({
                 message: "success",
-                data: tag.Events
-            });
+                data: events
+            })
         } catch (err) {
             return res.status(500).json({ findError: err.message });
         }
@@ -108,7 +72,7 @@ router.get('/tags', async (req, res) => {
     }
 });
 
-// POST a tag
+// ADD a tag
 router.post('/tags',
     validate({ body: createTagValidation }),
     async (req, res) => {
