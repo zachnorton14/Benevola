@@ -1,4 +1,4 @@
-const { Op, fn, col, literal } = require("sequelize");
+const { Op, fn, col, literal, where } = require("sequelize");
 const Tag = require("../models/Tag")
 const Event = require("../models/Event")
 
@@ -27,16 +27,20 @@ function buildEventBaseOptions(q) {
 
   // date filters
     if (q.date) {
-            const { start, end } = dayBounds(q.date);
-            options.where.date = { [Op.between]: [start, end] };
+        options.where[Op.and] = [
+            where(fn("date", col("date")), q.date)
+        ]
     } else {
+        options.where[Op.and] = options.where[Op.and] || [];
         if (q.afterDate) {
-            const { start } = dayBounds(q.afterDate);
-            options.where.date = { ...(options.where.date || {}), [Op.gte]: start };
+            options.where[Op.and].push(
+                where(fn("date", col("date")), { [Op.gte]: q.afterDate })
+            );
         }
         if (q.beforeDate) {
-            const { end } = dayBounds(q.beforeDate);
-            options.where.date = { ...(options.where.date || {}), [Op.lte]: end };
+            options.where[Op.and].push(
+                where(fn("date", col("date")), { [Op.lte]: q.beforeDate })
+            );
         }
     }
 
