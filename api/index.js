@@ -22,6 +22,7 @@ app.use(cors({
 const eventsRouter = require('./src/routes/events');
 const orgsRouter = require('./src/routes/organizations');
 const usersRouter = require('./src/routes/users');
+const authRouter = require('./src/routes/auth');
 
 
 // Middleware to parse JSON bodies
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
+app.use('/', authRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/orgs', orgsRouter);
 app.use('/api/users', usersRouter);
