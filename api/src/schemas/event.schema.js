@@ -79,8 +79,8 @@ const EventsQuerySchema = z.object({
     }
 
     // if one near param provided, require all
-    const anyGeo = q.nearLat != null || q.nearLng != null || q.radiusKm != null;
-    const allGeo = q.nearLat != null && q.nearLng != null && q.radiusKm != null;
+    const anyGeo = q.nearLat != null || q.nearLng != null || q.radiusM != null;
+    const allGeo = q.nearLat != null && q.nearLng != null && q.radiusM != null;
     if (anyGeo && !allGeo) {
         ctx.addIssue({
             code: "invalid format",
