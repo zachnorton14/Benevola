@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "@elastic/elasticsearch": "^9.2.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "google-auth-library": "^10.5.0",
+    "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.11",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
