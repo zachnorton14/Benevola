@@ -38,6 +38,10 @@ app.use('/api/events', eventsRouter);
 app.use('/api/orgs', orgsRouter);
 app.use('/api/users', usersRouter);
 
+const redisClient = createClient({ url: process.env.REDIS_URL });
+await redisClient.connect();
+
+// enable foreign keys for all sqlite sessions
 sequelize.addHook("afterConnect", async (connection) => {
     await new Promise((resolve, reject) => {
         connection.run("PRAGMA foreign_keys = ON;", (err) =>
