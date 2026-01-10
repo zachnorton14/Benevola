@@ -15,7 +15,7 @@ const eventValidation = z.object({
     date: z.coerce.date().nullable(),
     duration: z.number().int().positive().nullable(),
     tags: z.array(tagSlug).max(5).default([]),
-    address: z.string(150).nullable(),
+    address: z.string().max(150).nullable(),
     latitude: z.coerce.number().min(-90).max(90),
     longitude: z.coerce.number().min(-180).max(180),
     image: z.url().nullable()
@@ -28,7 +28,7 @@ const updateEventValidation = z.object({
     date: z.coerce.date().nullable().optional(),
     duration: z.coerce.number().int().positive().nullable().optional(),
     tags: z.array(tagSlug).max(5).optional(),
-    address: z.string(150).nullable().optional(),
+    address: z.string().max(150).nullable().optional(),
     latitude: z.coerce.number().min(-90).max(90).optional(),
     longitude: z.coerce.number().min(-180).max(180).optional(),
     image: z.url().nullable().optional(),

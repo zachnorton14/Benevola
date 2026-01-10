@@ -11,7 +11,7 @@ const parseTags = require("../middleware/parseTags");
 const load = require("../middleware/load");
 
 // GET organizations
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const orgs = await Organization.findAll();
         return res.status(200).json({
@@ -19,14 +19,14 @@ router.get('/', async (req, res) => {
             data: orgs,
         });
     } catch (err) {
-        return res.status(500).json({ findError: err.message });
+        next(err);
     }
 });
 
 // CREATE a new org
 router.post('/',
     validate({ body: orgValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const newOrg = await Organization.create(req.validatedBody);
 
@@ -36,7 +36,7 @@ router.post('/',
             });
 
         } catch (err) {
-            return res.status(400).json({ createError: err.errors });
+            next(err);
         }
     }
 );
@@ -66,7 +66,7 @@ router.put('/:oid',
         reqKey: "org"
     }),
     validate({ body: orgValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;
 
@@ -87,7 +87,7 @@ router.put('/:oid',
                 data: org
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            next(err);
         }
     }
 );
@@ -101,7 +101,7 @@ router.patch('/:oid',
         reqKey: "org"
     }),
     validate({ body: orgUpdateValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;
 
@@ -122,7 +122,7 @@ router.patch('/:oid',
                 data: org
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            next(err);
         }
     }
 );
@@ -135,14 +135,14 @@ router.delete('/:oid',
         modelField: "id",
         reqKey: "org"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const org = req.org;
 
         try {
             await org.destroy();
             return res.status(204).end();
         } catch (err) {
-            return res.status(500).json({ destroyError: err.message });
+            next(err);
         }
     }
 );
@@ -155,7 +155,7 @@ router.get('/:oid/events',
         modelField: "id",
         reqKey: "org"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const org = req.org;
 
         try {
@@ -166,7 +166,7 @@ router.get('/:oid/events',
                 data: events,
             });
         } catch (err) {
-            return res.status(500).json({ findError: err.message });
+            next(err);
         }
     }
 );
@@ -181,7 +181,7 @@ router.post('/:oid/events',
     }),
     validate({ body: updateEventValidation }),
     parseTags(Tag, false),
-    async (req, res) => {
+    async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;
 
@@ -202,7 +202,7 @@ router.post('/:oid/events',
             });
 
         } catch (err) {
-            return res.status(500).json({ createError: err });
+            next(err);
         }
     }
 );

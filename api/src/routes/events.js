@@ -24,7 +24,7 @@ const { getEvents } = require("../services/buildEventQuery");
 // GET events
 router.get('/',
     validate({ query: EventsQuerySchema }),
-    async (req, res) => {
+    async (req, res, next) => {
         const query = req.validatedQuery
 
         try {
@@ -35,7 +35,7 @@ router.get('/',
                 data: events
             })
         } catch (err) {
-            return res.status(500).json({ findError: err.message });
+            next(err);
         }
     }
 );
@@ -43,7 +43,7 @@ router.get('/',
 // SEARCH events
 router.get('/search',
     validate({ query: searchQueryValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const { q } = req.validatedQuery;
             const results = await searchEvents(q);
@@ -52,13 +52,13 @@ router.get('/search',
                 data: results
             });
         } catch (err) {
-            return res.status(500).json({ searchError: err.message });
+            next(err);
         }
     }
 );
 
 // GET list of tags
-router.get('/tags', async (req, res) => {
+router.get('/tags', async (req, res, next) => {
     try {
         const tags = await Tag.findAll();
         if (!tags) return res.status(404).json({ error: "No tags to display "});
@@ -68,14 +68,14 @@ router.get('/tags', async (req, res) => {
             tags: tags,
         })
     } catch (err) {
-        return res.status(500).json({ findError: err.message });
+        next(err);
     }
 });
 
 // ADD a tag
 router.post('/tags',
     validate({ body: createTagValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const newTag = await Tag.create(req.validatedBody);
             
@@ -84,7 +84,7 @@ router.post('/tags',
                 data: newTag
             });
         } catch (err) {
-            return res.status(500).json({ createError: err.errors });
+            next(err);
         }
     }
 );
@@ -98,14 +98,14 @@ router.delete('/tags/:slug',
         reqKey: "tag",
         findMethod: "findOne"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const tag = req.tag;
 
         try {
             await tag.destroy();
             return res.status(204).end();
         } catch (err) {
-            return res.status(500).json({ destroyError: err.message });
+            next(err);
         }
     }
 );
@@ -137,7 +137,7 @@ router.put('/:eid',
     }),
     validate({ body: eventValidation }),
     parseTags(Tag, false),
-    async (req, res) => {
+    async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
 
@@ -156,7 +156,7 @@ router.put('/:eid',
                 "data": updated
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err });
+            next(err);
         }
     }
 );
@@ -171,7 +171,7 @@ router.patch('/:eid',
     }),
     validate({ body: updateEventValidation }),
     parseTags(Tag),
-    async (req, res) => {
+    async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
 
@@ -194,7 +194,7 @@ router.patch('/:eid',
                 "data": updated
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            next(err);
         }
     }
 );
@@ -207,7 +207,7 @@ router.delete('/:eid',
         modelField: "id",
         reqKey: "event"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const event = req.event;
 
         try {
@@ -215,7 +215,7 @@ router.delete('/:eid',
             await event.destroy();
             return res.status(204).end();
         } catch (err) {
-            return res.status(500).json({ destroyError: err.message });
+            next(err);
         }
     }
 );
@@ -261,7 +261,7 @@ router.post('/:eid/attendees',
         reqKey: "user",
         origin: "validatedBody"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const event = req.event;
         const user = req.user;
 
@@ -272,7 +272,7 @@ router.post('/:eid/attendees',
             if (err.name === "SequelizeUniqueConstraintError") {
               return res.status(409).json({ error: "already attending" });
             }
-            return res.status(500).json({ joinError: err.message });
+            next(err);
         }
     }
 );
@@ -292,7 +292,7 @@ router.delete('/:eid/attendees/me',
         reqKey: "user",
         origin: "validatedBody"
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const event = req.event;
         const user = req.user;
 
@@ -300,7 +300,7 @@ router.delete('/:eid/attendees/me',
             await event.removeUser(user.id);
             return res.status(200).json({ message: "removed" });
         } catch (err) {
-            return res.status(500).json({ joinError: err.message });
+            next(err);
         }
     }
 );

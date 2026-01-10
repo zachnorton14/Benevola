@@ -1,141 +1,189 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+
 const User = require('../models/User');
+const Organization = require('../models/Organization');
+const { Op } = require('sequelize');
 const validate = require('../middleware/validate');
 const authenticate = require('../middleware/authenticate');
 const { registerValidation, loginValidation, googleAuthValidation } = require('../schemas/auth.schema');
+const bcrypt = require('bcrypt');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_development_secret_key';
+const { OAuth2Client } = require('google-auth-library');
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-const generateToken = (user) => {
-    return jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-    );
-};
-
-// POST /register
-router.post('/register',
+// REGISTER a user
+router.post('/register/user',
     validate({ body: registerValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
-            const { username, email, password, displayName, profilePic } = req.validatedBody;
+            const { username, email, password } = req.validatedBody;
 
-            const userCheck = await User.findOne({ where: { email } });
-            if (userCheck) {
-                return res.status(409).json({ message: 'Email already in use' });
-            }
-            const usernameCheck = await User.findOne({ where: { username } });
-            if (usernameCheck) {
-                return res.status(409).json({ message: 'Username already taken' });
+            const existingUser = await User.findOne({
+                where: {
+                    [Op.or]: [{ email },{ username }],
+                },
+            });
+
+            if (existingUser){
+                return res.status(409).json({
+                    message: existingUser.email === email
+                        ? "Email already in use"
+                        : "Username already in use",
+                });
             }
 
-            const passwordHash = await bcrypt.hash(password, 10);
+            const passwordHash = await bcrypt.hash(password, 12);
 
             const newUser = await User.create({
                 username,
                 email,
                 passwordHash,
-                displayName: displayName || username, // Default display name
-                profilePic,
-                role: 'user'
-            });
+            }); // "user" role is default
 
-            const token = generateToken(newUser);
+            req.session.regenerate((err) => {
+                if (err) return next(err);
 
-            return res.status(201).json({
-                message: 'User registered successfully',
-                data: {
-                    user: {
+                req.session.userId = newUser.id;
+
+                return res.status(201).json({
+                    message: "successfully registered",
+                    data: {
                         id: newUser.id,
                         username: newUser.username,
                         email: newUser.email,
                         role: newUser.role,
-                        displayName: newUser.displayName,
-                        profilePic: newUser.profilePic
-                    },
-                    token
-                }
-            });
-
+                    }
+                })
+            })
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error', error: err.message });
+            next(err);
         }
     }
 );
 
-// POST /login
-router.post('/login',
-    validate({ body: loginValidation }),
-    async (req, res) => {
+// REGISTER an organization
+router.post('/register/org',
+    validate({ body: registerValidation }),
+    async (req, res, next) => {
         try {
             const { email, password } = req.validatedBody;
 
-            const user = await User.findOne({ where: { email } });
+            const existingOrg = await User.findOne({ where: { email } });
+            if (existingOrg) return res.status(409).json({ message: "Email already in use" });
 
-            if (!user || !user.passwordHash) {
-                return res.status(401).json({ message: 'Invalid credentials' });
-            }
+            const passwordHash = await bcrypt.hash(password, 12);
+
+            const newOrg = await Organization.create({
+                name: "New Organization",
+                email,
+                passwordHash,
+            });
+
+            req.session.regenerate((err) => {
+                if (err) return next(err);
+
+                req.session.userId = newUser.id;
+
+                return res.status(201).json({
+                    message: "successfully registered",
+                    data: {
+                        id: newOrg.id,
+                        username: newOrg.name,
+                        email: newOrg.email,
+                    }
+                })
+            })
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
+// Log in a user
+router.post('/login/user', authenticate,
+    validate({ body: loginValidation }),
+    async (req, res, next) => {
+        try {
+            const { email, username, password } = req.validatedBody;
+
+            const user = await User.findOne({ where: (email ? { email } : { username }) });
+            if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
             const isMatch = await bcrypt.compare(password, user.passwordHash);
+            if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-            if (!isMatch) {
-                return res.status(401).json({ message: 'Invalid credentials' });
-            }
-
-            const token = generateToken(user);
-
-            return res.status(200).json({
-                message: 'Login successful',
-                data: {
-                    user: {
+            req.session.regenerate((err) => {
+                if (err) return next(err);
+        
+                req.session.principal = { kind: "user", id: user.id };
+        
+                return res.status(200).json({
+                    message: "Login successful",
+                    data: {
                         id: user.id,
                         username: user.username,
                         email: user.email,
                         role: user.role,
-                        displayName: user.displayName,
-                        profilePic: user.profilePic
                     },
-                    token
-                }
+                });
             });
-
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error', error: err.message });
+            next(err);
+        }
+    }
+);
+
+// Log in an org
+router.post('/login/org', authenticate,
+    validate({ body: loginValidation }),
+    async (req, res, next) => {
+        try {
+            const { email, password } = req.validatedBody;
+
+            const org = await Organization.findOne({ where: { email } });
+            if (!org) return res.status(401).json({ message: 'Invalid credentials' });
+
+            const isMatch = await bcrypt.compare(password, org.passwordHash);
+            if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+            req.session.regenerate((err) => {
+                if (err) return next(err);
+        
+                req.session.principal = { kind: "org", id: org.id };
+        
+                return res.status(200).json({
+                    message: "Login successful",
+                    data: {
+                        id: org.id,
+                        username: org.username,
+                        email: org.email,
+                        role: org.role,
+                    },
+                });
+            });
+        } catch (err) {
+            next(err);
         }
     }
 );
 
 // POST /logout
 router.post('/logout', (req, res) => {
-    // Since we are using stateless JWTs, we can't really invalidate the token on the server
-    // without a blacklist. For now, we just respond with success.
-    res.status(200).json({ message: 'Logout successful' });
+    req.session.destroy(() => {
+        res.clearCookie('sid');
+        res.status(200).json({ message: 'logged out'});
+    })
 });
 
 // GET /me
 router.get('/me', authenticate, (req, res) => {
-    const user = req.user;
     return res.status(200).json({
         message: 'success',
         data: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            displayName: user.displayName,
-            profilePic: user.profilePic,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt
+            kind: req.session.principal.kind,
+            info: req.user ?? req.org
         }
     });
 });
@@ -143,7 +191,7 @@ router.get('/me', authenticate, (req, res) => {
 // POST /google
 router.post('/google',
     validate({ body: googleAuthValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const { token } = req.validatedBody;
             
@@ -209,8 +257,7 @@ router.post('/google',
             });
 
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error', error: err.message });
+            next(err);
         }
     }
 );

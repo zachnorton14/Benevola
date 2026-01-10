@@ -8,7 +8,7 @@ const validate = require("../middleware/validate");
 const load = require("../middleware/load")
 
 // GET users
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const users = await User.findAll();
         return res.status(200).json({
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
             data: users,
         });
     } catch (err) {
-        return res.status(500).json({ findError: err.message });
+        next(err);
     }
 });
 
@@ -25,7 +25,7 @@ router.post('/',
     validate({
         body: userValidation,
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const newUser = await User.create(req.validatedBody);
 
@@ -35,7 +35,7 @@ router.post('/',
             });
 
         } catch (err) {
-            return res.status(400).json({ createError: err.errors });
+            next(err);
         }
     }
 );
@@ -66,7 +66,7 @@ router.put('/:uid',
         reqKey: "user",
     }),
     validate({ body: userValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const user = req.user;
             const body = req.validatedBody;
@@ -87,7 +87,7 @@ router.put('/:uid',
                 data: user
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            next(err);
         }
     }
 );
@@ -101,7 +101,7 @@ router.patch('/:uid',
         reqKey: "user",
     }),
     validate({ body: userUpdateValidation }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const user = req.user;
             const body = req.validatedBody;
@@ -122,7 +122,7 @@ router.patch('/:uid',
                 data: user
             });
         } catch (err) {
-            return res.status(500).json({ updateError: err.message });
+            next(err);
         }
     }
 );
@@ -135,14 +135,14 @@ router.delete('/:uid',
         modelField: "id",
         reqKey: "user",
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         const user = req.user;
 
         try {
             await user.destroy();
             return res.status(204).end()
         } catch (err) {
-            return res.status(400).json({ destroyError: err.message });
+            next(err);
         }
     }
 );
@@ -156,7 +156,7 @@ router.get('/:uid/events',
         reqKey: "user",
         include: { model: Event }
     }),
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const user = req.user;
             const events = user.Events;
@@ -166,7 +166,7 @@ router.get('/:uid/events',
                 data: events,
             });
         } catch (err) {
-            return res.status(500).json({ findError: err.message });
+            next(err);
         }
     }
 );
