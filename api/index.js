@@ -59,6 +59,7 @@ app.use('/', authRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/orgs', orgsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/auth', authRouter);
 app.use(errorHandler);
 
 

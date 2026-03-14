@@ -5,7 +5,9 @@ const User = require('../models/User');
 const { updateEventValidation, } = require("../schemas/event.schema");
 const { userParamsValidation, userValidation, userUpdateValidation, } = require("../schemas/user.schema");
 const validate = require("../middleware/validate");
-const load = require("../middleware/load")
+const load = require("../middleware/load");
+const authenticate = require("../middleware/authenticate");
+const { requireUser, requireOrg } = require("../middleware/authorization");
 
 // GET users
 router.get('/', async (req, res, next) => {
