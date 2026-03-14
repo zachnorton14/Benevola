@@ -4,11 +4,13 @@ const sequelize = require('../db/database');
 const Organization = require('../models/Organization');
 const Event = require('../models/Event');
 const Tag = require("../models/Tag");
-const { eventValidation, updateEventValidation } = require("../schemas/event.schema");
+const { updateEventValidation } = require("../schemas/event.schema");
 const { orgParamsValidation, orgValidation, orgUpdateValidation, } = require("../schemas/org.schema");
 const validate = require("../middleware/validate");
 const parseTags = require("../middleware/parseTags");
 const load = require("../middleware/load");
+const authenticate = require('../middleware/authenticate');
+const { requireOrg, verifyOwnership, } = require('../middleware/authorization');
 
 // GET organizations
 router.get('/', async (req, res, next) => {
@@ -59,6 +61,8 @@ router.get('/:oid',
 
 // REPLACE an org
 router.put('/:oid', 
+    authenticate,
+    requireOrg,
     validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
@@ -66,6 +70,7 @@ router.put('/:oid',
         reqKey: "org"
     }),
     validate({ body: orgValidation }),
+    verifyOwnership(req => req.org.id),
     async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;
@@ -94,6 +99,8 @@ router.put('/:oid',
 
 // UPDATE an org's fields
 router.patch('/:oid',
+    authenticate,
+    requireOrg,
     validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
@@ -101,6 +108,7 @@ router.patch('/:oid',
         reqKey: "org"
     }),
     validate({ body: orgUpdateValidation }),
+    verifyOwnership(req => req.org.id),
     async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;
@@ -129,12 +137,15 @@ router.patch('/:oid',
 
 // DELETE an org
 router.delete('/:oid',
+    authenticate,
+    requireOrg,
     validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
         modelField: "id",
         reqKey: "org"
     }),
+    verifyOwnership(req => req.org.id),
     async (req, res, next) => {
         const org = req.org;
 
@@ -147,7 +158,7 @@ router.delete('/:oid',
     }
 );
 
-// GET events by organizations
+// GET an organization's events
 router.get('/:oid/events',
     validate({ params: orgParamsValidation }),
     load(Organization, {
@@ -173,6 +184,8 @@ router.get('/:oid/events',
 
 // CREATE a new event
 router.post('/:oid/events',
+    authenticate,
+    requireOrg,
     validate({ params: orgParamsValidation }),
     load(Organization, {
         identifier: "oid",
@@ -181,6 +194,7 @@ router.post('/:oid/events',
     }),
     validate({ body: updateEventValidation }),
     parseTags(Tag, false),
+    verifyOwnership(req => req.org.id),
     async (req, res, next) => {
         const org = req.org;
         const body = req.validatedBody;

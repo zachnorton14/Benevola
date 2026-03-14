@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const User = require('../models/User');
-const { updateEventValidation, } = require("../schemas/event.schema");
 const { userParamsValidation, userValidation, userUpdateValidation, } = require("../schemas/user.schema");
 const validate = require("../middleware/validate");
 const load = require("../middleware/load");
 const authenticate = require("../middleware/authenticate");
-const { requireUser, requireOrg } = require("../middleware/authorization");
+const { requireUser, verifyOwnership } = require("../middleware/authorization");
 
 // GET users
 router.get('/', async (req, res, next) => {
@@ -42,8 +41,8 @@ router.post('/',
     }
 );
 
-// GET users by id
-router.get('/:uid', 
+// GET user by id
+router.get('/:uid',
     validate({
         params: userParamsValidation
     }),
@@ -61,6 +60,8 @@ router.get('/:uid',
 );
 // REPLACE a user
 router.put('/:uid', 
+    authenticate,
+    requireUser,
     validate({ params: userParamsValidation }),
     load(User, {
         identifier: "uid",
@@ -68,6 +69,7 @@ router.put('/:uid',
         reqKey: "user",
     }),
     validate({ body: userValidation }),
+    verifyOwnership(req => req.user.id),
     async (req, res, next) => {
         try {
             const user = req.user;
@@ -96,6 +98,8 @@ router.put('/:uid',
 
 // UPDATE a user's fields
 router.patch('/:uid',
+    authenticate,
+    requireUser,
     validate({ params: userParamsValidation }),
     load(User, {
         identifier: "uid",
@@ -103,6 +107,7 @@ router.patch('/:uid',
         reqKey: "user",
     }),
     validate({ body: userUpdateValidation }),
+    verifyOwnership(req => req.user.id),
     async (req, res, next) => {
         try {
             const user = req.user;
@@ -131,12 +136,15 @@ router.patch('/:uid',
 
 // DELETE a user
 router.delete('/:uid',
+    authenticate,
+    requireUser,
     validate({ params: userParamsValidation }),
     load(User, {
         identifier: "uid",
         modelField: "id",
         reqKey: "user",
     }),
+    verifyOwnership(req => req.user.id),
     async (req, res, next) => {
         const user = req.user;
 

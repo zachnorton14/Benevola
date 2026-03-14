@@ -21,7 +21,7 @@ const parseTags = require("../middleware/parseTags")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
 const { getEvents } = require("../services/buildEventQuery");
 const authenticate = require("../middleware/authenticate");
-const { requireUser, requireOrg } = require("../middleware/authorization");
+const { requireUser, requireOrg, verifyOwnership } = require("../middleware/authorization");
 
 // GET events
 router.get('/',
@@ -143,14 +143,10 @@ router.put('/:eid',
         reqKey: "event"
     }),
     parseTags(Tag, false),
+    verifyOwnership(req => req.org.organizationId),
     async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
-
-        // disallow on invalid permissions
-        if (event.organizationId !== req.org.id) {
-            return res.status(403).json({ message: "You are not allowed to perform this action" });
-        }
 
         try {
             const updated = await sequelize.transaction(async (t) => {
@@ -186,14 +182,10 @@ router.patch('/:eid',
         reqKey: "event"
     }),
     parseTags(Tag),
+    verifyOwnership(req => req.org.organizationId),
     async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
-
-        // disallow on invalid permissions
-        if (event.organizationId !== req.org.id) {
-            return res.status(403).json({ message: "You are not allowed to perform this action" });
-        }
 
         try {
             const updated = await sequelize.transaction(async (t) => {
@@ -229,13 +221,9 @@ router.delete('/:eid',
         modelField: "id",
         reqKey: "event"
     }),
+    verifyOwnership(req => req.event.organizationId),
     async (req, res, next) => {
         const event = req.event;
-
-        // disallow on invalid permissions
-        if (event.organizationId !== req.org.id) {
-            return res.status(403).json({ message: "You are not allowed to perform this action" });
-        }
 
         try {
             await removeEvent(event.id);
