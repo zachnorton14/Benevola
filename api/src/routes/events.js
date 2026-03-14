@@ -20,6 +20,8 @@ const load = require("../middleware/load");
 const parseTags = require("../middleware/parseTags")
 const { searchEvents, indexEvent, removeEvent } = require('../services/searchService');
 const { getEvents } = require("../services/buildEventQuery");
+const authenticate = require("../middleware/authenticate");
+const { requireUser, requireOrg } = require("../middleware/authorization");
 
 // GET events
 router.get('/',
@@ -129,17 +131,26 @@ router.get('/:eid',
 
 // REPLACE an event
 router.put('/:eid',
-    validate({ params: eventParamValidation }),
+    authenticate,
+    requireOrg,
+    validate({ 
+        params: eventParamValidation,
+        body: eventValidation
+     }),
     load(Event, {
         identifier: "eid",
         modelField: "id",
         reqKey: "event"
     }),
-    validate({ body: eventValidation }),
     parseTags(Tag, false),
     async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
+
+        // disallow on invalid permissions
+        if (event.organizationId !== req.org.id) {
+            return res.status(403).json({ message: "You are not allowed to perform this action" });
+        }
 
         try {
             const updated = await sequelize.transaction(async (t) => {
@@ -163,17 +174,26 @@ router.put('/:eid',
 
 // UPDATE an event's fields
 router.patch('/:eid',
-    validate({ params: eventParamValidation }),
+    authenticate,
+    requireOrg,
+    validate({ 
+        params: eventParamValidation,
+        body: updateEventValidation
+    }),
     load(Event, {
         identifier: "eid",
         modelField: "id",
         reqKey: "event"
     }),
-    validate({ body: updateEventValidation }),
     parseTags(Tag),
     async (req, res, next) => {
         const event = req.event;
         const body = req.validatedBody;
+
+        // disallow on invalid permissions
+        if (event.organizationId !== req.org.id) {
+            return res.status(403).json({ message: "You are not allowed to perform this action" });
+        }
 
         try {
             const updated = await sequelize.transaction(async (t) => {
@@ -201,6 +221,8 @@ router.patch('/:eid',
 
 // DELETE an event
 router.delete('/:eid',
+    authenticate,
+    requireOrg,
     validate({ params: eventParamValidation }),
     load(Event, {
         identifier: "eid",
@@ -209,6 +231,11 @@ router.delete('/:eid',
     }),
     async (req, res, next) => {
         const event = req.event;
+
+        // disallow on invalid permissions
+        if (event.organizationId !== req.org.id) {
+            return res.status(403).json({ message: "You are not allowed to perform this action" });
+        }
 
         try {
             await removeEvent(event.id);
@@ -248,18 +275,13 @@ router.get('/:eid/attendees',
 
 // ADD an attendee
 router.post('/:eid/attendees',
+    authenticate,
+    requireUser,
     validate({ params: eventParamValidation }),
     load(Event, {
         identifier: "eid",
         modelField: "id",
         reqKey: "event",
-    }),
-    validate({ body: attendeeBodyValidation }), // user validation and load will go away once auth is set up
-    load(User, {
-        identifier: "userId",
-        modelField: "id",
-        reqKey: "user",
-        origin: "validatedBody"
     }),
     async (req, res, next) => {
         const event = req.event;
@@ -279,18 +301,13 @@ router.post('/:eid/attendees',
 
 // REMOVE attendee
 router.delete('/:eid/attendees/me',
+    authenticate,
+    requireUser,
     validate({ params: eventParamValidation }),
     load(Event, {
         identifier: "eid",
         modelField: "id",
         reqKey: "event",
-    }),
-    validate({ body: attendeeBodyValidation }), // user validation will go away once auth is set up
-    load(User, {
-        identifier: "userId",
-        modelField: "id",
-        reqKey: "user",
-        origin: "validatedBody"
     }),
     async (req, res, next) => {
         const event = req.event;

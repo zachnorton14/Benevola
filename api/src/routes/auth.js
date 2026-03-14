@@ -102,7 +102,7 @@ router.post('/register/org',
 );
 
 // Log in a user
-router.post('/login/user', authenticate,
+router.post('/login/user',
     validate({ body: loginValidation }),
     async (req, res, next) => {
         try {
@@ -136,7 +136,7 @@ router.post('/login/user', authenticate,
 );
 
 // Log in an org
-router.post('/login/org', authenticate,
+router.post('/login/org',
     validate({ body: loginValidation }),
     async (req, res, next) => {
         try {
