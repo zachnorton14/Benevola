@@ -84,7 +84,7 @@ router.post('/register/org',
             req.session.regenerate((err) => {
                 if (err) return next(err);
 
-                req.session.userId = newUser.id;
+                req.session.userId = newOrg.id;
 
                 return res.status(201).json({
                     message: "successfully registered",
@@ -188,78 +188,78 @@ router.get('/me', authenticate, (req, res) => {
     });
 });
 
-// POST /google
-router.post('/google',
-    validate({ body: googleAuthValidation }),
-    async (req, res, next) => {
-        try {
-            const { token } = req.validatedBody;
+// // POST /google
+// router.post('/google',
+//     validate({ body: googleAuthValidation }),
+//     async (req, res, next) => {
+//         try {
+//             const { token } = req.validatedBody;
             
-            let payload;
-            try {
-                const ticket = await client.verifyIdToken({
-                    idToken: token,
-                    audience: GOOGLE_CLIENT_ID, 
-                });
-                payload = ticket.getPayload();
-            } catch (googleErr) {
+//             let payload;
+//             try {
+//                 const ticket = await client.verifyIdToken({
+//                     idToken: token,
+//                     audience: GOOGLE_CLIENT_ID, 
+//                 });
+//                 payload = ticket.getPayload();
+//             } catch (googleErr) {
 
-                console.error("Google verify error:", googleErr);
-                return res.status(401).json({ message: 'Invalid Google token' });
-            }
+//                 console.error("Google verify error:", googleErr);
+//                 return res.status(401).json({ message: 'Invalid Google token' });
+//             }
 
-            const { email, name, picture, sub } = payload;
+//             const { email, name, picture, sub } = payload;
 
-            if (!email) {
-                return res.status(400).json({ message: 'Google account has no email' });
-            }
+//             if (!email) {
+//                 return res.status(400).json({ message: 'Google account has no email' });
+//             }
 
-            let user = await User.findOne({ where: { email } });
+//             let user = await User.findOne({ where: { email } });
 
-            if (!user) {
+//             if (!user) {
 
-                const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-                const passwordHash = await bcrypt.hash(randomPassword, 10);
+//                 const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+//                 const passwordHash = await bcrypt.hash(randomPassword, 10);
                 
-                let baseUsername = email.split('@')[0];
-                let username = baseUsername;
-                let counter = 1;
-                while (await User.findOne({ where: { username } })) {
-                    username = `${baseUsername}${counter}`;
-                    counter++;
-                }
+//                 let baseUsername = email.split('@')[0];
+//                 let username = baseUsername;
+//                 let counter = 1;
+//                 while (await User.findOne({ where: { username } })) {
+//                     username = `${baseUsername}${counter}`;
+//                     counter++;
+//                 }
 
-                user = await User.create({
-                    username,
-                    email,
-                    passwordHash,
-                    displayName: name,
-                    profilePic: picture,
-                    role: 'user'
-                });
-            }
+//                 user = await User.create({
+//                     username,
+//                     email,
+//                     passwordHash,
+//                     displayName: name,
+//                     profilePic: picture,
+//                     role: 'user'
+//                 });
+//             }
 
-            const jwtToken = generateToken(user);
+//             const jwtToken = generateToken(user);
 
-            return res.status(200).json({
-                message: 'Google login successful',
-                data: {
-                    user: {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
-                        role: user.role,
-                        displayName: user.displayName,
-                        profilePic: user.profilePic
-                    },
-                    token: jwtToken
-                }
-            });
+//             return res.status(200).json({
+//                 message: 'Google login successful',
+//                 data: {
+//                     user: {
+//                         id: user.id,
+//                         username: user.username,
+//                         email: user.email,
+//                         role: user.role,
+//                         displayName: user.displayName,
+//                         profilePic: user.profilePic
+//                     },
+//                     token: jwtToken
+//                 }
+//             });
 
-        } catch (err) {
-            next(err);
-        }
-    }
-);
+//         } catch (err) {
+//             next(err);
+//         }
+//     }
+// );
 
 module.exports = router;
