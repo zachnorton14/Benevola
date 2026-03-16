@@ -8,7 +8,6 @@
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "google-auth-library": "^10.5.0",
-    "nodemon": "^3.1.11",
     "redis": "^5.10.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
@@ -23,6 +22,7 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "sequelize-cli db:migrate --env development",
+    "db:migrate:prod": "sequelize-cli db:migrate --env production",
     "db:seed": "sequelize-cli db:seed:all --env development",
     "db:fresh": "rimraf data/dev.sqlite && cross-env NODE_ENV=development sequelize-cli db:migrate && cross-env NODE_ENV=development sequelize-cli db:seed:all"
   },
@@ -32,6 +32,7 @@
   "type": "commonjs",
   "devDependencies": {
     "cross-env": "^10.1.0",
+    "nodemon": "^3.1.11",
     "rimraf": "^6.1.2",
     "sequelize-cli": "^6.6.5"
   }
