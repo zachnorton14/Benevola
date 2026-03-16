@@ -58,26 +58,26 @@ router.get('/search',
 );
 
 //GET events by filter query
-router.get('/search', validate({ query: EventsQuerySchema }),
+router.get('/filter', validate({ query: EventsQuerySchema }),
     async (req, res, next) => {
     try {
-        const queryParams = {
-            date: req.query.date,
-            afterDate: req.query.afterDate,
-            beforeDate: req.query.beforeDate,
-            afterTime: req.query.afterTime,
-            beforeTime: req.query.beforeTime,
-            nearLat: req.query.lat ? parseFloat(req.query.lat) : null,
-            nearLng: req.query.lng ? parseFloat(req.query.lng) : null,
-            radiusM: req.query.radius ? parseFloat(req.query.radius) : null, 
+        // const queryParams = {
+        //     date: req.query.date,
+        //     afterDate: req.query.afterDate,
+        //     beforeDate: req.query.beforeDate,
+        //     afterTime: req.query.afterTime,
+        //     beforeTime: req.query.beforeTime,
+        //     nearLat: req.query.lat ? parseFloat(req.query.lat) : null,
+        //     nearLng: req.query.lng ? parseFloat(req.query.lng) : null,
+        //     radiusM: req.query.radius ? parseFloat(req.query.radius) : null, 
 
-            tags: req.query.tags ? (Array.isArray(req.query.tags) ?
-                req.query.tags : req.query.tags.split(',')) : [],
-            limit: req.query.limit ? parseInt(req.query.limit) : 20,
-            offset: req.query.offset ? parseInt(req.query.offset) : 0,
-        };
+        //     tags: req.query.tags ? (Array.isArray(req.query.tags) ?
+        //         req.query.tags : req.query.tags.split(',')) : [],
+        //     limit: req.query.limit ? parseInt(req.query.limit) : 20,
+        //     offset: req.query.offset ? parseInt(req.query.offset) : 0,
+        // };
 
-        const events = await getEvents(queryParams);
+        const events = await getEvents(req.validatedQuery);
 
         return res.status(200).json({
             message: "success",

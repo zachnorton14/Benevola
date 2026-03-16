@@ -68,18 +68,18 @@ function buildEventBaseOptions(q) {
     }
 
   // location filter (miles)
-    if (q.nearLat != null || q.nearLng != null || q.radiusM != null) {
-        if (q.nearLat == null || q.nearLng == null || q.radiusM == null) {
-            throw Object.assign(new Error("nearLat, nearLng, and radiusM must be provided together"), {
+    if (q.lat != null || q.lng != null || q.radius != null) {
+        if (q.lat == null || q.lng == null || q.radius == null) {
+            throw Object.assign(new Error("lat, lng, and radius must be provided together"), {
                 status: 400,
             });
         }
 
-        const latDelta = q.radiusM / 69;
-        const lngDelta = q.radiusM / (69 * Math.cos((q.nearLat * Math.PI) / 180));
+        const latDelta = q.radius / 69;
+        const lngDelta = q.radius / (69 * Math.cos((q.lat * Math.PI) / 180));
 
-        options.where.latitude = { [Op.between]: [q.nearLat - latDelta, q.nearLat + latDelta] };
-        options.where.longitude = { [Op.between]: [q.nearLng - lngDelta, q.nearLng + lngDelta] };
+        options.where.latitude = { [Op.between]: [q.lat - latDelta, q.lat + latDelta] };
+        options.where.longitude = { [Op.between]: [q.lng - lngDelta, q.lng + lngDelta] };
     }
 
   return options;

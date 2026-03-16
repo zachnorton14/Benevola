@@ -43,6 +43,7 @@ const tagsSchema = z.preprocess((val) => {
   
     if (typeof val === "string") {
       return [val];
+      //return val.split(',').map(s => s.trim()).filter(Boolean); May trim array correctly
     }
     if (Array.isArray(val)) {
       return val;
@@ -61,11 +62,14 @@ const EventsQuerySchema = z.object({
     beforeTime: timeHHmm.optional(),
     afterTime: timeHHmm.optional(),
 
-    nearLat: z.coerce.number().min(-90).max(90).optional(),
-    nearLng: z.coerce.number().min(-180).max(180).optional(),
-    radiusM: z.coerce.number().positive().max(500).optional(),
+    lat: z.coerce.number().min(-90).max(90).optional(),
+    lng: z.coerce.number().min(-180).max(180).optional(),
+    radius: z.coerce.number().positive().max(500).optional(),
 
-    limit: z.coerce.number().int().positive().max(100).optional().default(20),
+    // I don't thing ther should be an optional in the schema here
+    // limit: z.coerce.number().int().positive().max(100).optional().default(20), 
+    limit: z.coerce.number().int().positive().max(100).default(20),
+
     offset: z.coerce.number().int().min(0).optional().default(0), // for pagination
     sort: z.enum(["date", "createdAt"]).optional().default("date"),
     order: z.enum(["asc", "desc"]).optional().default("asc"),
@@ -79,12 +83,12 @@ const EventsQuerySchema = z.object({
     }
 
     // if one near param provided, require all
-    const anyGeo = q.nearLat != null || q.nearLng != null || q.radiusM != null;
-    const allGeo = q.nearLat != null && q.nearLng != null && q.radiusM != null;
+    const anyGeo = q.lat != null || q.lng != null || q.radius != null;
+    const allGeo = q.lat != null && q.lng != null && q.radius != null;
     if (anyGeo && !allGeo) {
         ctx.addIssue({
             code: "invalid format",
-            message: "nearLat, nearLng, and radiusKm must be provided together",
+            message: "lat, lng, and radiusKm must be provided together",
         });
     }
 
