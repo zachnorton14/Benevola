@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
+const fs = require('fs');
 require("dotenv").config()
 
 const env = process.env.NODE_ENV || "development";
@@ -14,6 +15,9 @@ const fallbackStorage = path.resolve(
     "data",
     env === "production" ? "prod.sqlite" : "dev.sqlite"
 );
+
+const storageDir = path.dirname(storageFromEnv || fallbackStorage);
+if (!fs.existsSync(storageDir)) fs.mkdirSync(storageDir, { recursive: true });
 
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize({
