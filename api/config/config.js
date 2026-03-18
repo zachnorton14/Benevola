@@ -1,25 +1,27 @@
 require("dotenv").config();
-const path = require("path");
-
-const devFallback = path.resolve(process.cwd(), "data", "dev.sqlite");
-const prodFallback = path.resolve(process.cwd(), "data", "prod.sqlite");
 
 module.exports = {
   development: {
-    dialect: "sqlite",
-    storage: process.env.SQLITE_STORAGE_DEV || devFallback,
-    logging: false,
-  },
-  
-  production: {
-    dialect: "sqlite",
-    storage: process.env.SQLITE_STORAGE_PROD || prodFallback,
+    url: process.env.DATABASE_URL,
+    dialect: "postgres",
     logging: false,
   },
 
+  production: {
+    url: process.env.DATABASE_URL,
+    dialect: "postgres",
+    logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  },
+
   test: {
-    dialect: "sqlite",
-    storage: ":memory:",
+    url: process.env.DATABASE_URL_TEST || process.env.DATABASE_URL,
+    dialect: "postgres",
     logging: false,
   },
 };
