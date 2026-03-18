@@ -11,7 +11,7 @@ const session = require('express-session');
 const { RedisStore } = require('connect-redis');
 require("./src/models/associations");
 
-const BE_PORT = process.env.BE_PORT || 5173;
+const BE_PORT = process.env.PORT || process.env.BE_PORT || 5173;
 const FE_PORT = process.env.FE_PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
 
