@@ -64,11 +64,13 @@ app.use(errorHandler);
 
 
 // Start server
-sequelize.authenticate().then(() => {
+sequelize.authenticate().then(async () => {
     console.log('Database connected.');
+    await redisClient.connect();
+    console.log('Redis connected.');
     app.listen(BE_PORT, () => {
         console.log(`Server is running on ${DOMAIN}:${BE_PORT}`);
     });
 }).catch(err => {
-    console.error('Unable to connect to the database:', err);
+    console.error('Unable to start server:', err);
 });
