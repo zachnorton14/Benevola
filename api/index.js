@@ -11,7 +11,7 @@ const session = require('express-session');
 const { RedisStore } = require('connect-redis');
 require("./src/models/associations");
 
-const BE_PORT = process.env.BE_PORT || 5173;
+const BE_PORT = process.env.PORT || process.env.BE_PORT || 5173;
 const FE_PORT = process.env.FE_PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
 
@@ -64,11 +64,13 @@ app.use(errorHandler);
 
 
 // Start server
-sequelize.authenticate().then(() => {
+sequelize.authenticate().then(async () => {
     console.log('Database connected.');
+    await redisClient.connect();
+    console.log('Redis connected.');
     app.listen(BE_PORT, () => {
         console.log(`Server is running on ${DOMAIN}:${BE_PORT}`);
     });
 }).catch(err => {
-    console.error('Unable to connect to the database:', err);
+    console.error('Unable to start server:', err);
 });
