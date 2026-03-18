@@ -42,14 +42,17 @@ router.get('/',
 
 // SEARCH events
 router.get('/search',
-    validate({ query: searchQueryValidation }),
+    validate({ query: EventsQuerySchema }),
     async (req, res, next) => {
+        const query = req.validatedQuery;
+
         try {
-            const { q } = req.validatedQuery;
-            const results = await searchEvents(q);
+            const events = await getEvents(query);
+
             return res.status(200).json({
                 message: "success",
-                data: results
+                results: events.length,
+                data: events
             });
         } catch (err) {
             next(err);

@@ -53,6 +53,7 @@ const tagsSchema = z.preprocess((val) => {
   
 
 const EventsQuerySchema = z.object({
+    q: z.string().optional(),
     tags: tagsSchema,
 
     date: dateYYYYMMDD.optional(),
