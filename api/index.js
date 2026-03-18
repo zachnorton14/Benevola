@@ -15,6 +15,12 @@ const BE_PORT = process.env.PORT || process.env.BE_PORT || 5173;
 const FE_PORT = process.env.FE_PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
 
+// Request logger
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
 // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
