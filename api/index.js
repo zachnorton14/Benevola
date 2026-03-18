@@ -63,15 +63,6 @@ app.use('/api/auth', authRouter);
 app.use(errorHandler);
 
 
-// enable foreign keys for all sqlite sessions
-sequelize.addHook("afterConnect", async (connection) => {
-    await new Promise((resolve, reject) => {
-        connection.run("PRAGMA foreign_keys = ON;", (err) =>
-            err ? reject(err) : resolve()
-        );
-    });
-});
-
 // Start server
 sequelize.authenticate().then(() => {
     console.log('Database connected.');
