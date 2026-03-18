@@ -1,12 +1,10 @@
 const { Sequelize } = require('sequelize');
 require("dotenv").config();
 
-const env = process.env.NODE_ENV || "development";
-
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     logging: false,
-    ...(env === 'production' && {
+    ...(process.env.DB_SSL === 'true' && {
         dialectOptions: {
             ssl: {
                 require: true,
