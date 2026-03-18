@@ -1,6 +1,7 @@
 const { Op, fn, col, literal, where } = require("sequelize");
 const Tag = require("../models/Tag")
 const Event = require("../models/Event")
+const { searchEvents } = require("./searchService");
 
 function dayBounds(yyyy_mm_dd) {
     const start = new Date(`${yyyy_mm_dd}T00:00:00.000`);
@@ -16,7 +17,7 @@ function toHHmmss(timeHHmm) {
     return `${timeHHmm}:00`;
 }
 
-function buildEventBaseOptions(q) {
+function buildEventBaseOptions(q, esIds = null) {
     const options = {
         where: {},
         include: [],
@@ -24,6 +25,10 @@ function buildEventBaseOptions(q) {
         offset: q.offset,
         order: [["date", "ASC"]],
     };
+
+    if (esIds) {
+        options.where.id = { [Op.in]: esIds };
+    }
 
   // date filters
     if (q.date) {
@@ -85,8 +90,8 @@ function buildEventBaseOptions(q) {
   return options;
 }
 
-async function findEventIdsByFilters(q) {
-    const base = buildEventBaseOptions(q);
+async function findEventIdsByFilters(q, esIds = null) {
+    const base = buildEventBaseOptions(q, esIds);
   
     // If no tag filter, just use the base ordering and return IDs
     if (!q.tags?.length) {
@@ -145,7 +150,16 @@ async function fetchEventsWithAllTags(ids) {
 }
   
 async function getEvents(q) {
-    const ids = await findEventIdsByFilters(q);
+    let esIds = null;
+    if (q.q) {
+        const searchResults = await searchEvents(q.q);
+        esIds = searchResults.map(hit => hit.id);
+        
+        // If search returned nothing, return early with empty results
+        if (esIds.length === 0) return [];
+    }
+
+    const ids = await findEventIdsByFilters(q, esIds);
     return await fetchEventsWithAllTags(ids);
 }
   
