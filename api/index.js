@@ -23,7 +23,7 @@ app.use(express.json());
 // must come before express.json / express.urlencoded
 const cors = require("cors");
 app.use(cors({
-  origin: `${DOMAIN}:${FE_PORT}`,
+  origin: `https://${DOMAIN}:${FE_PORT}`,
   credentials: true
 }));
 
