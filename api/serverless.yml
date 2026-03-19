@@ -1,0 +1,19 @@
+service: benevola-api
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-1
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
+    JWT_SECRET: ${env:JWT_SECRET}
+    NODE_ENV: production
+    DB_SSL: 'true'
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN, ''}
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi: '*'
