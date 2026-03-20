@@ -18,54 +18,7 @@ const Home = () => {
     };
 
     const handleCreateEvent = () => {
-      // create the event with post then navigate to that page
-
-      // get the id of the organization
-      const oid = 1;
-
-      // Default values for a new event
-      const title = "New Event";
-      const description = null;
-      const capacity = null;
-      const date = null;
-      const duration = null;
-      const tags = [];
-      const address = null;
-      const longitude = 35.7796;
-      const latitude = -78.6382;
-      const image = null;
-
-      fetch(`${API_URL}/api/orgs/${oid}/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          capacity,
-          date,
-          duration,
-          tags,
-          address,
-          latitude,
-          longitude,
-          image
-        })
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Request failed");
-        return res.json();
-      })
-      .then(result => {
-        const eid = result.data.event.id;
-        console.log(result);
-        navigate(`/event/${eid}`); // indicate a successful creation
-      })
-      .catch(err => {
-        alert("Error creating event");
-        console.error("Error:", err);
-      });
+      navigate('/create-event');
     };
 
     const handleOrgs = () => {

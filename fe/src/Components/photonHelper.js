@@ -1,7 +1,7 @@
 export function formatPhotonAddress(p) {
   return [
-    p.name,
-    p.street,
+    p.housenumber,
+    p.street || p.name,
     p.city || p.town || p.village,
     p.state,
     p.country
