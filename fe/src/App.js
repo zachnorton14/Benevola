@@ -6,9 +6,11 @@ import NotFoundPage from '../src/Pages/NotFoundPage';
 import CreateEventPage from '../src/Pages/CreateEventPage';
 import BrowseOrgsPage from './Pages/BrowseOrgsPage';
 import MyProfilePage from './Pages/MyProfilePage';
-import OrgProfilePage from './Pages/OrgProfilePage';
-import UserProfilePage from './Pages/UserProfilePage';
+// import OrgProfilePage from './Pages/OrgProfilePage';
+// import UserProfilePage from './Pages/UserProfilePage';
 import EventPage from './Pages/EventPage';
+import UserRegister from './prototype/UserRegister';
+import UserLogin from './prototype/UserLogin';
 
 function App() {
   return (
@@ -19,9 +21,11 @@ function App() {
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/organizations" element={<BrowseOrgsPage />} />
         <Route path="/my-profile" element={<MyProfilePage />} />
-        <Route path="/orgs/profile/:id" element={<OrgProfilePage />} />
-        <Route path="/users/profile/:id" element={<UserProfilePage />} />
+        {/* <Route path="/orgs/profile/:id" element={<OrgProfilePage />} /> */}
+        {/* <Route path="/users/profile/:id" element={<UserProfilePage />} /> */}
         <Route path="/event/:id" element={<EventPage />} />
+        <Route path="/prototype/register/user" element={<UserRegister />} />
+        <Route path="/prototype/login/user" element={<UserLogin />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
