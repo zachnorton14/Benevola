@@ -40,7 +40,7 @@ const Event = sequelize.define('Event', {
         allowNull: false,
         validate: { min: -180, max: 180 },
     },
-    image: {
+    coverPhoto: {
         type: DataTypes.STRING,
     }
 }, {
