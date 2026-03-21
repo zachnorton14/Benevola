@@ -18,7 +18,7 @@ const eventValidation = z.object({
     address: z.string().max(150).nullable(),
     latitude: z.coerce.number().min(-90).max(90),
     longitude: z.coerce.number().min(-180).max(180),
-    image: z.url().nullable()
+    coverPhoto: z.url().nullable(),
 }).strict();
 
 const updateEventValidation = z.object({
@@ -31,7 +31,7 @@ const updateEventValidation = z.object({
     address: z.string().max(150).nullable().optional(),
     latitude: z.coerce.number().min(-90).max(90).optional(),
     longitude: z.coerce.number().min(-180).max(180).optional(),
-    image: z.url().nullable().optional(),
+    coverPhoto: z.url().nullable().optional(),
 })
     .strict()
     .refine((obj) => Object.keys(obj).length > 0, {
@@ -117,17 +117,38 @@ const attendeeParamValidation = z.object({
     uid: z.coerce.number().int().positive(),
 });
 
+const galleryImageParamValidation = z.object({
+    eid: z.coerce.number().int().positive(),
+    imageId: z.coerce.number().int().positive(),
+});
+
+const imageUploadUrlQueryValidation = z.object({
+    contentType: z.enum(['image/jpeg', 'image/png']),
+    type: z.enum(['cover', 'gallery']),
+    count: z.coerce.number().int().min(1).max(10).optional(),
+}).refine(
+    data => data.type !== 'gallery' || data.count != null,
+    { message: 'count is required for gallery uploads' }
+);
+
+const galleryBodyValidation = z.object({
+    urls: z.array(z.url()).min(1).max(10),
+}).strict();
+
 const addTagValidation = z.object({
     slug: z.string().regex(/^[a-z0-9-]+$/)
 }).strict();
 
-module.exports = { 
-    eventValidation, 
-    updateEventValidation, 
-    eventParamValidation, 
-    EventsQuerySchema, 
+module.exports = {
+    eventValidation,
+    updateEventValidation,
+    eventParamValidation,
+    EventsQuerySchema,
     searchQueryValidation,
     attendeeBodyValidation,
     attendeeParamValidation,
-    addTagValidation
+    addTagValidation,
+    galleryImageParamValidation,
+    imageUploadUrlQueryValidation,
+    galleryBodyValidation,
 };
