@@ -4,7 +4,7 @@ frameworkVersion: '4'
 provider:
   name: aws
   runtime: nodejs22.x
-  region: us-east-1
+  region: ${env:AWS_REGION}
   environment:
     DATABASE_URL: ${env:DATABASE_URL}
     JWT_SECRET: ${env:JWT_SECRET}
