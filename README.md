@@ -20,6 +20,7 @@
   - [Organizations](#organizations--apiorgs)
   - [Authentication](#authentication--apiauth)
 - [Deployment](#deployment)
+- [Roadmap](#roadmap)
 - [Architecture Notes](#architecture-notes)
 
 ---
@@ -292,6 +293,48 @@ The frontend is a standard React build deployable to any static host (S3 + Cloud
 cd fe
 npm run build
 ```
+
+---
+
+## Roadmap
+
+Features are grouped by theme. Items marked *designed* have been scoped and partially built but are not yet integrated into the platform.
+
+### Discovery & Search
+
+- **Organization search** — A dedicated page for searching and browsing organizations, with suggestions based on event history and past attendance.
+- **User availability schedule** *(designed)* — Users specify a weekly availability schedule; events can be filtered to those that fall within a user's available times.
+- **User & event skills** — Skills can be tagged on user profiles and events to better match volunteers to opportunities. Applicable to volunteer role listings as well.
+- **Community-service tags** — Organizations can flag events as accepted community service work. Requires research into 501(c) qualification rules, as not all organizations legally qualify as community service employers.
+
+### Events
+
+- **Recurring events** — Refactor the event model to support repeating events on a weekly, monthly, or custom schedule. Alternatively, allow organizers to select specific dates from a calendar. Frontend views will need careful design.
+- **Multi-date events** — Support events that span multiple days (e.g., a multi-day convention seeking volunteers across several shifts).
+- **Event waitlist** — When an event reaches capacity, users can join a waitlist and be notified if a spot opens.
+- **Imprecise addresses** — For security, precise event locations are hidden publicly. Only registered, verified attendees receive the full address.
+
+### Organizations
+
+- **Organization members** — Users can affiliate with an organization. Opens the door to role-based editing of org pages and events, moving away from organization-as-single-account. Member volunteers would be featured prominently as attendees, making it easier for newcomers to feel comfortable joining.
+- **Volunteer role listings** — Organizations can post standing volunteer roles (part-time or full-time) in addition to one-off events. Listings would be surfaced on organization pages and in search, and could integrate into social media features if implemented.
+
+### Trust & Safety
+
+- **Verification** — Verification for both users and organizations. Prevents impersonation of legitimate ministries and orgs, and deters bad actors from registering for events. Complexity increases if non-profit verification is required for community service hour eligibility.
+- **Volunteer hour tracking** — Users accumulate logged volunteer hours confirmed by the hosting organization. Hours display on user profiles as credibility signals and incentivize engagement. Likely requires QR code check-ins or similar confirmation. Ties closely into verification.
+- **User reporting** — Users who repeatedly register for events but do not attend can be flagged or reported, protecting organization capacity.
+- **Private profiles** — Users can opt to make their profile private, limiting visibility to the general public.
+
+### Social
+
+- **Social media layer** — Follow organizations, friend other users, and receive a personalized feed of organization posts (LinkedIn-style). Includes user reactions, comments, and forwarding. A basic messaging system for user-to-user and org-to-user communication. The largest scope item on the roadmap.
+- **Notifications** — Email and push notifications for event reminders, cancellations, waitlist updates, and capacity alerts.
+
+### Platform
+
+- **Goodie AI** — An AI agent that acts as a first-class interface to Benevola. Not a chatbot — Goodie can perform any permitted API action on behalf of the user: searching events, registering for opportunities, updating availability, and more, without the user navigating the UI.
+- **Dark mode** — A dark theme across all pages.
 
 ---
 
