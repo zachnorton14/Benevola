@@ -65,6 +65,15 @@
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/benevola-api-dev*:*:*"
                     }
                   ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObject"
+                  ],
+                  "Resource": "arn:aws:s3:::benevola-images/*"
                 }
               ]
             }
@@ -90,8 +99,8 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "serverless-framework-deployments-us-east-1-75835dba-45ee",
-          "S3Key": "serverless/benevola-api/dev/1773888144639-2026-03-19T02:42:24.639Z/benevola-api.zip"
+          "S3Bucket": "serverless-framework-deployments-us-east-2-5b463c5f-4ff0",
+          "S3Key": "serverless/benevola-api/dev/1774147592055-2026-03-22T02:46:32.055Z/benevola-api.zip"
         },
         "Handler": "handler.handler",
         "Runtime": "nodejs22.x",
@@ -104,7 +113,8 @@
             "JWT_SECRET": "689898070a8856d84c4bfde9eaa8d6e360fe0a9589025ed9ceb5a60a4cfdccc2",
             "NODE_ENV": "production",
             "DB_SSL": "true",
-            "ALLOWED_ORIGIN": ""
+            "ALLOWED_ORIGIN": "http://localhost:3000",
+            "S3_BUCKET_NAME": "benevola-images"
           }
         },
         "Role": {
@@ -118,14 +128,14 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersions5ywC0pqpHOxnHdrelOnesHOIcaOGnHyuXIc6nJAM": {
+    "ApiLambdaVersionfnyW73539IzjIhsduLvS1KkSnruFwXXMmW8mScgwU": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "B6+C7lGKllTHyGiRain7HPTDrCjLQOQJK3br55HtxHc="
+        "CodeSha256": "Fv9uw8O+PYjyslx+s9Fd/oWtsO0BNdWVWaY1gZE4Bm8="
       }
     },
     "HttpApi": {
@@ -226,7 +236,7 @@
   },
   "Outputs": {
     "ServerlessDeploymentBucketName": {
-      "Value": "serverless-framework-deployments-us-east-1-75835dba-45ee",
+      "Value": "serverless-framework-deployments-us-east-2-5b463c5f-4ff0",
       "Export": {
         "Name": "sls-benevola-api-dev-ServerlessDeploymentBucketName"
       }
@@ -234,7 +244,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersions5ywC0pqpHOxnHdrelOnesHOIcaOGnHyuXIc6nJAM"
+        "Ref": "ApiLambdaVersionfnyW73539IzjIhsduLvS1KkSnruFwXXMmW8mScgwU"
       },
       "Export": {
         "Name": "sls-benevola-api-dev-ApiLambdaFunctionQualifiedArn"

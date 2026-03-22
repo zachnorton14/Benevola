@@ -5,12 +5,23 @@ provider:
   name: aws
   runtime: nodejs22.x
   region: ${env:AWS_REGION}
+  profile: benevola
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: arn:aws:s3:::${env:S3_BUCKET_NAME}/*
   environment:
     DATABASE_URL: ${env:DATABASE_URL}
     JWT_SECRET: ${env:JWT_SECRET}
     NODE_ENV: production
     DB_SSL: 'true'
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN, ''}
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}
 
 functions:
   api:
