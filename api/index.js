@@ -34,7 +34,11 @@ const { errorHandler } = require("./src/middleware/errorHandler");
 
 // HOME
 app.get('/', (req, res) => {
-    res.send("Home route")
+    res.json({
+        name: 'Benevola API',
+        status: 'ok',
+        uptime: process.uptime()
+    });
 });
 
 // API Routes
