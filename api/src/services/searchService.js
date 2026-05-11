@@ -5,25 +5,59 @@ const INDEX_NAME = 'events';
 const createIndex = async () => {
   try {
     const indexExists = await esClient.indices.exists({ index: INDEX_NAME });
-    if (!indexExists) {
-      await esClient.indices.create({
-        index: INDEX_NAME,
-        id: { type: 'integer' }, 
-        body: {
-          mappings: {
-            properties: {
-              title: { type: 'text' },
-              description: { type: 'text' },
-              tags: { type: 'keyword' },
-              date: { type: 'date' },
-              latitude: { type: 'float' },
-              longitude: { type: 'float' }
+    if (indexExists) {
+      // We must delete the index to apply mapping changes
+      await esClient.indices.delete({ index: INDEX_NAME });
+      console.log(`Old index ${INDEX_NAME} deleted.`);
+    }
+
+    await esClient.indices.create({
+      index: INDEX_NAME,
+      body: {
+        settings: {
+          analysis: {
+            filter: {
+              autocomplete_filter: {
+                type: "edge_ngram",
+                min_gram: 1,
+                max_gram: 20
+              }
+            },
+            analyzer: {
+              autocomplete: {
+                type: "custom",
+                tokenizer: "standard",
+                filter: ["lowercase", "autocomplete_filter"]
+              },
+              autocomplete_search: {
+                type: "custom",
+                tokenizer: "standard",
+                filter: ["lowercase"]
+              }
             }
           }
+        },
+        mappings: {
+          properties: {
+            title: { 
+              type: 'text', 
+              analyzer: "autocomplete", 
+              search_analyzer: "autocomplete_search" 
+            },
+            description: { 
+              type: 'text', 
+              analyzer: "autocomplete", 
+              search_analyzer: "autocomplete_search" 
+            },
+            tags: { type: 'keyword' },
+            date: { type: 'date' },
+            latitude: { type: 'float' },
+            longitude: { type: 'float' }
+          }
         }
-      });
-      console.log(`Index ${INDEX_NAME} created.`);
-    }
+      }
+    });
+    console.log(`Index ${INDEX_NAME} created with autocomplete.`);
   } catch (error) {
     console.error('Error creating index:', error);
   }
@@ -55,6 +89,7 @@ const searchEvents = async (query) => {
             query: query,
             fields: ['title', 'description', 'tags', 'address'],
             fuzziness: 'AUTO'
+            // fuzziness: 5
           }
         }
       }

@@ -5,6 +5,7 @@ const EventTag = require("./EventTag");
 const EventAttendance = require("./EventAttendance")
 const Organization = require("./Organization");
 const UserAvailability = require("./UserAvailibility");
+const EventImage = require("./EventImage");
 
 Organization.hasMany(Event, { 
   foreignKey: { name: "organizationId" },
@@ -39,5 +40,7 @@ Tag.belongsToMany(Event, {
 User.hasMany(UserAvailability, { foreignKey: "userId" });
 UserAvailability.belongsTo(User, { foreignKey: "userId" });
 
+Event.hasMany(EventImage, { foreignKey: "eventId", onDelete: "CASCADE" });
+EventImage.belongsTo(Event, { foreignKey: "eventId" });
 
-module.exports = { User, Event, Tag, EventTag, EventAttendance, Organization, UserAvailability };
+module.exports = { User, Event, Tag, EventTag, EventAttendance, Organization, UserAvailability, EventImage };

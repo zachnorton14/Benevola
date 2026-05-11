@@ -40,7 +40,7 @@ module.exports = {
       { name: "Experienced Volunteers", slug: "experienced-volunteers" },
     ].map(t => ({ ...t, created_at: now, updated_at: now }));
 
-    await queryInterface.bulkInsert("tags", tags, {});
+    await queryInterface.bulkInsert("tags", tags, { ignoreDuplicates: true });
   },
 
   async down(queryInterface) {

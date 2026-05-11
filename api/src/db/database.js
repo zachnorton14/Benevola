@@ -1,25 +1,22 @@
 const { Sequelize } = require('sequelize');
-const path = require('path');
-require("dotenv").config()
+require("dotenv").config({ quiet: true });
 
-const env = process.env.NODE_ENV || "development";
-
-const storageFromEnv =
-  env === "production"
-    ? process.env.SQLITE_STORAGE_PROD
-    : process.env.SQLITE_STORAGE_DEV;
-
-const fallbackStorage = path.resolve(
-    process.cwd(),
-    "data",
-    env === "production" ? "prod.sqlite" : "dev.sqlite"
-);
-
-// Initialize Sequelize with SQLite
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: storageFromEnv || fallbackStorage,
-    logging: false
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    logging: false,
+    pool: {
+        max: 2,
+        min: 0,
+        acquire: 30000,
+        idle: 10000,
+    },
+    ...(process.env.DB_SSL == 'true' && { dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false,
+            },
+        },
+    }),
 });
 
 module.exports = sequelize;
