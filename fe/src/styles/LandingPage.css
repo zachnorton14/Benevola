@@ -1,0 +1,361 @@
+:root {
+  /* Modular colors to control the fade for the backgroudns */
+  --bg-color-1: rgb(255, 255, 255);
+  --bg-color-2: rgb(207, 224, 243);
+  --bg-color-3: rgb(50, 119, 39);
+  --bg-color-4: rgb(255, 255, 255);
+
+  /* Standard Color formating */
+  --highlight-color: rgb(77, 76, 76); 
+  --title-color: rgb(0, 0, 0);
+  --desc-color: rgb(101, 101, 101); 
+  --desc2-color: rgb(255, 255, 255); 
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* or 'fill' */
+}
+
+h1 {
+  grid-area: title;
+  color: var(--title-color);
+  font-weight: 550;
+  font-size: 55px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  flex: 1 1 auto;
+
+  margin: 10px;
+}
+
+p {
+  grid-area: desc;
+  color: var(--desc-color);
+  font-weight: 500;
+  font-size: 30px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  flex: 1 1 auto;
+
+  margin: 10px;
+}
+
+b {
+  color: var(--highlight-color);
+  font-weight: 550;
+  font-size: 33px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.button-1 {
+  grid-area: button-1;
+}
+
+.button-2 {
+  grid-area: button-2;
+}
+
+.dark-desc {
+  color: var(--title-color);
+}
+
+.main-grid {
+  /* Grid container that holds everything, also determines global background*/
+  background-color: #7bff8f;
+
+  
+}
+
+/*************/
+/* Section 1 */
+/*************/
+
+.section-1 {
+  /* background-color: blueviolet; */
+  min-width: 100vw;
+  background: linear-gradient(to bottom, var(--bg-color-1), var(--bg-color-2));
+}
+
+.s1-layout {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+
+  /* DESKTOP layout */
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-areas: 
+    "s1-left s1-main s1-right";
+}
+
+.s1-left {
+  grid-area: s1-left;
+}
+
+.s1-main {
+  grid-area: s1-main;
+}
+
+.s1-right {
+  grid-area: s1-right;
+}
+
+.section-1-images-con {
+  flex: 0 1 auto;
+}
+
+.section-1-image {
+  flex: 0 1 auto;
+  margin: 20px;
+  width: 300px;
+  height: 300px;
+  border-radius: 25px;
+  background-color: #7bff8f;
+  overflow: hidden;
+}
+
+/* Controls the format of the central title container */
+.section-1-text-con {
+  display: grid;
+  grid-template-rows: 0.95fr 1.05fr ;
+  grid-template-areas: 
+    "title"
+    "desc-and-button";
+}
+
+.section-1-desc-and-button-con {
+  grid-area: desc-and-button;
+}
+
+.section-1-desc-highlight {
+  color: var(--highlight-color);
+}
+
+
+/*************/
+/* Section 2 */
+/*************/
+.section-2 {
+  /*background: linear-gradient(to bottom, var(--bg-color-2), var(--bg-color-3));*/
+  background-image: url("https://images.unsplash.com/photo-1652971876875-05db98fab376?q=80&w=1429&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  color: white;
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  min-width: 100vw;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  text-align: center;
+  flex: 1 1 0;
+}
+
+.s2-blur-box {
+  /* Blurs for easier text readability */
+  backdrop-filter: blur(6px);
+  background: linear-gradient(
+    rgba(215, 228, 243, 0.8), 
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 100, 0, 0.3)
+  );
+
+  min-height: 80vh;
+  margin: 6vw;
+  border-radius: 25px;
+  display: grid;
+  grid-template-rows: 0.95fr 1fr 0.85fr;
+  grid-template-areas: 
+    "title"
+    "desc"
+    "button-1";
+}
+
+.s2-desc {
+  border-radius: 25px;
+  background-color: rgba(0, 191, 127, 0.75);
+
+  margin: 3vh 7vw;
+  padding: 0px 1vw;
+  color: var(--desc2-color);
+}
+
+/*************/
+/* Section 3 */
+/*************/
+.section-3 {
+  background: linear-gradient(
+    rgba(0, 100, 0, 0.3),
+    rgba(215, 228, 243, 0.8),
+    rgba(215, 228, 243, 0.8),
+    rgba(215, 228, 243, 0.8),
+    rgba(215, 228, 243, 0.8),
+    rgba(215, 228, 243, 0.8),
+    rgba(215, 228, 243, 0.8),
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.8)
+  );
+  color: white;
+  min-width: 100vw;
+}
+
+.s3-layout {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+
+  /* DESKTOP layout */
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-areas: 
+    "started started started started"
+    "events learn learn orgs";
+}
+
+/* Standard container for all */
+.s3-con {
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+/* For Browse Events / Organiztions */
+.s3-con-small {
+  display: grid;
+  grid-template-rows: 0.8fr 0.2fr;
+  grid-template-areas: 
+    "s3-icon"
+    "button-1";
+}
+
+.s3-small-icon-con {
+  max-height: 200px;
+  font-size: 30px;
+  margin: 25px 0px 0px 0px;
+  padding:  0px 100px;
+  grid-area: s3-icon;
+}
+
+.s3-small-icon {
+  color: white;
+  max-width: 125px;
+  max-height: 125px;
+}
+
+.s3-events {
+  grid-area: events;
+}
+
+.s3-orgs {
+  grid-area: orgs;
+}
+
+.s3-get-started {
+  display: grid;
+  padding: 20px;
+  grid-area: started;
+  grid-template-columns: 1fr 1.3fr 1.3fr 1fr;
+  grid-template-areas: 
+    "title title title title"
+    "desc desc desc desc"
+    ". button-1 button-2 .";
+}
+
+.s3-learn-more {
+  margin: 0px;
+  padding: 30px 20px 20px 20px;
+  grid-area: learn;
+  grid-template-columns: 1fr;
+  grid-template-areas: 
+    "desc"
+    "button-1";
+}
+
+/*******************/
+/* Modular Layouts */
+/*******************/
+
+/* medium layout - placed before tiny layout so tiny layour trumps this layout */
+@media (max-width: 1400px) {
+  .s1-layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "s1-main s1-main"
+      "s1-left s1-right";
+  }
+
+  .s3-layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "started started"
+      "orgs events"
+      "learn learn";
+  }
+
+  .s3-get-started {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "title title"
+      "desc desc"
+      "button-1 button-2";
+  }
+
+  .s2-desc {
+    margin: 0px 3vw;
+    padding: 1vh 2vw;
+  }
+}
+
+/* tiny MOBILE layout */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  p {
+    font-size: 20px;
+  }
+
+  .App { 
+    width: 100vw;
+  }
+
+
+  .s1-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "s1-main"
+      "s1-left"
+      "s1-right";
+  }
+
+  .s3-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "started"
+      "orgs"
+      "events"
+      "learn";
+  }
+
+  .s3-get-started {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "title"
+      "desc"
+      "button-1"
+      "button-2";
+  }
+}

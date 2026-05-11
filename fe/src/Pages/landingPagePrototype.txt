@@ -1,0 +1,229 @@
+
+.landing-page-title-container {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  border-radius: 15px;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  margin: auto;
+
+  
+  background-color: #F4F6F8;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.landing-page-title-text {
+  display: flex;
+  color: var(--accent-color);
+  font-size: calc(4vh + 7vw);
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+}
+
+.landing-page-title-description-text {
+  position: absolute;
+  color: rgb(91, 87, 87);
+  top: 150px;
+  font-size: 30px;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+}
+
+.landing-page-organization-container {
+  min-height: 24vh;
+  width: 45vw;
+  background-color: rgb(219, 237, 253);
+  border-radius: 25px;
+  display: flex;
+  margin: 0 auto;
+  position: relative;
+  top: -12vh;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+}
+
+.landing-page-organization-text {
+  position: relative;
+  top: -65px;
+  font-size: 39px;
+  color: rgb(69, 69, 69);
+}
+
+.landing-page-organization-text-secondary {
+  position: absolute;
+  top: 78px;
+  font-size: 23px;
+  color: rgb(114, 114, 114);
+}
+
+.landing-page-organization-button {
+  position: absolute;
+  top: 122px;
+  padding: 0.9rem 1.75rem;
+  padding-right: 28px;
+  padding-left: 28px;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  border-radius: 5rem;
+  font-size: 2.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.landing-page-organization-button:hover {
+  background-color: rgb(0, 141, 77);
+  padding-right: 62px;
+  padding-left: 28px;
+}
+
+.landing-page-organization-icon-container {
+  position: absolute;
+  left: 222px;
+  top: 20.5px;
+}
+
+.landing-page-event-button {
+  position: absolute;
+  top: 122px;
+  padding: 0.9rem 1.75rem;
+  padding-right: 28px;
+  padding-left: 28px;
+  background-color: var(--accent-color);
+  color: white;
+  outline: none;
+  border: none;
+  border-radius: 5rem;
+  font-size: 2.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.landing-page-event-button:hover {
+  background-color: rgb(0, 141, 77);
+  padding-right: 62px;
+  padding-left: 28px;
+}
+
+.landing-page-event-icon-container {
+  position: absolute;
+  left: 175px;
+  top: 20.5px;
+}
+
+.landing-page-event-container {
+  position: relative;
+  top: 220px;
+  background-color: linear-gradient(#ff9a9e, #fad0c4);
+  height: 40vh;
+  width: 100vw;
+  z-index: 1;
+}
+
+
+--------------------------------------------------
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import '../App.css';
+import NavBar from "../Components/NavBar"
+// alternate arrow icon import EastIcon from '@mui/icons-material/East';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
+function LandingPage() {
+  const navigate = useNavigate();
+
+  // used for hovering over a button
+  const [eventHovered, setEventHovered] = useState(false);
+  const [orgHovered, setOrgHovered] = useState(false);
+
+  const handleEvent = () => {
+    navigate('/opp-list');
+  };
+
+  const handleOrg = () => {
+    navigate('/create-event');
+  };
+
+  return (
+    
+    <div> 
+      
+      <head>
+        <title> Benevola Landing page</title>
+      </head>
+
+      <div className="landing-navbar">
+        <NavBar/>
+      </div>
+
+      {/** Background Image */}
+      <div className="landing-page-image-container">
+        <div className="landing-page-title-container">
+          <div className="landing-page-title-text">
+            Benevola
+          </div>
+          <div className="landing-page-title-description-text">
+            Connecting Volunteers with Organizations accross the world.
+          </div>
+        </div>
+      </div>
+
+      <div className="landing-page-organization-container">
+        <div className="landing-page-organization-text">
+          Looking to find a place to volunteer?
+        </div>
+
+        <div className="landing-page-organization-text-secondary">
+          Find events made for you.
+        </div>
+        
+        <button  
+          onClick={handleEvent}
+          onMouseEnter={() => setEventHovered(true)}
+          onMouseLeave={() => setEventHovered(false)}
+          className="landing-page-event-button">
+          Discover
+          {eventHovered ? <> <div className="landing-page-event-icon-container">
+            <ArrowForwardIcon fontSize="large"/>
+          </div> </> : <></>} 
+        </button>
+      </div>
+
+  
+
+      <div className='landing-page-event-container'>
+         <div className="landing-page-organization-container">
+          <div className="landing-page-organization-text">
+            
+            Need Volunteers for your event?
+          </div>
+
+          <div className="landing-page-organization-text-secondary">
+            Register your event with Benevola.
+          </div>
+          
+          <button  
+            onClick={handleOrg}
+            onMouseEnter={() => setOrgHovered(true)}
+            onMouseLeave={() => setOrgHovered(false)}
+            className="landing-page-organization-button">
+            Get Started
+            {orgHovered ? <> <div className="landing-page-organization-icon-container">
+              <ArrowForwardIcon fontSize="large"/>
+            </div> </> : <></>} 
+          </button>
+        </div>
+
+      </div>
+
+
+    </div>
+  );
+}
+
+export default LandingPage;

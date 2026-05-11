@@ -20,6 +20,10 @@ const NavBar = () => {
       navigate('/');
     };
 
+    const handleMission = () => {
+      navigate('/our-mission');
+    };
+
     const handleProfile = () => {
       navigate('/my-profile');
     };
@@ -32,23 +36,28 @@ const NavBar = () => {
     const menuOptions = [
         {
             text:"Home",
-            icon:<HomeIcon/>
+            icon:<HomeIcon/>,
+            link:handleHome
         },
         {
             text:"Our Mission",
-            icon:<InfoIcon/>
+            icon:<InfoIcon/>,
+            link:handleMission
         },
         {
             text:"Opportunities",
-            icon:<HandshakeIcon/>
+            icon:<HandshakeIcon/>,
+            link:handleVolunteer
         },
         {
             text:"Companies",
-            icon:<BusinessIcon/>
+            icon:<BusinessIcon/>,
+            link:handleOrgs
         },
         {
             text:"My Profile",
-            icon:<AccountBoxIcon/>
+            icon:<AccountBoxIcon/>,
+            link:handleProfile
         },
     ];
 
@@ -59,10 +68,10 @@ const NavBar = () => {
       </div>
       <div className="navbar-links-container" >
         <a href="/" onClick={handleHome}>Home</a>
-        <a href="/" onClick={handleHome}>Our Mission</a>
+        <a href="/our-mission" onClick={handleMission}>Our Mission</a>
+        <a href="/opp-list" onClick={handleVolunteer}>Opportunities</a>
         <a href="/organizations" onClick={handleOrgs}>Companies</a>
-        <a href="my-profile" onClick={handleProfile}>My Profile</a>
-        <button className="primary-button" onClick={handleVolunteer}> Volunteer </button>
+        <button className="primary-button" onClick={handleProfile}> My Profile </button>
       </div>
       <div className="navbar-menu-container" >
         <HiOutlineBars3 onClick={() => setOpenMenu(true)} />
@@ -80,7 +89,7 @@ const NavBar = () => {
             <List>
                 {menuOptions.map((item) => (
                     <ListItem key={item.text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={item.link}>
                             <ListItemIcon> {item.icon} </ListItemIcon>
                             <ListItemText primary={item.text} />
                         </ListItemButton>

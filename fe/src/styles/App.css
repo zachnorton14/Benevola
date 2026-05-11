@@ -2,11 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Reem Kufi", sans-serif !important;
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 :root {
   --accent-color: rgb(0, 191, 127);
+  --second-accent-color:  #F4F6F8;
   --opportunity-post-background-color: rgb(230, 236, 236);
   --opportunity-post-border-color: rgb(208, 208, 208);
   --opportunity-post-border-width: 1px;
@@ -18,6 +22,7 @@
   --form-textbox-font-size: 23px;
   --global-background-color: #f7f8f9;
 }
+
 img {
   max-width: 100%;
   height: auto;
@@ -30,6 +35,27 @@ img {
   margin: 0rem auto;
   overflow: hidden;
 }
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  flex: 1 1 auto;
+
+  margin: 10px;
+}
+
+.landing-navbar {
+  min-height: 5vh;
+  width: 85vw;
+  max-width: 1900px;
+  margin: 0rem auto;
+  overflow: hidden;
+}
+
 body {
   max-width: 100%;
   overflow-x: hidden;
@@ -245,6 +271,11 @@ nav {
   left: 325px;
   width: 607px;
   height: 600px;
+}
+
+.orgs-map-container-spacing {
+  position: relative;
+  top: -250px;
 }
 
 .event-tags-container {

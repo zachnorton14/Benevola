@@ -1,5 +1,5 @@
 import NavBar from "../Components/NavBar";
-import '../App.css';
+import '../styles/App.css';
 import { List } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
