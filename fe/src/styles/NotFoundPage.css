@@ -1,0 +1,71 @@
+/* ── 404 Page ───────────────────────────────────────────────────── */
+.not-found {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--gray-50);
+  font-family: var(--font);
+}
+
+.not-found-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.not-found-code {
+  font-size: clamp(96px, 18vw, 180px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  color: var(--green-700);
+  opacity: 0.15;
+  user-select: none;
+}
+
+.not-found-body {
+  margin-top: -16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.not-found-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.not-found-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 340px;
+}
+
+.not-found-home {
+  margin-top: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  background: var(--green-700);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.not-found-home:hover {
+  background: var(--green-900);
+  transform: translateY(-1px);
+}

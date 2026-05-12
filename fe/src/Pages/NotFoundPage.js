@@ -1,21 +1,27 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from "../Components/NavBar";
+import '../styles/NotFoundPage.css';
 
-// NotFoundPage.js
+import Header from '../Components/Header';
+import Footer from '../Components/Footer';
+
 function NotFoundPage() {
   return (
-    <div className="App">
-        <div className="home-container">
-            <NavBar/>
-            <hr></hr>
-            <div className="home-text-section" >
-                <h1 className="primary-heading" >
-                    You are lost! </h1>
-                <p className="primary-text" >This is the error 404 page. (Page Not Found) <br></br> Go back to home sweet home. <br></br> Use the Navigation bar to the right of the logo.</p>
-            {/* Link back to home */}
-            <Link to="/"></Link>
-            </div>
+    <div className="not-found">
+      <Header />
+      <div className="not-found-content">
+        <div className="not-found-code" aria-hidden="true">404</div>
+        <div className="not-found-body">
+          <h1 className="not-found-title">Page not found</h1>
+          <p className="not-found-sub">
+            The page you're looking for doesn't exist or may have been moved.
+          </p>
+          <Link className="not-found-home" to="/">
+            Go back home
+          </Link>
         </div>
+      </div>
+      <Footer />
     </div>
   );
 }
