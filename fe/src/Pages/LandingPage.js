@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/LandingPage.css';
 
 import Header from '../Components/Header';
@@ -47,41 +48,16 @@ const MOSAIC_IMGS = [
 
 /* ── Hero ──────────────────────────────────────────────────────── */
 function Hero() {
-  const [toastMsg, setToastMsg] = useState('');
-  const [toastVisible, setToastVisible] = useState(false);
-  const timerRef = useRef(null);
-
-  const showToast = useCallback((msg) => {
-    setToastMsg(msg);
-    setToastVisible(true);
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setToastVisible(false), 1800);
-  }, []);
-
   return (
     <section className="hero-wrap">
       <div className="mosaic">
-        <div className="tile t1">
-          <img src={MOSAIC_IMGS[0].src} alt={MOSAIC_IMGS[0].alt} />
-        </div>
-        <div className="tile t2">
-          <img src={MOSAIC_IMGS[1].src} alt={MOSAIC_IMGS[1].alt} />
-        </div>
-        <div className="tile t3">
-          <img src={MOSAIC_IMGS[2].src} alt={MOSAIC_IMGS[2].alt} />
-        </div>
-        <div className="tile t4">
-          <img src={MOSAIC_IMGS[3].src} alt={MOSAIC_IMGS[3].alt} />
-        </div>
-        <div className="tile t5">
-          <img src={MOSAIC_IMGS[4].src} alt={MOSAIC_IMGS[4].alt} />
-        </div>
-        <div className="tile t6">
-          <img src={MOSAIC_IMGS[5].src} alt={MOSAIC_IMGS[5].alt} />
-        </div>
-        <div className="tile t7">
-          <img src={MOSAIC_IMGS[6].src} alt={MOSAIC_IMGS[6].alt} />
-        </div>
+        <div className="tile t1"><img src={MOSAIC_IMGS[0].src} alt={MOSAIC_IMGS[0].alt} /></div>
+        <div className="tile t2"><img src={MOSAIC_IMGS[1].src} alt={MOSAIC_IMGS[1].alt} /></div>
+        <div className="tile t3"><img src={MOSAIC_IMGS[2].src} alt={MOSAIC_IMGS[2].alt} /></div>
+        <div className="tile t4"><img src={MOSAIC_IMGS[3].src} alt={MOSAIC_IMGS[3].alt} /></div>
+        <div className="tile t5"><img src={MOSAIC_IMGS[4].src} alt={MOSAIC_IMGS[4].alt} /></div>
+        <div className="tile t6"><img src={MOSAIC_IMGS[5].src} alt={MOSAIC_IMGS[5].alt} /></div>
+        <div className="tile t7"><img src={MOSAIC_IMGS[6].src} alt={MOSAIC_IMGS[6].alt} /></div>
       </div>
 
       <div className="hero-card">
@@ -89,12 +65,10 @@ function Hero() {
           Looking to make<br />an impact?
           <em>We've got your<br />back<span className="period">.</span></em>
         </h1>
-        <button className="btn" onClick={() => showToast('Loading opportunities near you…')}>
+        <Link to="/events" className="btn">
           Explore Opportunities <ArrowRight />
-        </button>
+        </Link>
       </div>
-
-      <div className={'toast' + (toastVisible ? ' show' : '')}>{toastMsg}</div>
     </section>
   );
 }
@@ -148,9 +122,9 @@ function Platform() {
 }
 
 /* ── Action Card ───────────────────────────────────────────────── */
-function ActionCard({ icon, eyebrow, title, body, action, variant }) {
+function ActionCard({ icon, eyebrow, title, body, action, variant, to }) {
   return (
-    <a href="#" className={'action-card' + (variant ? ' ' + variant : '')}>
+    <Link to={to} className={'action-card' + (variant ? ' ' + variant : '')}>
       <div className="action-card-top">
         <div className="action-card-icon">{icon}</div>
         <div className="action-card-eyebrow">{eyebrow}</div>
@@ -160,7 +134,7 @@ function ActionCard({ icon, eyebrow, title, body, action, variant }) {
       <div className="action-card-foot">
         <span>{action}</span><ArrowRight />
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -186,6 +160,7 @@ function OrgCTA() {
             title="Create an event"
             body="Post a single shift, recurring need, or campaign in under three minutes. Volunteers find it, sign up, and show up."
             action="Create Event"
+            to="/signup?role=organization"
           />
           <ActionCard
             icon={<IconBuilding />}
@@ -194,6 +169,7 @@ function OrgCTA() {
             body="Claim a verified profile, manage your team, track impact hours, and unlock recurring partnerships with local volunteers."
             action="Register Organization"
             variant="accent"
+            to="/signup?role=organization"
           />
         </div>
       </div>
@@ -224,6 +200,7 @@ function VolunteerCTA() {
             title="Browse organizations"
             body="See verified nonprofits and groups working on the causes you care about — filtered by city, category, and time of week."
             action="Browse Organizations"
+            to="/organizations"
           />
           <ActionCard
             icon={<IconCalendar />}
@@ -231,6 +208,7 @@ function VolunteerCTA() {
             title="Find events near you"
             body="One-off shifts and pop-up campaigns happening this week — sortable by distance, date, and how many hours you can give."
             action="Find Events"
+            to="/events"
           />
           <ActionCard
             icon={<IconUser />}
@@ -239,6 +217,7 @@ function VolunteerCTA() {
             body="Create a free profile, save your skills and causes, log verified hours, and get matched to opportunities automatically."
             action="Create Profile"
             variant="accent"
+            to="/signup"
           />
         </div>
       </div>

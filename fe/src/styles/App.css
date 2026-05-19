@@ -8,12 +8,27 @@
   --gray-200:  #e2e5dd;
   --text:      #1a1a1a;
   --text-muted:#5a5f55;
+  --surface:   #ffffff;
+  --input-bg:  #ffffff;
+  --nav-bg:    rgba(255, 255, 255, 0.95);
   --radius-lg: 20px;
   --radius-md: 12px;
   --radius-sm: 8px;
   --nav-h:     64px;
   --page-max:  1280px;
   --font:      'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+[data-theme="dark"] {
+  --gray-50:    #1a2018;
+  --gray-100:   #161c17;
+  --gray-200:   #2a352b;
+  --text:       #e0e8e0;
+  --text-muted: #8a9a88;
+  --surface:    #212c23;
+  --input-bg:   #1a2018;
+  --nav-bg:     rgba(18, 24, 19, 0.95);
 }
 
 /* ── Reset ──────────────────────────────────────────────────────── */
@@ -27,7 +42,7 @@
 .page {
   font-family: var(--font);
   color: var(--text);
-  background: #fff;
+  background: var(--surface);
   min-height: 100vh;
 }
 

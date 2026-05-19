@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 48px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--gray-200);
 }
@@ -72,7 +72,7 @@
   top: calc(100% + 8px);
   left: 0;
   min-width: 230px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -103,6 +103,35 @@
   height: 6px;
   border-radius: 50%;
   background: var(--lime-400);
+}
+
+/* ── Logged-in user name ─────────────────────────────────────────── */
+.nav-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0 6px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Theme toggle ────────────────────────────────────────────────── */
+.nav-theme-toggle {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-muted);
+}
+
+.nav-theme-toggle:hover {
+  color: var(--text);
+  background: var(--gray-100);
 }
 
 /* ── Responsive ─────────────────────────────────────────────────── */

@@ -20,35 +20,30 @@ function Footer() {
       <div>
         <h4>For volunteers</h4>
         <ul>
-          <li><a href="#browse">Browse opportunities</a></li>
-          <li><a href="#causes">Causes</a></li>
-          <li><a href="#matching">Skill matching</a></li>
-          <li><a href="#transcripts">Hour transcripts</a></li>
+          <li><a href="/events/">Browse opportunities</a></li>
+          <li><a href="/organizations/">Browse organizations</a></li>
+          <li><a href="/signup/">Create your profile</a></li>
         </ul>
       </div>
 
       <div>
         <h4>For organizations</h4>
         <ul>
-          <li><a href="#register">Register</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#corporate">Corporate partners</a></li>
-          <li><a href="#resources">Resource library</a></li>
+          <li><a href="/signup?role=organization">Register your organization</a></li>
+          <li><a href="/events/new">Create an event</a></li>
         </ul>
       </div>
 
       <div>
         <h4>Company</h4>
         <ul>
-          <li><a href="#about">About</a></li>
-          <li><a href="#impact">Impact report</a></li>
-          <li><a href="#careers">Careers</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><Link to="/about">About Us</Link></li>
+          <li><a href="mailto:benevolacorp@gmail.com" target="_blank" rel="noreferrer">Contact us</a></li>
         </ul>
       </div>
 
       <div className="legal">
-        <span>© 2026 Benevola, PBC</span>
+        <span>© 2026 Benevola</span>
         <span>Built for good · Privacy · Terms</span>
       </div>
     </footer>
