@@ -1,0 +1,96 @@
+/* Shared destructive-action block. Neutral enough to sit inside any of the
+   three designs; colours come from a local token so it reads as "danger"
+   regardless of the surrounding palette. */
+
+.danger-zone {
+  --dz-red: #c0392b;
+  --dz-red-soft: rgba(192, 57, 43, 0.08);
+  --dz-red-line: rgba(192, 57, 43, 0.35);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  margin-top: 40px;
+  padding: 18px 20px;
+  border: 1px solid var(--dz-red-line);
+  border-radius: 10px;
+  background: var(--dz-red-soft);
+}
+
+.danger-zone-copy { min-width: 0; }
+
+.danger-zone-title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--dz-red);
+}
+
+.danger-zone-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.85;
+  max-width: 52ch;
+}
+
+.danger-zone-btn {
+  flex-shrink: 0;
+  padding: 9px 15px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dz-red);
+  background: transparent;
+  border: 1px solid var(--dz-red-line);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.danger-zone-btn:hover:not(:disabled) { background: rgba(192, 57, 43, 0.14); }
+
+.danger-zone-btn--solid {
+  color: #fff;
+  background: var(--dz-red);
+  border-color: var(--dz-red);
+}
+.danger-zone-btn--solid:hover:not(:disabled) { background: #a93226; }
+
+.danger-zone-btn:disabled,
+.danger-zone-cancel:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.danger-zone-confirm {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.danger-zone-warn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dz-red);
+}
+
+.danger-zone-actions { display: flex; gap: 8px; }
+
+.danger-zone-cancel {
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.danger-zone-cancel:hover:not(:disabled) { opacity: 1; }
+
+@media (max-width: 640px) {
+  .danger-zone { flex-direction: column; align-items: stretch; }
+  .danger-zone-btn { width: 100%; }
+  .danger-zone-actions { flex-direction: column; }
+}

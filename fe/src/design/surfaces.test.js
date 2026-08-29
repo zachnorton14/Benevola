@@ -70,6 +70,7 @@ const ROUTE_FOR = {
   Landing:   '/',
   Events:    '/events',
   Event:     '/events/1',
+  EventNew:  '/organizations/2/events/new',
   Orgs:      '/organizations',
   Org:       '/organizations/2',
   Volunteer: '/volunteer/7',
@@ -81,6 +82,7 @@ const ROUTE_FOR = {
 
 const PATH_PATTERN = {
   Event:     '/events/:id',
+  EventNew:  '/organizations/:id/events/new',
   Org:       '/organizations/:id',
   Volunteer: '/volunteer/:id',
 };

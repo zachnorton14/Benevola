@@ -13,6 +13,15 @@ function formatZodError(err) {
 function errorHandler(err, req, res, next) {
     const isProd = process.env.NODE_ENV === "production";
 
+    // 0) Body parser failures. These are thrown by express.json/raw before any
+    // route handler runs, so a route's own try/catch never sees them.
+    if (err.type === "entity.too.large") {
+        return res.status(413).json({ message: "That upload is too large." });
+    }
+    if (err.type === "entity.parse.failed") {
+        return res.status(400).json({ message: "The request body was not valid JSON." });
+    }
+
     // 1) Your own "operational" errors
     if (err instanceof ApiError) {
         return res.status(err.status).json({

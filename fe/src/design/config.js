@@ -1,55 +1,49 @@
-/* ─────────────────────────────────────────────────────────────────────
+/* ───────────────────────────────────────────────────────
    Design variant configuration.
 
-   MAKING A CHOICE PERMANENT
-   -------------------------
-   Set LOCKED to a design id below. The switcher disappears and every route
-   renders that design, regardless of what is in localStorage or the URL.
+   The site is LOCKED to 'default'. The switcher is gone, and the design is
+   not readable from the URL or localStorage — every route renders the one
+   design, in the brand colours set in ./brand.js.
 
-       export const LOCKED = 'meridian';
+   BRINGING BACK A SHELVED LOOK
+   ----------------------------
+   The other five designs are archived under src/OldThemes/, not deleted.
+   To restore one:
 
-   REMOVING A DESIGN FOR GOOD
-   --------------------------
-   1. Delete its folder under src/variants/ (or, for 'classic', delete
-      src/Pages/ and src/Components/).
-   2. Delete its entry from the DESIGNS array below.
-   3. Delete its column from the registry in src/design/registry.js.
+     1. Move its folder back to src/variants/ (the relative import depth is
+        the same in both places, so nothing inside it needs editing).
+        'classic' also needs OldThemes/Pages, OldThemes/Components and
+        OldThemes/styles moved back alongside it.
+     2. Add its import and BY_DESIGN entry in ./registry.js.
+     3. Add its entry to DESIGNS below.
 
-   Nothing else in the app imports variant files directly, so those three
-   steps are the whole job.
-   ──────────────────────────────────────────────────────────────────── */
+   To let visitors choose again, set LOCKED back to null and restore
+   DesignSwitcher (deleted — recover it from git history).
 
-/** null = let the visitor choose. A design id = hard lock, switcher hidden. */
-export const LOCKED = null;
+   NOTE: EventNew lives in src/shared and is served to every design by the
+   registry.
+   ────────────────────────────────────────────────────── */
+
+/** null = let the visitor choose. A design id = hard lock. */
+export const LOCKED = 'default';
 
 /** Used on first visit, before anyone has picked anything. */
-export const DEFAULT_DESIGN = 'meridian';
+export const DEFAULT_DESIGN = 'default';
 
+/* `tunable: true` means the design builds its palette from the brand colours
+   in ./brand.js rather than carrying a hand-tuned one. */
 export const DESIGNS = [
   {
-    id:      'classic',
-    name:    'Classic',
+    id:      'default',
+    name:    'Default',
     label:   '00',
-    tagline: 'The original green-and-white build',
+    tagline: 'Open daylight — gradient band, soft cards, your colour',
     theme:   'light',
-  },
-  {
-    id:      'meridian',
-    name:    'Meridian',
-    label:   '01',
-    tagline: 'Field guide — paper, hairlines, signal orange',
-    theme:   'light',
-  },
-  {
-    id:      'vesper',
-    name:    'Vesper',
-    label:   '02',
-    tagline: 'Nocturne — deep petrol, poster serif, clay',
-    theme:   'dark',
+    tunable: true,
   },
 ];
 
 export const DESIGN_IDS = DESIGNS.map(d => d.id);
 
-export const STORAGE_KEY = 'benevola_design';
-export const THEME_KEY   = 'theme';
+/** Light/dark is still a visitor preference, so it still persists. */
+export const THEME_KEY = 'theme';

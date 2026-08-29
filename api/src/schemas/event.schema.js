@@ -55,6 +55,9 @@ const tagsSchema = z.preprocess((val) => {
 const EventsQuerySchema = z.object({
     tags: tagsSchema,
 
+    // free-text keyword; matches event title/description/address and tag names
+    q: z.string().trim().min(1).max(100).optional(),
+
     date: dateYYYYMMDD.optional(),
     beforeDate: dateYYYYMMDD.optional(),
     afterDate: dateYYYYMMDD.optional(),
@@ -103,10 +106,6 @@ const EventsQuerySchema = z.object({
     }
 });
 
-const searchQueryValidation = z.object({
-    q: z.string().min(1),
-})
-
 const attendeeBodyValidation = z.object({
     userId: z.coerce.number().int().positive(),
 }).strict();
@@ -124,8 +123,7 @@ module.exports = {
     eventValidation, 
     updateEventValidation, 
     eventParamValidation, 
-    EventsQuerySchema, 
-    searchQueryValidation,
+    EventsQuerySchema,
     attendeeBodyValidation,
     attendeeParamValidation,
     addTagValidation

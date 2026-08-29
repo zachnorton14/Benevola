@@ -1,0 +1,5 @@
+# The dev database must never ship: production is Postgres, and a stray
+# SQLite file in the bundle is both dead weight and seeded demo credentials.
+data/
+node_modules/
+.env

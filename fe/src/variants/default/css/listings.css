@@ -1,0 +1,72 @@
+/* ── Event rows ─────────────────────────────────────────────────────── */
+
+.def-list { display: flex; flex-direction: column; }
+
+.def-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 14px;
+  margin: 0 -14px;
+  border-radius: var(--def-r);
+  text-decoration: none;
+  color: inherit;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.def-item + .def-item { box-shadow: inset 0 1px 0 var(--def-line); }
+.def-item:hover { background: var(--def-panel); box-shadow: var(--def-shadow); }
+.def-item:hover + .def-item { box-shadow: none; }
+
+.def-lead { display: flex; align-items: center; gap: 13px; }
+
+.def-date {
+  width: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+  background: var(--def-ground-2);
+  border-radius: var(--def-r-sm);
+  line-height: 1.1;
+}
+.def-item:hover .def-date { background: var(--def-pri-soft); }
+.def-date b { font-size: 1.15rem; font-weight: 670; letter-spacing: -0.025em; }
+.def-date span { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--def-ink-3); }
+
+.def-thumb {
+  flex-shrink: 0;
+  width: 70px;
+  height: 48px;
+  border-radius: var(--def-r-sm);
+  object-fit: cover;
+  background: var(--def-ground-2);
+}
+
+.def-item-body { min-width: 0; }
+.def-item-title { display: block; font-weight: 600; font-size: 0.97rem; margin-bottom: 3px; }
+
+/* One line, always. Letting this wrap gives neighbouring rows different
+   heights depending on how long the address is, which makes a tidy list look
+   accidental. The address truncates instead; the duration never does, because
+   it is the part people scan for. */
+.def-item-meta {
+  display: flex;
+  gap: 13px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  font-size: 0.83rem;
+  color: var(--def-ink-3);
+}
+.def-item-meta > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.def-item-meta > *:last-child { flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .def-item { grid-template-columns: auto minmax(0, 1fr); gap: 14px; }
+  .def-item > :last-child { grid-column: 2; }
+  .def-thumb { display: none; }
+}
+
+/* Compact variant used inside the hero preview card. */
+.def-preview-body .def-item { margin: 0; padding: 12px 16px; border-radius: 0; }
+.def-preview-body .def-item:hover { background: var(--def-ground-2); box-shadow: none; }

@@ -1,0 +1,806 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   01 PROTOTYPE — night studio.
+
+   Scene: 9pm on a weeknight, lights off except the screen, phone or laptop
+   in hand, scrolling with intent and about to commit to something on
+   Saturday. Low ambient light, high personal energy. So: near-black ground,
+   heavy display type, and colour arriving in whole blocks rather than
+   accents. Loud on purpose.
+
+   Colour strategy is COMMITTED: the picked primary fills entire panels
+   rather than trimming them, the way a poster commits to one ink.
+
+   Two colour tokens, and the difference matters:
+     --ptp-pri     the picked hex, unmodified. Only ever used as a FILL,
+                   with --ptp-pri-ink on top. Contrast is guaranteed
+                   because brand.js computed that ink for this exact hex.
+     --ptp-accent  the same hue lifted (dark mode) or deepened (light mode)
+                   until it is legible as TEXT on the page ground.
+
+   Mixing them up is how a bright pick ends up as unreadable body copy.
+   ══════════════════════════════════════════════════════════════════════ */
+
+[data-design='prototype'] {
+  --ptp-ground:   oklch(from var(--brand-primary) 13% 0.012 h);
+  --ptp-ground-2: oklch(from var(--brand-primary) 9% 0.01 h);
+  --ptp-panel:    oklch(from var(--brand-primary) 18% 0.014 h);
+  --ptp-panel-2:  oklch(from var(--brand-primary) 23% 0.017 h);
+
+  --ptp-ink:   oklch(from var(--brand-primary) 97% 0.004 h);
+  --ptp-ink-2: oklch(from var(--brand-primary) 74% 0.012 h);
+  --ptp-ink-3: oklch(from var(--brand-primary) 58% 0.012 h);
+
+  --ptp-line:   oklch(from var(--brand-primary) 26% 0.014 h);
+  --ptp-line-2: oklch(from var(--brand-primary) 36% 0.018 h);
+
+  /* Fills. Raw pick + the ink brand.js computed for it. */
+  --ptp-pri:     var(--brand-primary);
+  --ptp-pri-ink: var(--brand-primary-ink);
+  --ptp-sec:     var(--brand-secondary);
+  --ptp-sec-ink: var(--brand-secondary-ink);
+
+  /* Text-safe on this ground: hue and chroma from the pick, lightness pinned
+     high enough to read on near-black whatever was chosen.
+
+     No calc() with channel keywords appears in this file. CRA's CSS minifier
+     cannot parse it and fails the production build, and pinned lightness is
+     the better tool anyway: it fixes contrast rather than inheriting it. */
+  --ptp-accent:       oklch(from var(--brand-primary) 0.78 c h);
+  --ptp-accent-hover: oklch(from var(--brand-primary) 0.87 c h);
+  --ptp-accent-soft:  color-mix(in oklch, var(--brand-primary) 28%, var(--ptp-ground));
+  --ptp-sec-text:     oklch(from var(--brand-secondary) 0.8 c h);
+
+  --ptp-danger:      oklch(70% 0.17 25);
+  --ptp-danger-soft: oklch(27% 0.08 25);
+  --ptp-moss:        oklch(76% 0.15 152);
+
+  --ptp-font: 'Figtree', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  --ptp-r:    12px;
+  --ptp-r-lg: 22px;
+  --ptp-r-sm: 8px;
+
+  /* Native widgets — the date pickers in the filter rail, the clear button on
+     the search field, scrollbars — are painted by the browser, not by us.
+     Without this they stay in light dress on the near-black ground. */
+  color-scheme: dark;
+
+  --ptp-shadow: 0 4px 14px oklch(0% 0 0 / 0.4), 0 18px 46px oklch(0% 0 0 / 0.34);
+  --ptp-ease:   cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The inverse scene: same poster energy, read in daylight. Fills keep their
+   ink; only the ground and the text-safe accent flip. */
+[data-design='prototype'][data-theme='light'] {
+  color-scheme: light;
+
+  --ptp-ground:   oklch(from var(--brand-primary) 97.5% 0.006 h);
+  --ptp-ground-2: oklch(from var(--brand-primary) 94% 0.009 h);
+  --ptp-panel:    oklch(from var(--brand-primary) 99.5% 0.003 h);
+  --ptp-panel-2:  oklch(from var(--brand-primary) 96% 0.007 h);
+
+  --ptp-ink:   oklch(from var(--brand-primary) 17% 0.02 h);
+  --ptp-ink-2: oklch(from var(--brand-primary) 45% 0.02 h);
+  --ptp-ink-3: oklch(from var(--brand-primary) 60% 0.017 h);
+
+  --ptp-line:   oklch(from var(--brand-primary) 90% 0.008 h);
+  --ptp-line-2: oklch(from var(--brand-primary) 82% 0.012 h);
+
+  --ptp-accent:       oklch(from var(--brand-primary) 0.48 c h);
+  --ptp-accent-hover: oklch(from var(--brand-primary) 0.38 c h);
+  --ptp-accent-soft:  color-mix(in oklch, var(--brand-primary) 13%, var(--ptp-panel));
+  --ptp-sec-text:     oklch(from var(--brand-secondary) 0.46 c h);
+
+  --ptp-danger:      oklch(53% 0.19 25);
+  --ptp-danger-soft: oklch(95% 0.035 25);
+  --ptp-moss:        oklch(52% 0.13 152);
+
+  --ptp-shadow: 0 4px 14px oklch(from var(--brand-primary) 30% 0.03 h / 0.1),
+                0 18px 46px oklch(from var(--brand-primary) 30% 0.03 h / 0.12);
+}
+
+/* ── Frame ──────────────────────────────────────────────────────────── */
+
+.ptp-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ptp-ground);
+  color: var(--ptp-ink);
+  font-family: var(--ptp-font);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ptp-wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+.ptp-shell {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 24px 96px;
+}
+.ptp-shell--narrow { max-width: 780px; }
+.ptp-shell--form   { max-width: 470px; }
+
+/* ── Nav ────────────────────────────────────────────────────────────── */
+
+.ptp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: color-mix(in oklch, var(--ptp-ground-2) 88%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.ptp-nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 66px;
+}
+
+.ptp-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+  color: var(--ptp-ink);
+  text-decoration: none;
+}
+
+.ptp-nav-links { display: flex; align-items: center; gap: 22px; }
+
+.ptp-nav-link {
+  font-size: 0.9rem;
+  font-weight: 620;
+  color: var(--ptp-ink-2);
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+.ptp-nav-link:hover  { color: var(--ptp-ink); }
+.ptp-nav-link.is-on  { color: var(--ptp-ink); }
+
+.ptp-nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.ptp-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--ptp-ink-2);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.ptp-icon-btn:hover { color: var(--ptp-ink); background: var(--ptp-panel-2); }
+
+@media (max-width: 800px) { .ptp-nav-links { display: none; } }
+
+/* ── Type ───────────────────────────────────────────────────────────── */
+
+.ptp-h1 { margin: 0 0 10px; font-size: 2.3rem;  font-weight: 850; letter-spacing: -0.035em; line-height: 1.08; }
+.ptp-h2 { margin: 0 0 8px;  font-size: 1.65rem; font-weight: 800; letter-spacing: -0.03em;  line-height: 1.16; }
+.ptp-h3 { margin: 0;        font-size: 1.1rem;  font-weight: 720; letter-spacing: -0.018em; }
+
+.ptp-sub   { margin: 0; color: var(--ptp-ink-2); font-size: 1rem; max-width: 66ch; }
+.ptp-muted { color: var(--ptp-ink-3); font-size: 0.86rem; }
+.ptp-hint  { display: block; margin-top: 6px; color: var(--ptp-ink-3); font-size: 0.82rem; }
+
+.ptp-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ptp-accent);
+}
+
+.ptp-prose { color: var(--ptp-ink-2); max-width: 68ch; }
+.ptp-prose p { margin: 0 0 15px; }
+
+.ptp-link { color: var(--ptp-accent); font-weight: 640; text-decoration: underline; text-underline-offset: 3px; }
+.ptp-link:hover { color: var(--ptp-accent-hover); }
+
+.ptp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.ptp-crumbs { display: flex; gap: 7px; font-size: 0.8rem; color: var(--ptp-ink-3); margin-bottom: 18px; flex-wrap: wrap; }
+.ptp-crumbs a { color: var(--ptp-ink-3); text-decoration: none; }
+.ptp-crumbs a:hover { color: var(--ptp-ink); }
+.ptp-crumb-sep { margin-left: 7px; }
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+
+.ptp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 30px;
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 750;
+  letter-spacing: -0.005em;
+  color: var(--ptp-pri-ink);
+  background: var(--ptp-pri);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  /* Spotify's tell: the pill grows slightly under the cursor. */
+  transition: transform 180ms var(--ptp-ease), background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.ptp-btn:hover:not(:disabled) { transform: scale(1.045); }
+.ptp-btn:active:not(:disabled) { transform: scale(0.99); }
+.ptp-btn:focus-visible { outline: 2px solid var(--ptp-ink); outline-offset: 3px; }
+.ptp-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.ptp-btn--ghost {
+  color: var(--ptp-ink);
+  background: transparent;
+  border-color: var(--ptp-line-2);
+}
+.ptp-btn--ghost:hover:not(:disabled) { border-color: var(--ptp-ink); }
+
+.ptp-btn--quiet {
+  color: var(--ptp-ink-2);
+  background: transparent;
+  border-color: transparent;
+  font-weight: 660;
+}
+.ptp-btn--quiet:hover:not(:disabled) { color: var(--ptp-ink); transform: none; }
+
+/* On a colour-block panel the fill has to invert or it disappears. */
+.ptp-btn--onfill {
+  color: var(--ptp-pri);
+  background: var(--ptp-pri-ink);
+  border-color: transparent;
+}
+
+.ptp-btn--sm { padding: 8px 18px; font-size: 0.85rem; font-weight: 700; }
+.ptp-btn--block { width: 100%; }
+
+/* ── Panels ─────────────────────────────────────────────────────────── */
+
+.ptp-panel {
+  background: var(--ptp-panel);
+  border: 1px solid var(--ptp-line);
+  border-radius: var(--ptp-r-lg);
+}
+.ptp-panel--pad { padding: 24px; }
+.ptp-panel--float { box-shadow: var(--ptp-shadow); }
+
+.ptp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--ptp-line);
+}
+
+.ptp-panel-head-right { display: flex; align-items: center; gap: 10px; }
+
+/* Live search: the only moving part while a query is in flight. The results
+   below hold still on purpose — dimming or skeletoning them on every
+   keystroke is what makes search-as-you-type feel broken. */
+.ptp-spin {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--ptp-line-2);
+  border-top-color: var(--ptp-accent);
+  border-radius: 50%;
+  animation: ptp-spin 640ms linear infinite;
+}
+@keyframes ptp-spin { to { transform: rotate(1turn); } }
+
+/* ── Fields ─────────────────────────────────────────────────────────── */
+
+.ptp-row { margin-bottom: 18px; }
+
+.ptp-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ptp-ink);
+}
+
+.ptp-field {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px 15px;
+  font: inherit;
+  font-size: 0.93rem;
+  color: var(--ptp-ink);
+  background: var(--ptp-panel-2);
+  border: 1px solid var(--ptp-line-2);
+  border-radius: var(--ptp-r-sm);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.ptp-field::placeholder { color: var(--ptp-ink-3); }
+.ptp-field:focus {
+  outline: none;
+  border-color: var(--ptp-accent);
+  box-shadow: 0 0 0 3px var(--ptp-accent-soft);
+}
+.ptp-field:disabled { opacity: 0.5; cursor: not-allowed; }
+.ptp-field--err { border-color: var(--ptp-danger); }
+textarea.ptp-field { resize: vertical; line-height: 1.6; }
+.ptp-field[type='date'], .ptp-field[type='time'] { padding-left: 12px; padding-right: 12px; font-size: 0.87rem; }
+.ptp-field[type='search']::-webkit-search-cancel-button { cursor: pointer; }
+
+.ptp-field-err { display: block; margin-top: 6px; font-size: 0.8rem; font-weight: 600; color: var(--ptp-danger); }
+
+.ptp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; }
+.ptp-pair > * { min-width: 0; }
+@media (max-width: 560px) { .ptp-pair { grid-template-columns: 1fr; } }
+
+/* ── Chips ──────────────────────────────────────────────────────────── */
+
+.ptp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  font-size: 0.79rem;
+  font-weight: 640;
+  color: var(--ptp-ink-2);
+  background: var(--ptp-panel-2);
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+.ptp-chip--accent { color: var(--ptp-pri-ink); background: var(--ptp-pri); }
+.ptp-chip--sec    { color: var(--ptp-sec-ink); background: var(--ptp-sec); }
+button.ptp-chip { cursor: pointer; font-family: inherit; transition: background 150ms ease, color 150ms ease; }
+button.ptp-chip:hover { color: var(--ptp-ink); background: var(--ptp-line); }
+button.ptp-chip--accent:hover { color: var(--ptp-pri-ink); background: var(--ptp-pri); }
+
+.ptp-chiprow { display: flex; flex-wrap: wrap; gap: 7px; }
+
+/* ── Landing: colour-block hero ─────────────────────────────────────── */
+
+.ptp-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 20px 0 0;
+  padding: 76px 52px 80px;
+  border-radius: var(--ptp-r-lg);
+  /* A solid fill, not a gradient: the ink on top was computed for this exact
+     hex, and a gradient would drift out from under it. */
+  background: var(--ptp-pri);
+  color: var(--ptp-pri-ink);
+}
+
+/* The secondary arrives as light rather than as a second background colour,
+   so it can never land behind a word. */
+.ptp-hero::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  right: -160px;
+  bottom: -260px;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ptp-sec) 0%, transparent 65%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ptp-hero h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2.4rem, 5.6vw, 4rem);
+  font-weight: 880;
+  letter-spacing: -0.042em;
+  line-height: 1.02;
+  max-width: 16ch;
+}
+
+.ptp-hero-lede {
+  margin: 0 0 34px;
+  font-size: 1.1rem;
+  font-weight: 520;
+  line-height: 1.5;
+  max-width: 48ch;
+  opacity: 0.85;
+}
+
+.ptp-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.ptp-hero-eyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  opacity: 0.8;
+}
+
+@media (max-width: 720px) { .ptp-hero { padding: 52px 26px 56px; } }
+
+/* ── Landing: the three ways in ─────────────────────────────────────── */
+
+.ptp-section { padding: 76px 0; }
+.ptp-section-head { margin-bottom: 34px; max-width: 62ch; }
+
+/* Deliberately not a uniform grid: the middle column is the recommended
+   route, so it sits higher and carries the fill. */
+.ptp-routes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.ptp-route {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 28px 26px 26px;
+  background: var(--ptp-panel);
+  border-radius: var(--ptp-r-lg);
+}
+
+.ptp-route--featured {
+  margin-top: -22px;
+  padding-top: 34px;
+  padding-bottom: 32px;
+  background: var(--ptp-pri);
+  color: var(--ptp-pri-ink);
+  box-shadow: var(--ptp-shadow);
+}
+.ptp-route--featured .ptp-route-meta,
+.ptp-route--featured .ptp-route-list li { color: inherit; opacity: 0.86; }
+
+.ptp-route-badge {
+  align-self: flex-start;
+  margin-bottom: 14px;
+  padding: 4px 11px;
+  font-size: 0.68rem;
+  font-weight: 780;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: var(--ptp-sec);
+  color: var(--ptp-sec-ink);
+}
+
+.ptp-route h3 { margin: 0 0 6px; font-size: 1.28rem; font-weight: 800; letter-spacing: -0.026em; }
+.ptp-route-meta { margin: 0 0 18px; font-size: 0.9rem; color: var(--ptp-ink-2); }
+
+.ptp-route-list { list-style: none; margin: 0 0 26px; padding: 0; display: grid; gap: 10px; }
+.ptp-route-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.9rem;
+  color: var(--ptp-ink-2);
+}
+.ptp-route-list svg { flex-shrink: 0; margin-top: 3px; }
+.ptp-route .ptp-btn { margin-top: auto; }
+
+@media (max-width: 900px) {
+  .ptp-routes { grid-template-columns: 1fr; }
+  .ptp-route--featured { margin-top: 0; }
+}
+
+/* ── Landing: FAQ ───────────────────────────────────────────────────── */
+
+.ptp-faq { border-top: 1px solid var(--ptp-line); }
+
+.ptp-faq details {
+  border-bottom: 1px solid var(--ptp-line);
+}
+.ptp-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 4px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  cursor: pointer;
+  list-style: none;
+  transition: color 150ms ease;
+}
+.ptp-faq summary::-webkit-details-marker { display: none; }
+.ptp-faq summary:hover { color: var(--ptp-accent); }
+
+/* A plus that becomes a minus. Rotating the vertical bar avoids animating a
+   layout property. */
+.ptp-faq-sign { position: relative; flex-shrink: 0; width: 16px; height: 16px; }
+.ptp-faq-sign::before,
+.ptp-faq-sign::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+.ptp-faq-sign::after { transform: translateY(-50%) rotate(90deg); transition: transform 260ms var(--ptp-ease); }
+.ptp-faq details[open] .ptp-faq-sign::after { transform: translateY(-50%) rotate(0deg); }
+
+.ptp-faq p { margin: 0 0 22px; padding-right: 40px; color: var(--ptp-ink-2); max-width: 70ch; }
+
+/* ── Landing: closing band ──────────────────────────────────────────── */
+
+.ptp-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  flex-wrap: wrap;
+  padding: 30px 34px;
+  border-radius: var(--ptp-r-lg);
+  background: var(--ptp-sec);
+  color: var(--ptp-sec-ink);
+}
+.ptp-band h3 { margin: 0 0 3px; font-size: 1.22rem; font-weight: 800; letter-spacing: -0.026em; }
+.ptp-band p  { margin: 0; font-size: 0.92rem; opacity: 0.82; }
+.ptp-band .ptp-btn { color: var(--ptp-sec); background: var(--ptp-sec-ink); }
+
+/* ── Event rows ─────────────────────────────────────────────────────── */
+
+.ptp-list { display: flex; flex-direction: column; gap: 6px; }
+
+.ptp-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 13px 16px;
+  border-radius: var(--ptp-r);
+  text-decoration: none;
+  color: inherit;
+  transition: background 150ms ease;
+}
+.ptp-item:hover { background: var(--ptp-panel); }
+
+.ptp-lead { display: flex; align-items: center; gap: 14px; }
+
+.ptp-date {
+  width: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+  background: var(--ptp-panel-2);
+  border-radius: var(--ptp-r-sm);
+  line-height: 1.08;
+}
+.ptp-item:hover .ptp-date { background: var(--ptp-pri); color: var(--ptp-pri-ink); }
+.ptp-date b { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.03em; }
+.ptp-date span { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ptp-ink-3); }
+.ptp-item:hover .ptp-date span { color: inherit; opacity: 0.75; }
+
+.ptp-thumb {
+  flex-shrink: 0;
+  width: 72px;
+  height: 50px;
+  border-radius: var(--ptp-r-sm);
+  object-fit: cover;
+  background: var(--ptp-panel-2);
+}
+
+.ptp-item-body { min-width: 0; }
+.ptp-item-title { display: block; font-weight: 700; font-size: 0.99rem; letter-spacing: -0.014em; margin-bottom: 2px; }
+
+/* One line, always — see the note on .def-item-meta. Wrapping here gives
+   neighbouring rows different heights depending on address length. */
+.ptp-item-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  font-size: 0.83rem;
+  color: var(--ptp-ink-3);
+}
+.ptp-item-meta > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ptp-item-meta > *:last-child { flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .ptp-item { grid-template-columns: auto minmax(0, 1fr); gap: 14px; }
+  .ptp-item > :last-child { grid-column: 2; }
+  .ptp-thumb { display: none; }
+}
+
+/* ── Detail layout ──────────────────────────────────────────────────── */
+
+.ptp-cols { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 40px; align-items: start; }
+@media (max-width: 980px) { .ptp-cols { grid-template-columns: 1fr; gap: 30px; } }
+
+.ptp-aside { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 86px; z-index: 2; min-width: 0; }
+@media (max-width: 980px) { .ptp-aside { position: static; } }
+
+.ptp-kv { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--ptp-line); font-size: 0.89rem; }
+.ptp-kv:last-child { border-bottom: 0; }
+.ptp-kv dt { color: var(--ptp-ink-3); font-weight: 600; }
+.ptp-kv dd { margin: 0; font-weight: 640; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+
+.ptp-meter { height: 7px; background: var(--ptp-panel-2); border-radius: 999px; overflow: hidden; }
+.ptp-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ptp-accent);
+  transition: width 340ms var(--ptp-ease);
+}
+.ptp-meter-fill.is-full { background: var(--ptp-danger); }
+
+/* ── Roster / profile ───────────────────────────────────────────────── */
+
+.ptp-roster { list-style: none; margin: 0; padding: 0; max-height: 310px; overflow-y: auto; }
+.ptp-roster li + li { border-top: 1px solid var(--ptp-line); }
+.ptp-roster a { display: flex; align-items: center; gap: 12px; padding: 11px 22px; text-decoration: none; color: inherit; }
+.ptp-roster a:hover { background: var(--ptp-panel-2); }
+
+.ptp-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ptp-pri);
+  color: var(--ptp-pri-ink);
+  font-size: 0.8rem;
+  font-weight: 780;
+  overflow: hidden;
+}
+.ptp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ptp-avatar--lg { width: 72px; height: 72px; font-size: 1.7rem; }
+
+.ptp-profile {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--ptp-line);
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.ptp-profile-actions { margin-left: auto; display: flex; gap: 9px; flex-wrap: wrap; }
+
+.ptp-banner {
+  margin-bottom: 26px;
+  border-radius: var(--ptp-r-lg);
+  overflow: hidden;
+  background: var(--ptp-panel-2);
+}
+.ptp-banner img { display: block; width: 100%; height: 210px; object-fit: cover; }
+
+/* ── Edit bar ───────────────────────────────────────────────────────── */
+
+.ptp-editbar {
+  position: sticky;
+  top: 66px;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 13px 24px;
+  background: var(--ptp-pri);
+  color: var(--ptp-pri-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.ptp-editbar-actions { display: flex; gap: 9px; }
+.ptp-editbar .ptp-btn--ghost { color: inherit; border-color: currentColor; }
+.ptp-editbar .ptp-btn:not(.ptp-btn--ghost) { color: var(--ptp-pri); background: var(--ptp-pri-ink); }
+
+/* ── States ─────────────────────────────────────────────────────────── */
+
+.ptp-state {
+  padding: 52px 28px;
+  border: 1px solid var(--ptp-line);
+  border-radius: var(--ptp-r-lg);
+  text-align: center;
+  color: var(--ptp-ink-2);
+}
+.ptp-state strong { display: block; margin-bottom: 7px; color: var(--ptp-ink); font-size: 1.14rem; font-weight: 780; letter-spacing: -0.02em; }
+.ptp-state--err { border-color: var(--ptp-danger); color: var(--ptp-danger); }
+
+.ptp-skel {
+  height: 70px;
+  margin-bottom: 6px;
+  border-radius: var(--ptp-r);
+  background: var(--ptp-panel);
+  animation: ptp-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ptp-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.ptp-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  z-index: 900;
+  transform: translate(-50%, 16px);
+  padding: 13px 24px;
+  font-size: 0.89rem;
+  font-weight: 680;
+  color: var(--ptp-pri-ink);
+  background: var(--ptp-pri);
+  border-radius: 999px;
+  box-shadow: var(--ptp-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms var(--ptp-ease);
+}
+.ptp-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+
+.ptp-foot { margin-top: auto; background: var(--ptp-ground-2); }
+
+.ptp-foot-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 48px;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 54px 24px 38px;
+}
+.ptp-foot-brand p { margin: 14px 0 0; max-width: 34ch; font-size: 0.88rem; color: var(--ptp-ink-3); }
+
+.ptp-foot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.ptp-foot-cols h4 {
+  margin: 0 0 14px;
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ptp-ink-3);
+}
+.ptp-foot-cols a { display: block; margin-bottom: 9px; font-size: 0.9rem; font-weight: 560; color: var(--ptp-ink-2); text-decoration: none; }
+.ptp-foot-cols a:hover { color: var(--ptp-ink); }
+
+.ptp-foot-base {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 20px 24px 30px;
+  border-top: 1px solid var(--ptp-line);
+  font-size: 0.82rem;
+  color: var(--ptp-ink-3);
+}
+
+@media (max-width: 820px) { .ptp-foot-inner { grid-template-columns: 1fr; gap: 34px; } }
+@media (max-width: 520px) { .ptp-foot-cols { grid-template-columns: 1fr 1fr; } }
+
+/* ── Motion ─────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .ptp-btn, .ptp-item, .ptp-meter-fill, .ptp-toast, .ptp-faq-sign::after { transition: none; }
+  .ptp-btn:hover:not(:disabled) { transform: none; }
+  .ptp-skel { animation: none; }
+  /* The spinner reports state, so it slows rather than stops. */
+  .ptp-spin { animation-duration: 2s; }
+}

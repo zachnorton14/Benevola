@@ -1,0 +1,55 @@
+/* ── Detail layout ──────────────────────────────────────────────────── */
+
+.def-cols { display: grid; grid-template-columns: minmax(0, 1fr) 336px; gap: 40px; align-items: start; }
+@media (max-width: 960px) { .def-cols { grid-template-columns: 1fr; gap: 30px; } }
+
+.def-aside { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 82px; z-index: 2; min-width: 0; }
+@media (max-width: 960px) { .def-aside { position: static; } }
+
+.def-kv { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--def-line); font-size: 0.88rem; }
+.def-kv:last-child { border-bottom: 0; }
+.def-kv dt { color: var(--def-ink-3); }
+.def-kv dd { margin: 0; font-weight: 540; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+
+.def-meter { height: 6px; background: var(--def-ground-2); border-radius: 999px; overflow: hidden; }
+.def-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg in oklch, var(--def-pri), var(--def-sec));
+  transition: width 520ms var(--def-ease);
+}
+.def-meter-fill.is-full { background: var(--def-danger); }
+
+/* ── Roster / profile ───────────────────────────────────────────────── */
+
+.def-roster { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }
+.def-roster li + li { border-top: 1px solid var(--def-line); }
+.def-roster a { display: flex; align-items: center; gap: 11px; padding: 10px 18px; text-decoration: none; color: inherit; }
+.def-roster a:hover { background: var(--def-ground-2); }
+
+.def-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--def-pri-soft);
+  color: var(--def-pri-text);
+  font-size: 0.78rem;
+  font-weight: 660;
+  overflow: hidden;
+}
+.def-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.def-avatar--lg { width: 66px; height: 66px; font-size: 1.5rem; }
+
+.def-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--def-line);
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.def-profile-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }

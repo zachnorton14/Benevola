@@ -14,13 +14,14 @@ const orgValidation = z.object({
     iconImg: z.url().nullable(),
 }).strict();
 
+// NOTE: `passwordHash` is deliberately not updatable here — clients must never
+// set a credential hash directly through a profile-update endpoint.
 const orgUpdateValidation = z.object({
     name: z.string().max(120).min(1).optional(),
     description: z.string().nullable().optional(),
     email: z.email().optional(),
-    passwordHash: z.string().optional(),
     phone: z.string().nullable().optional(),
-    address: z.string().max(150).nullable(),
+    address: z.string().max(150).nullable().optional(),
     bannerImg: z.url().nullable().optional(),
     iconImg: z.url().nullable().optional(),
 })

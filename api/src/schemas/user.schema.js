@@ -12,13 +12,15 @@ const userValidation = z.object({
     role: z.enum(["user", "admin"]),
 }).strict();
 
+// NOTE: `role` and `passwordHash` are deliberately not updatable here. This is a
+// self-service endpoint (verifyOwnership limits it to your own record), so
+// accepting them would let any logged-in user promote themselves to admin or
+// set their own credential hash directly.
 const userUpdateValidation = z.object({
     username: z.string().max(50).min(2).regex(/^[a-zA-Z0-9_]+$/).optional(),
     email: z.email().optional(),
-    passwordHash: z.string().optional(),
     displayName: z.string().nullable().optional(),
     profilePic: z.url().nullable().optional(),
-    role: z.enum(["user", "admin"]).optional(),
 })  .strict()
     .refine((obj) => Object.keys(obj).length > 0, {
         message: "Provide at least one field to update",

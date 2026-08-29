@@ -3,28 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <script>
-      /* Paint the right ground on the very first frame, before React boots. */
+      /* Stamp the design and theme before React boots, so the first frame is
+         not painted in the wrong mode. The colours are deliberately not set
+         here: they live in variants/default/css/tokens.css, and a stylesheet is
+         render-blocking, so it lands before the first paint anyway. Setting
+         them here too would put an inline style on :root that quietly beat the
+         stylesheet. */
       (function() {
         var el = document.documentElement;
-        var designs = ['classic', 'meridian', 'vesper'];
-        var nativeTheme = { classic: 'light', meridian: 'light', vesper: 'dark' };
-        var d;
+        el.setAttribute('data-design', 'default');
         try {
-          var fromUrl = new URLSearchParams(window.location.search).get('design');
-          d = designs.indexOf(fromUrl) > -1 ? fromUrl : localStorage.getItem('benevola_design');
-          if (designs.indexOf(d) === -1) d = 'meridian';
-          el.setAttribute('data-design', d);
           var t = localStorage.getItem('theme');
-          el.setAttribute('data-theme', t === 'light' || t === 'dark' ? t : nativeTheme[d]);
-        } catch (e) { /* private mode — defaults are fine */ }
+          el.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+        } catch (e) { el.setAttribute('data-theme', 'light'); }
       })();
     </script>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#157C4F" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Find local volunteering shifts with a date, a place and a capacity you can count on."
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -35,8 +34,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-    <!-- Meridian: Archivo + IBM Plex Mono · Vesper: Fraunces + Public Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..700;1,400..600&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Public+Sans:ital,wght@0,300..800;1,300..700&display=swap" rel="stylesheet">
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.

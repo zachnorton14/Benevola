@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# Benevola — frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React app for finding local volunteering shifts. Organizations post an event
+with a real date, place and capacity; volunteers sign on and both sides watch
+the roster fill.
 
-## Available Scripts
+Built at NC State as a university project. **It is a demonstration, not a
+running service** — every organization and event in the database is sample data
+written by us, and the site says so in the footer and on each event page.
 
-In the project directory, you can run:
+## Running it
 
-### `npm start`
+From the repository root, `npm run dev` starts the API and this app together.
+To run only the frontend:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+cd fe
+npm install
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+It expects the API at the URL in `.env.local` (`http://localhost:5173` by
+default). Without it the app still renders — every page falls back to an error
+or empty state rather than breaking.
 
-### `npm test`
+| Command | Does |
+|---|---|
+| `npm start` | Dev server on :3000, hot reload |
+| `npm test` | Jest + Testing Library, watch mode |
+| `npm run build` | Production bundle into `build/` |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## How it is put together
 
-### `npm run build`
+```
+src/
+  App.js          routes; each names a surface, not a component
+  config.js       DEMO_MODE — drives the sample-data labelling
+  context/        auth, session-backed
+  data/           api.js owns every endpoint; hooks.js is all the state
+  design/         which design renders a surface, and the theme
+  shared/         surfaces written once for every design
+  variants/
+    default/      the design that ships — components + css/
+  OldThemes/      five shelved designs, unbundled
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Routes name a **surface** (`Landing`, `Events`, `Event`, …) and
+`design/registry.js` resolves it to a component. The site is locked to one
+design, so today that indirection buys two things: the shared surfaces
+(posting an event) are written once, and a shelved design can be restored
+without touching the router.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**There is no fetching or state logic in any page.** `data/hooks.js` holds it
+as headless hooks and `data/api.js` owns every endpoint, so a page is JSX and
+CSS. That is worth preserving.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Styling
 
-### `npm run eject`
+One design ships: **Default**, in the Meadow greens. Its stylesheet is split
+across `variants/default/css/`, and `default.css` is just the `@import`
+manifest that fixes their order.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**To change the site's colours, edit `variants/default/css/tokens.css`.** Two
+hexes at the top of that file are the only ones in the stylesheet — every
+other colour, including the greys, is derived from them in CSS. One value
+lives outside it: the `theme-color` meta in `public/index.html`, which tints
+mobile browser chrome and cannot read a CSS variable.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Light and dark both ship, and the header toggle switches between them.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+More detail in [`src/design/README.md`](./src/design/README.md).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Animation
 
-## Learn More
+Everything that moves is confirming something you did — signing in, RSVPing, a
+list arriving. The one exception is the causes ticker in the hero, and it is
+deliberately the only ambient motion on the site.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Every animation opts out under `prefers-reduced-motion`, in the block at the
+end of `css/motion.css` and one in `styles/App.css` for the route transition.
+Anything new belongs there too.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Demo-mode labelling
 
-### Code Splitting
+`config.js` exports `DEMO_MODE` and `isSample()`. Together they drive the
+standing footer notice and the "Sample" tag on event pages. When real
+organizations start posting alongside the seeded content, `isSample()` is the
+single place to change — mark the seeded rows in the API and test for it
+there. No call site needs touching.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Set `REACT_APP_DEMO_MODE=false` to turn the labelling off. CRA inlines env vars
+at build time, so that is a rebuild rather than a restart.
 
-### Analyzing the Bundle Size
+## Tests
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+`src/design/surfaces.test.js` renders every surface against a stubbed API and
+asserts each one mounts, fetches and settles. It is a smoke test rather than a
+snapshot — cheap, and it catches a page drifting out of sync with the hooks.
 
-### Making a Progressive Web App
+```
+npm test -- --watchAll=false
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The shelved designs under `src/OldThemes/` are not compiled by anything, so a
+broken import in there fails neither the build nor the tests.
 
-### Advanced Configuration
+## Deploying
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+See [`DEPLOY.md`](../DEPLOY.md) at the repository root. Short version: this
+directory is its own Vercel project with Root Directory `fe`, and
+`vercel.json` proxies `/api/*` to the API project so the browser stays on one
+origin and the session cookie stays first-party. `REACT_APP_API_URL` must stay
+unset in production for that to work.

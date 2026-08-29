@@ -1,0 +1,88 @@
+/* ── About: the team ────────────────────────────────────── */
+
+.def-team {
+  margin-top: 44px;
+  padding-top: 32px;
+  border-top: 1px solid var(--def-line);
+}
+
+.def-team-grid {
+  display: grid;
+  /* auto-fit collapses the tracks nobody fills, so three people sit in three
+     even columns and a fourth would wrap without touching this file. */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 30px 20px;
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.def-team-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+/* Larger than the 66px --lg used beside names in rows: here the portrait is
+   the point rather than a marker next to something else. */
+.def-team-card .def-avatar {
+  width: 92px;
+  height: 92px;
+  font-size: 1.9rem;
+  margin-bottom: 10px;
+}
+
+.def-team-name {
+  font-weight: 640;
+  letter-spacing: -0.012em;
+  color: var(--def-ink);
+}
+
+/* The mark sits below the role as the card's one link. It carries no text, so
+   it needs a tap target of its own: the padding takes a 20px glyph up to a
+   40px hit area, past the 24px minimum for a pointer target.
+
+   That padding is transparent, though, so it reads as a gap. The negative
+   margin pulls the box back up against the role — the glyph sits close to the
+   text while the 40px target stays the size a thumb needs. */
+.def-team-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -6px;
+  padding: 10px;
+  border-radius: 50%;
+  color: var(--def-ink-3);
+  transition: color 150ms ease, background 150ms ease;
+}
+.def-team-social:hover,
+.def-team-social:focus-visible {
+  color: var(--def-pri-text);
+  background: var(--def-pri-soft);
+}
+.def-team-social:focus-visible {
+  outline: 2px solid var(--def-pri-text);
+  outline-offset: 2px;
+}
+
+.def-team-mark { display: block; }
+
+.def-team-role {
+  font-size: 0.875rem;
+  color: var(--def-ink-3);
+}
+
+@media (max-width: 420px) {
+  .def-team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; }
+  .def-team-card .def-avatar { width: 76px; height: 76px; font-size: 1.6rem; }
+}
+
+.def-banner {
+  margin-bottom: 24px;
+  border-radius: var(--def-r-lg);
+  overflow: hidden;
+  background: var(--def-ground-2);
+}
+.def-banner img { display: block; width: 100%; height: 200px; object-fit: cover; }

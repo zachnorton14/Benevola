@@ -1,0 +1,62 @@
+/* ── Edit bar ───────────────────────────────────────────────────────── */
+
+.def-editbar {
+  position: sticky;
+  top: 62px;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 26px;
+  background: var(--def-pri-soft);
+  border-bottom: 1px solid var(--def-pri-line);
+  font-size: 0.87rem;
+}
+.def-editbar-actions { display: flex; gap: 8px; }
+
+/* ── States ─────────────────────────────────────────────────────────── */
+
+.def-state {
+  padding: 48px 26px;
+  border: 1px dashed var(--def-line-2);
+  border-radius: var(--def-r);
+  text-align: center;
+  color: var(--def-ink-2);
+}
+.def-state strong { display: block; margin-bottom: 6px; color: var(--def-ink); font-size: 1.05rem; font-weight: 630; }
+.def-state--err { border-style: solid; border-color: var(--def-danger); color: var(--def-danger); }
+
+.def-skel {
+  height: 66px;
+  margin-bottom: 8px;
+  border-radius: var(--def-r);
+  background: linear-gradient(
+    100deg,
+    var(--def-ground-2) 30%,
+    var(--def-panel-2) 50%,
+    var(--def-ground-2) 70%
+  );
+  background-size: 220% 100%;
+  animation: def-sweep 1.5s ease-in-out infinite;
+}
+@keyframes def-sweep { from { background-position: 180% 0; } to { background-position: -60% 0; } }
+
+.def-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 900;
+  transform: translate(-50%, 14px) scale(0.96);
+  padding: 11px 18px;
+  font-size: 0.87rem;
+  color: var(--def-panel);
+  background: var(--def-ink);
+  border-radius: 999px;
+  box-shadow: var(--def-shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms var(--def-ease);
+}
+.def-toast.is-on { opacity: 1; transform: translate(-50%, 0) scale(1); }

@@ -1,0 +1,23 @@
+/* ════════════════════════════════════════════════════════════════════════
+   00 DEFAULT — the stylesheet, assembled.
+
+   Order is the cascade, so it is not arbitrary: tokens first because
+   everything reads from them, motion last because its reduced-motion block
+   switches off animations the earlier files declare. Each file is a
+   contiguous slice of what used to be one 1,200-line stylesheet.
+
+   To change the site's colours, open css/tokens.css — it is the only file
+   with a hex in it.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@import './css/tokens.css';     /* brand colours, design tokens, dark mode  */
+@import './css/shell.css';      /* page frame, nav, typography              */
+@import './css/controls.css';   /* buttons, panels, fields, chips           */
+@import './css/landing.css';    /* the landing page only                    */
+@import './css/listings.css';   /* event and organization rows              */
+@import './css/detail.css';     /* detail layouts, roster, profile header   */
+@import './css/team.css';       /* the About page team grid                 */
+@import './css/states.css';     /* edit bar, empty and error states         */
+@import './css/footer.css';     /* footer, and the demo notice it carries   */
+@import './css/motion.css';     /* every animation, and the reduced-motion
+                                   block that turns them all off            */

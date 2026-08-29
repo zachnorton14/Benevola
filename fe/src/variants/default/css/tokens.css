@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   00 DEFAULT — open daylight.
+
+   Scene: a first-time visitor at a kitchen table on a Sunday morning,
+   laptop open, deciding whether volunteering next weekend is worth the
+   effort. Unhurried, sceptical, persuadable, and sitting in daylight. So:
+   light ground, generous air, one confident colour doing the persuading.
+
+   Colour strategy is split on purpose, the way a marketing site and the app
+   behind it are two different jobs:
+     · landing        committed — a full-bleed diagonal wash of the brand
+     · app surfaces   restrained — tinted neutrals, colour only on actions
+
+   ONLY ONE PLACE HAS A HEX. Every token below descends from --brand-primary
+   and --brand-secondary, and even the greys borrow the brand's hue so the
+   neutrals never read as dead. Change the two values in the block below and
+   the whole theme moves with them.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* THE BRAND — the only hexes in the stylesheet.
+
+   primary     buttons, links, focus rings, active nav, meter fill.
+               Everything you can act on.
+   secondary   the second stop in hero gradients, section accents,
+               decorative rules and glows. Never the only carrier of meaning,
+               because it is free to be light or dark.
+
+   The two -ink values are the text colour that sits ON those fills, and they
+   are the one thing to re-check by eye if you change a hue: pick whichever of
+   #FFFFFF or #14151A has more contrast against the new colour. Today's pair,
+   measured: white on the primary is 5.2:1, near-black on the secondary
+   10.1:1.
+
+   Keep the chroma inside sRGB at each lightness, or the oklch() derivations
+   below clip in ways that are hard to trace back to here. */
+
+:root {
+  --brand-primary:       #157C4F;   /* Meadow, deep green  */
+  --brand-secondary:     #A3CF64;   /* Meadow, light green */
+
+  --brand-primary-ink:   #FFFFFF;
+  --brand-secondary-ink: #14151A;
+}
+
+/* One value lives outside this file and cannot be helped: the theme-color meta
+   in public/index.html, which tints the browser chrome on mobile. HTML cannot
+   read a CSS variable, so if you change --brand-primary, change that too.
+
+   The other palettes drawn for this project, if you want to swap:
+     Iris   #7B53DD / #19D1D2      Ember  #C76A18 / #EB5169
+     Tide   #006EB1 / #51D5CE      Plum   #B91A96 / #FD8358
+   All four take white ink on the primary, near-black on the secondary. */
+
+[data-design='default'] {
+  /* Neutrals: brand hue, near-zero chroma. `h` is read off the primary. */
+  --def-ground:   oklch(from var(--brand-primary) 98.6% 0.004 h);
+  --def-ground-2: oklch(from var(--brand-primary) 96.4% 0.006 h);
+  --def-panel:    oklch(from var(--brand-primary) 99.6% 0.002 h);
+  --def-panel-2:  oklch(from var(--brand-primary) 97.6% 0.005 h);
+
+  --def-ink:      oklch(from var(--brand-primary) 24% 0.018 h);
+  --def-ink-2:    oklch(from var(--brand-primary) 51% 0.018 h);
+  --def-ink-3:    oklch(from var(--brand-primary) 64% 0.015 h);
+
+  --def-line:     oklch(from var(--brand-primary) 92.6% 0.007 h);
+  --def-line-2:   oklch(from var(--brand-primary) 86% 0.011 h);
+
+  /* Actions.
+
+     Tints are mixed toward the panel rather than set to a literal lightness,
+     so the same declaration produces a pale wash here and a deep one in dark
+     mode. Note the absence of calc() with channel keywords anywhere in this
+     file: CRA's CSS minifier cannot parse it and fails the production build.
+     Fixed lightness values are the substitute, and they are the better tool
+     regardless, because they pin contrast instead of inheriting whatever
+     lightness happened to be picked. */
+  --def-pri:       var(--brand-primary);
+  --def-pri-ink:   var(--brand-primary-ink);
+  --def-pri-hover: color-mix(in oklch, var(--brand-primary) 84%, #14151A);
+  --def-pri-soft:  color-mix(in oklch, var(--brand-primary) 12%, var(--def-panel));
+  --def-pri-line:  color-mix(in oklch, var(--brand-primary) 34%, var(--def-panel));
+
+  /* --def-pri is a FILL: it is only ever painted behind --def-pri-ink, and
+     brand.js computed that ink for this exact hex. As TEXT on the near-white
+     ground it is not safe, because a bright pick (an orange, a yellow) can
+     sit at 3.6:1. Links, eyebrows and icons use this pinned-lightness
+     version instead. */
+  --def-pri-text:  oklch(from var(--brand-primary) 0.48 c h);
+
+  /* Gradients and decorative accents. Never the only carrier of meaning. */
+  --def-sec:      var(--brand-secondary);
+  --def-sec-soft: color-mix(in oklch, var(--brand-secondary) 13%, var(--def-panel));
+
+  --def-moss:      oklch(56% 0.125 156);
+  --def-moss-soft: oklch(95% 0.04 156);
+  --def-danger:      oklch(55% 0.19 25);
+  --def-danger-soft: oklch(96% 0.03 25);
+
+  --def-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* Shadows are tinted with the brand hue rather than neutral black, which is
+     what keeps soft cards from looking grey and dirty on a tinted ground. */
+  --def-shadow:    0 1px 2px oklch(from var(--brand-primary) 30% 0.03 h / 0.05),
+                   0 6px 18px oklch(from var(--brand-primary) 30% 0.03 h / 0.07);
+  --def-shadow-lg: 0 2px 6px oklch(from var(--brand-primary) 30% 0.03 h / 0.07),
+                   0 20px 48px oklch(from var(--brand-primary) 30% 0.03 h / 0.12);
+
+  --def-r:    10px;
+  --def-r-lg: 16px;
+  --def-r-sm: 7px;
+
+  /* Native widgets — the date pickers in the filter rail, the clear button on
+     the search field, scrollbars — are painted by the browser, not by us.
+     Without this they stay in light dress on the dark ground. */
+  color-scheme: light;
+
+  /* Ease-out-quint. No bounce anywhere in this theme. */
+  --def-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-design='default'][data-theme='dark'] {
+  color-scheme: dark;
+
+  --def-ground:   oklch(from var(--brand-primary) 16.5% 0.014 h);
+  --def-ground-2: oklch(from var(--brand-primary) 13.5% 0.014 h);
+  --def-panel:    oklch(from var(--brand-primary) 20.5% 0.016 h);
+  --def-panel-2:  oklch(from var(--brand-primary) 24% 0.018 h);
+
+  --def-ink:      oklch(from var(--brand-primary) 96% 0.006 h);
+  --def-ink-2:    oklch(from var(--brand-primary) 74% 0.014 h);
+  --def-ink-3:    oklch(from var(--brand-primary) 59% 0.014 h);
+
+  --def-line:     oklch(from var(--brand-primary) 27% 0.016 h);
+  --def-line-2:   oklch(from var(--brand-primary) 35% 0.02 h);
+
+  /* Hue and chroma come from the pick; lightness is pinned to a value that is
+     legible on this ground whatever was chosen. Because that value is always
+     light, the ink on top is always the dark one, so it is derived here
+     rather than taken from --brand-primary-ink (which was computed for the
+     unpinned hex, where white would usually have won). */
+  --def-pri:       oklch(from var(--brand-primary) 0.76 c h);
+  --def-pri-ink:   oklch(from var(--brand-primary) 0.16 0.03 h);
+  --def-pri-hover: oklch(from var(--brand-primary) 0.85 c h);
+  --def-pri-text:  oklch(from var(--brand-primary) 0.78 c h);
+  --def-pri-soft:  color-mix(in oklch, var(--brand-primary) 26%, var(--def-ground));
+  --def-pri-line:  color-mix(in oklch, var(--brand-primary) 44%, var(--def-ground));
+
+  --def-sec:      oklch(from var(--brand-secondary) 0.76 c h);
+  --def-sec-soft: color-mix(in oklch, var(--brand-secondary) 26%, var(--def-ground));
+
+  --def-moss:      oklch(72% 0.12 156);
+  --def-moss-soft: oklch(27% 0.05 156);
+  --def-danger:      oklch(70% 0.16 25);
+  --def-danger-soft: oklch(28% 0.07 25);
+
+  --def-shadow:    0 1px 2px oklch(0% 0 0 / 0.3), 0 6px 18px oklch(0% 0 0 / 0.3);
+  --def-shadow-lg: 0 2px 6px oklch(0% 0 0 / 0.36), 0 20px 48px oklch(0% 0 0 / 0.42);
+}

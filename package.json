@@ -1,0 +1,18 @@
+{
+  "name": "benevola",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Dev-only workspace root: boots the API and the frontend together.",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "npm --prefix fe start",
+    "start": "npm run dev",
+    "install:all": "npm --prefix api install && npm --prefix fe install",
+    "db:reset": "npm --prefix api run db:migrate && npm --prefix api run db:seed",
+    "test": "npm --prefix fe test -- --watchAll=false"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

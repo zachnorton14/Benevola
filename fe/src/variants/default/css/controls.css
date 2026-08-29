@@ -1,0 +1,170 @@
+/* ── Buttons ────────────────────────────────────────────────────────── */
+
+.def-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 0.885rem;
+  font-weight: 580;
+  color: var(--def-pri-ink);
+  background: var(--def-pri);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px oklch(from var(--brand-primary) 30% 0.05 h / 0.18);
+  transition: background 150ms ease, transform 150ms var(--def-ease), box-shadow 150ms ease;
+}
+.def-btn:hover:not(:disabled) {
+  background: var(--def-pri-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px oklch(from var(--brand-primary) 30% 0.05 h / 0.22);
+}
+.def-btn:active:not(:disabled) { transform: scale(0.97); }
+.def-btn:focus-visible { outline: 2px solid var(--def-pri-text); outline-offset: 2px; }
+.def-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+.def-btn--ghost {
+  color: var(--def-ink);
+  background: var(--def-panel);
+  border-color: var(--def-line-2);
+  box-shadow: none;
+}
+.def-btn--ghost:hover:not(:disabled) {
+  background: var(--def-panel);
+  border-color: var(--def-ink-3);
+  box-shadow: var(--def-shadow);
+}
+
+.def-btn--quiet {
+  color: var(--def-ink-2);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.def-btn--quiet:hover:not(:disabled) {
+  color: var(--def-ink);
+  background: var(--def-ground-2);
+  transform: none;
+  box-shadow: none;
+}
+
+.def-btn--sm { padding: 7px 14px; font-size: 0.83rem; }
+.def-btn--block { width: 100%; }
+
+/* ── Panels ─────────────────────────────────────────────────────────── */
+
+.def-panel {
+  background: var(--def-panel);
+  border: 1px solid var(--def-line);
+  border-radius: var(--def-r);
+}
+.def-panel--pad { padding: 22px; }
+.def-panel--float { box-shadow: var(--def-shadow); border-color: transparent; }
+
+.def-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--def-line);
+}
+
+.def-panel-head-right { display: flex; align-items: center; gap: 10px; }
+
+/* Live search: the only moving part while a query is in flight. The results
+   below hold still on purpose — dimming or skeletoning them on every
+   keystroke is what makes search-as-you-type feel broken. */
+.def-spin {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--def-line-2);
+  border-top-color: var(--def-pri-text);
+  border-radius: 50%;
+  animation: def-spin 640ms linear infinite;
+}
+@keyframes def-spin { to { transform: rotate(1turn); } }
+
+/* ── Fields ─────────────────────────────────────────────────────────── */
+
+.def-row { margin-bottom: 18px; }
+
+.def-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 590;
+  color: var(--def-ink-2);
+}
+
+.def-field {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 10px 13px;
+  font: inherit;
+  font-size: 0.91rem;
+  color: var(--def-ink);
+  background: var(--def-panel);
+  border: 1px solid var(--def-line-2);
+  border-radius: var(--def-r-sm);
+  box-shadow: 0 1px 1px oklch(from var(--brand-primary) 30% 0.02 h / 0.04);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.def-field::placeholder { color: var(--def-ink-3); }
+.def-field:focus {
+  outline: none;
+  border-color: var(--def-pri-text);
+  box-shadow: 0 0 0 3px oklch(from var(--brand-primary) l c h / 0.2);
+}
+.def-field:disabled { opacity: 0.55; cursor: not-allowed; }
+.def-field--err { border-color: var(--def-danger); }
+textarea.def-field { resize: vertical; line-height: 1.6; }
+.def-field[type='date'], .def-field[type='time'] { padding-left: 11px; padding-right: 11px; font-size: 0.86rem; }
+.def-field[type='search']::-webkit-search-cancel-button { cursor: pointer; }
+
+.def-field-err { display: block; margin-top: 5px; font-size: 0.79rem; color: var(--def-danger); }
+
+.def-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-width: 0; }
+.def-pair > * { min-width: 0; }
+@media (max-width: 560px) { .def-pair { grid-template-columns: 1fr; } }
+
+/* ── Chips ──────────────────────────────────────────────────────────── */
+
+.def-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  font-size: 0.775rem;
+  font-weight: 520;
+  color: var(--def-ink-2);
+  background: var(--def-ground-2);
+  border: 1px solid var(--def-line);
+  border-radius: 999px;
+}
+.def-chip--accent { color: var(--def-pri-text); background: var(--def-pri-soft); border-color: transparent; }
+.def-chip--moss   { color: var(--def-moss); background: var(--def-moss-soft); border-color: transparent; }
+
+/* Sample data. Dashed rather than tinted: a solid coloured chip would read as
+   another cause tag sitting beside the real ones, and this is the opposite —
+   it says the row itself is not real. Muted so it labels without shouting. */
+.def-chip--sample {
+  color: var(--def-ink-3);
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--def-line-2);
+  font-weight: 560;
+  letter-spacing: 0.02em;
+}
+button.def-chip { cursor: pointer; font-family: inherit; transition: border-color 150ms ease, color 150ms ease; }
+button.def-chip:hover { color: var(--def-ink); border-color: var(--def-line-2); }
+button.def-chip--accent:hover { color: var(--def-pri-text); }
+
+.def-chiprow { display: flex; flex-wrap: wrap; gap: 6px; }

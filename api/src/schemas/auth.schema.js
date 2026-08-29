@@ -23,4 +23,10 @@ const googleAuthValidation = z.object({
     token: z.string().min(1),
 }).strict();
 
-module.exports = { registerValidation, loginValidation, googleAuthValidation };
+// Which account type the address belongs to — users and orgs are separate
+// tables and may legitimately share an email address.
+module.exports = {
+    registerValidation,
+    loginValidation,
+    googleAuthValidation,
+};

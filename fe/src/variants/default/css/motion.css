@@ -1,0 +1,111 @@
+/* ── Motion: confirmation and arrival ───────────────────────── */
+
+/* Everything here answers something the visitor did. The causes ticker in the
+   hero is the only thing on the site that moves on its own, and it should stay
+   that way — ambient motion competes with reading. */
+
+@keyframes def-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes def-rise {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Draws the tick rather than popping it in. The dash length is the path
+   length, so the stroke reveals itself left to right. */
+@keyframes def-draw {
+  from { stroke-dashoffset: 22; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes def-pop {
+  0%   { opacity: 0; transform: scale(0.8); }
+  60%  { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Content replacing a skeleton. Without this the swap is a hard cut, which
+   reads as a flash on a fast connection. */
+.def-fade-in { animation: def-fade-in 260ms var(--def-ease) both; }
+
+/* Rows arriving for the first time, each a beat behind the one above.
+   Deliberately applied only on the first load — re-running it on every filter
+   change turns a list into a strobe. See useFirstReveal in parts.jsx. */
+.def-stagger > * {
+  animation: def-rise 340ms var(--def-ease) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* The drawn tick, used by the RSVP confirmation and the login welcome. */
+.def-check circle { animation: def-pop 260ms var(--def-ease) both; }
+.def-check path {
+  stroke-dasharray: 22;
+  animation: def-draw 300ms var(--def-ease) 160ms both;
+}
+
+/* Something confirming, then collapsing away when it no longer applies. Height
+   rather than display so cancelling an RSVP shows the line leaving instead of
+   blinking out. max-height is the usual compromise: it cannot animate to auto,
+   so it animates to a bound comfortably above the real height. */
+.def-collapse {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 260ms var(--def-ease), opacity 200ms ease, margin-top 260ms var(--def-ease);
+  margin-top: 0;
+}
+.def-collapse.is-on { max-height: 80px; opacity: 1; margin-top: 11px; }
+
+.def-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: var(--def-ink-3);
+}
+.def-confirm .def-check { color: var(--def-moss); flex-shrink: 0; }
+
+/* The moment after a successful login, before the redirect. */
+.def-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 26px 8px 10px;
+  animation: def-fade-in 240ms ease both;
+}
+.def-welcome .def-check { color: var(--def-moss); }
+.def-welcome h2 {
+  margin: 0;
+  font-size: 1.32rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  animation: def-rise 320ms var(--def-ease) 120ms both;
+}
+.def-welcome p { margin: 0; color: var(--def-ink-3); font-size: 0.9rem; animation: def-rise 320ms var(--def-ease) 200ms both; }
+
+/* ── Motion ─────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .def-btn, .def-arrow svg, .def-preview, .def-nav-link::after,
+  .def-meter-fill, .def-toast, .def-item {
+    transition: none;
+  }
+  .def-skel { animation: none; }
+  .def-ticker-track { animation: none; }
+  /* Opacity is fine to keep; movement is not. These reveal instantly. */
+  .def-fade-in, .def-stagger > *,
+  .def-check circle, .def-check path,
+  .def-welcome, .def-welcome h2, .def-welcome p { animation: none; }
+  .def-check path { stroke-dashoffset: 0; }
+  .def-collapse { transition: none; }
+  .def-meter-fill { transition: none; }
+  .def-preview { transform: none; }
+  /* The spinner reports state, so it slows rather than stops. */
+  .def-spin { animation-duration: 2s; }
+}

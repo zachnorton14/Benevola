@@ -6,8 +6,13 @@ const Organization = require('../models/Organization');
 const { Op } = require('sequelize');
 const validate = require('../middleware/validate');
 const authenticate = require('../middleware/authenticate');
-const { registerValidation, loginValidation, googleAuthValidation } = require('../schemas/auth.schema');
-const bcrypt = require('bcrypt');
+const loginRateLimit = require('../middleware/loginRateLimit');
+const {
+    registerValidation,
+    loginValidation,
+    googleAuthValidation,
+} = require('../schemas/auth.schema');
+const bcrypt = require('bcryptjs');
 
 const { OAuth2Client } = require('google-auth-library');
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -45,7 +50,7 @@ router.post('/register/user',
             req.session.regenerate((err) => {
                 if (err) return next(err);
 
-                req.session.userId = newUser.id;
+                req.session.principal = { kind: "user", id: newUser.id };
 
                 return res.status(201).json({
                     message: "successfully registered",
@@ -68,15 +73,26 @@ router.post('/register/org',
     validate({ body: registerValidation }),
     async (req, res, next) => {
         try {
-            const { email, password } = req.validatedBody;
+            const { username, email, password } = req.validatedBody;
 
-            const existingOrg = await User.findOne({ where: { email } });
-            if (existingOrg) return res.status(409).json({ message: "Email already in use" });
+            const existingOrg = await Organization.findOne({
+                where: {
+                    [Op.or]: [{ email }, { name: username }],
+                },
+            });
+
+            if (existingOrg) {
+                return res.status(409).json({
+                    message: existingOrg.email === email
+                        ? "Email already in use"
+                        : "Organization name already in use",
+                });
+            }
 
             const passwordHash = await bcrypt.hash(password, 12);
 
             const newOrg = await Organization.create({
-                name: "New Organization",
+                name: username,
                 email,
                 passwordHash,
             });
@@ -84,7 +100,7 @@ router.post('/register/org',
             req.session.regenerate((err) => {
                 if (err) return next(err);
 
-                req.session.userId = newOrg.id;
+                req.session.principal = { kind: "org", id: newOrg.id };
 
                 return res.status(201).json({
                     message: "successfully registered",
@@ -103,6 +119,7 @@ router.post('/register/org',
 
 // Log in a user
 router.post('/login/user',
+    loginRateLimit,
     validate({ body: loginValidation }),
     async (req, res, next) => {
         try {
@@ -137,6 +154,7 @@ router.post('/login/user',
 
 // Log in an org
 router.post('/login/org',
+    loginRateLimit,
     validate({ body: loginValidation }),
     async (req, res, next) => {
         try {
@@ -179,11 +197,13 @@ router.post('/logout', (req, res) => {
 
 // GET /me
 router.get('/me', authenticate, (req, res) => {
+    const { passwordHash, ...info } = (req.user ?? req.org).toJSON();
+
     return res.status(200).json({
         message: 'success',
         data: {
             kind: req.session.principal.kind,
-            info: req.user ?? req.org
+            info,
         }
     });
 });

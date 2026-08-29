@@ -16,7 +16,7 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     description: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
     },
     capacity: {
         type: DataTypes.INTEGER, 

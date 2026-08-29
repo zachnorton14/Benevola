@@ -6,10 +6,12 @@ const { userParamsValidation, userValidation, userUpdateValidation, } = require(
 const validate = require("../middleware/validate");
 const load = require("../middleware/load");
 const authenticate = require("../middleware/authenticate");
-const { requireUser, verifyOwnership } = require("../middleware/authorization");
+const { requireUser, requireAdmin, verifyOwnership } = require("../middleware/authorization");
 
 // GET users
-router.get('/', async (req, res, next) => {
+// The full listing exposes every volunteer's email address, so it is not
+// something to hand out anonymously. Individual profiles stay public.
+router.get('/', authenticate, requireAdmin, async (req, res, next) => {
     try {
         const users = await User.findAll();
         return res.status(200).json({
@@ -22,7 +24,12 @@ router.get('/', async (req, res, next) => {
 });
 
 // CREATE a new user
+// Sign-up goes through POST /api/auth/register/user, which hashes the password
+// properly. This route takes a passwordHash directly, so it is an admin tool
+// rather than a public endpoint.
 router.post('/',
+    authenticate,
+    requireAdmin,
     validate({
         body: userValidation,
     }),

@@ -40,7 +40,17 @@ module.exports = {
       { name: "Experienced Volunteers", slug: "experienced-volunteers" },
     ].map(t => ({ ...t, created_at: now, updated_at: now }));
 
-    await queryInterface.bulkInsert("tags", tags, {});
+    /* The shared vocabulary, not demo content: it stays even when the sample
+       organizations and events are cleared out. Insert only what is missing,
+       so a re-run cannot collide with the unique constraint on slug. */
+    const existing = await queryInterface.sequelize.query(
+      "SELECT slug FROM tags",
+      { type: queryInterface.sequelize.constructor.QueryTypes.SELECT }
+    );
+    const have = new Set(existing.map(t => t.slug));
+    const fresh = tags.filter(t => !have.has(t.slug));
+
+    if (fresh.length) await queryInterface.bulkInsert("tags", fresh, {});
   },
 
   async down(queryInterface) {

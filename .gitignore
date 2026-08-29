@@ -1,0 +1,6 @@
+# Root-level tooling only — api/ and fe/ keep their own ignore files.
+node_modules/
+
+# Local environment overrides. Never commit these: api/.env holds SESSION_SECRET.
+.env
+.env.local
