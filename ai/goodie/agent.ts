@@ -1,7 +1,8 @@
 import { FunctionTool, LlmAgent } from '@google/adk';
 import { z } from 'zod';
 
-const API_BASE = 'http://localhost:4000/api/events';
+const BE_PORT = process.env.BE_PORT || process.env.PORT || 5173;
+const API_BASE = process.env.API_URL || `http://localhost:${BE_PORT}/api/events`;
 
 /**
  * 1. Calls GET /api/events/search?q=...
@@ -16,7 +17,7 @@ const searchEventsTool = new FunctionTool({
     try {
       const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`);
       if (!res.ok) return { status: 'error', message: `Search failed: ${res.statusText}` };
-      const body = await res.json();
+      const body = (await res.json()) as any;
       return { status: 'success', data: body.data };
     } catch (err) {
       return { status: 'error', message: String(err) };
@@ -25,7 +26,7 @@ const searchEventsTool = new FunctionTool({
 });
 
 /**
- * 2. Calls GET /api/events/tags/:slug
+ * 2. Calls GET /api/events?tags=:slug
  */
 const getEventsByTagTool = new FunctionTool({
   name: 'get_events_by_tag',
@@ -35,9 +36,9 @@ const getEventsByTagTool = new FunctionTool({
   }),
   execute: async ({ slug }) => {
     try {
-      const res = await fetch(`${API_BASE}/tags/${encodeURIComponent(slug)}`);
+      const res = await fetch(`${API_BASE}?tags=${encodeURIComponent(slug)}`);
       if (!res.ok) return { status: 'error', message: `Tag fetch failed: ${res.statusText}` };
-      const body = await res.json();
+      const body = (await res.json()) as any;
       return { status: 'success', data: body.data };
     } catch (err) {
       return { status: 'error', message: String(err) };
@@ -55,7 +56,7 @@ const getAllTagsTool = new FunctionTool({
     try {
       const res = await fetch(`${API_BASE}/tags`);
       if (!res.ok) return { status: 'error', message: `Failed to fetch tags: ${res.statusText}` };
-      const body = await res.json();
+      const body = (await res.json()) as any;
       return { status: 'success', tags: body.tags };
     } catch (err) {
       return { status: 'error', message: String(err) };
@@ -76,7 +77,7 @@ const getEventByIdTool = new FunctionTool({
     try {
       const res = await fetch(`${API_BASE}/${eid}`);
       if (!res.ok) return { status: 'error', message: `Failed to get event ${eid}: ${res.statusText}` };
-      const body = await res.json();
+      const body = (await res.json()) as any;
       return { status: 'success', data: body.data };
     } catch (err) {
       return { status: 'error', message: String(err) };
@@ -94,7 +95,7 @@ const getAllEventsTool = new FunctionTool({
     try {
       const res = await fetch(API_BASE);
       if (!res.ok) return { status: 'error', message: `Failed to fetch all events: ${res.statusText}` };
-      const body = await res.json();
+      const body = (await res.json()) as any;
       return { status: 'success', data: body.data };
     } catch (err) {
       return { status: 'error', message: String(err) };
@@ -117,7 +118,7 @@ API ROUTING RULES:
 
 SCHEDULE FILTERING:
 - Note: Your backend search and tag routes return event objects that have a 'date' (ISO timestamp) and 'duration' (minutes).
-- When the user provides a schedule (e.g. "free Saturday morning" or text from an uploaded calendar), call the relevant search/tag tool first, then filter the returned events in your memory to keep only those that fit within the user's availability window.
+- When the user provides a schedule (e.g. "free Saturday morning"), call the relevant search/tag tool first, then filter the returned events in your memory to keep only those that fit within the user's availability window.
 
 OUTPUT FORMAT CONTRACT:
 ALWAYS respond in valid JSON with this structure so the frontend can display cards:
@@ -131,7 +132,7 @@ ALWAYS respond in valid JSON with this structure so the frontend can display car
       "date": "2026-10-03T10:00:00.000Z",
       "duration": 60,
       "address": "123 Main St",
-      "image": "https://..."
+      "coverPhoto": "https://..."
     }
   ]
 }
