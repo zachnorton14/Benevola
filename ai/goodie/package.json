@@ -10,8 +10,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@google/adk": "^0.2.1",
-    "@google/adk-devtools": "^0.2.1"
+    "@google/adk": "^2.2.0",
+    "@google/adk-devtools": "^2.2.0"
   },
   "keywords": [],
   "author": "",
