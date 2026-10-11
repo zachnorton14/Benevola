@@ -20,7 +20,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon index.js" ,
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "sequelize-cli db:migrate --env development",
     "db:migrate:prod": "sequelize-cli db:migrate --env production",

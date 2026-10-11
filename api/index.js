@@ -108,6 +108,7 @@ const orgsRouter = require('./src/routes/organizations');
 const usersRouter = require('./src/routes/users');
 const authRouter = require('./src/routes/auth');
 const uploadsRouter = require('./src/routes/uploads');
+const aiRouter = require('./src/routes/ai');
 const { errorHandler } = require("./src/middleware/errorHandler");
 
 /* Health check. The API is its own Vercel project, so this is the cheapest way
@@ -122,6 +123,7 @@ app.use('/api/orgs', orgsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/uploads', uploadsRouter);
+app.use('/api/ai', aiRouter);
 app.use(errorHandler);
 
 module.exports = app;

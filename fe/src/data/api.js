@@ -227,6 +227,21 @@ export async function searchEvents(filters, page) {
   return { rows, total };
 }
 
+/* ── AI Assistant Chat ───────────────────────────────────────────── */
+
+export async function sendChatMessage({ prompt, history = [] }) {
+  const payload = await request(`${API}/api/ai/chat`, {
+    method: 'POST',
+    body: { prompt, history },
+  });
+
+  const events = (payload?.events ?? []).map(mapEvent);
+  return {
+    message: payload?.message ?? '',
+    events,
+  };
+}
+
 /* ── Session ─────────────────────────────────────────────────────── */
 
 /** The logged-in principal, or null when the session is gone/expired.

@@ -7,8 +7,11 @@
     "dev": "concurrently -k -n api,web -c blue,magenta \"npm:dev:api\" \"npm:dev:web\"",
     "dev:api": "npm --prefix api run dev",
     "dev:web": "npm --prefix fe start",
+    "dev:ai": "npm --prefix ai/goodie run dev",
+    "build:ai": "npm --prefix ai/goodie run build",
+    "watch:ai": "npm --prefix ai/goodie run build:watch",
     "start": "npm run dev",
-    "install:all": "npm --prefix api install && npm --prefix fe install",
+    "install:all": "npm --prefix api install && npm --prefix fe install && npm --prefix ai/goodie install",
     "db:reset": "npm --prefix api run db:migrate && npm --prefix api run db:seed",
     "test": "npm --prefix fe test -- --watchAll=false"
   },

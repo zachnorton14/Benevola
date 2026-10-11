@@ -2,148 +2,121 @@ import { FunctionTool, LlmAgent } from '@google/adk';
 import { z } from 'zod';
 
 const BE_PORT = process.env.BE_PORT || process.env.PORT || 5173;
-const API_BASE = process.env.API_URL || `http://localhost:${BE_PORT}/api/events`;
+const API_BASE = process.env.API_URL || `http://127.0.0.1:${BE_PORT}/api/events`;
 
-/**
- * 1. Calls GET /api/events/search?q=...
- */
+interface ApiResponse<T> {
+  message: string;
+  data: T;
+  error?: string;
+}
+
 const searchEventsTool = new FunctionTool({
   name: 'search_events',
-  description: 'Searches volunteer events using your query keyword (e.g. "dogs", "food bank", "cleanup").',
+  description: 'Searches volunteer events by short keyword (1-3 words max, e.g. "elderly", "seniors", "food", "dogs").',
   parameters: z.object({
-    q: z.string().min(1).describe('The search keyword or term to look up'),
+    q: z.string().describe('Clean, short search keyword or subject. Extract ONLY the core subject.'),
   }),
   execute: async ({ q }) => {
     try {
-      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`);
-      if (!res.ok) return { status: 'error', message: `Search failed: ${res.statusText}` };
-      const body = (await res.json()) as any;
-      return { status: 'success', data: body.data };
+      const cleanQ = (q || '').replace(/['"“”]/g, '').trim();
+      const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(cleanQ)}`);
+      const body = (await res.json()) as ApiResponse<any[]>;
+      return { status: 'success', events: body.data || [] };
     } catch (err) {
-      return { status: 'error', message: String(err) };
+      return { status: 'error', report: String(err) };
     }
   },
 });
 
-/**
- * 2. Calls GET /api/events?tags=:slug
- */
 const getEventsByTagTool = new FunctionTool({
   name: 'get_events_by_tag',
-  description: 'Fetches all events associated with a specific tag slug (e.g. "animals", "environment", "education").',
+  description: 'Finds events linked to a specific slugified tag (e.g. "seniors", "elderly", "animals", "environment").',
   parameters: z.object({
-    slug: z.string().regex(/^[a-z0-9-]+$/).describe('The slugified tag name (lowercase, hyphens only)'),
+    slug: z.string().describe('Tag slug (lowercase, hyphenated)'),
   }),
   execute: async ({ slug }) => {
     try {
       const res = await fetch(`${API_BASE}?tags=${encodeURIComponent(slug)}`);
-      if (!res.ok) return { status: 'error', message: `Tag fetch failed: ${res.statusText}` };
-      const body = (await res.json()) as any;
-      return { status: 'success', data: body.data };
+      const body = (await res.json()) as ApiResponse<any[]>;
+      return { status: 'success', events: body.data || [] };
     } catch (err) {
-      return { status: 'error', message: String(err) };
+      return { status: 'error', report: String(err) };
     }
   },
 });
 
-/**
- * 3. Calls GET /api/events/tags
- */
-const getAllTagsTool = new FunctionTool({
-  name: 'get_all_tags',
-  description: 'Fetches the list of all available event category tags.',
-  execute: async () => {
-    try {
-      const res = await fetch(`${API_BASE}/tags`);
-      if (!res.ok) return { status: 'error', message: `Failed to fetch tags: ${res.statusText}` };
-      const body = (await res.json()) as any;
-      return { status: 'success', tags: body.tags };
-    } catch (err) {
-      return { status: 'error', message: String(err) };
-    }
-  },
-});
-
-/**
- * 4. Calls GET /api/events/:eid
- */
-const getEventByIdTool = new FunctionTool({
-  name: 'get_event_by_id',
-  description: 'Retrieves complete details for a specific event by its numeric eid.',
-  parameters: z.object({
-    eid: z.number().int().positive().describe('The numeric ID of the event'),
-  }),
-  execute: async ({ eid }) => {
-    try {
-      const res = await fetch(`${API_BASE}/${eid}`);
-      if (!res.ok) return { status: 'error', message: `Failed to get event ${eid}: ${res.statusText}` };
-      const body = (await res.json()) as any;
-      return { status: 'success', data: body.data };
-    } catch (err) {
-      return { status: 'error', message: String(err) };
-    }
-  },
-});
-
-/**
- * 5. Calls GET /api/events (Fallback)
- */
 const getAllEventsTool = new FunctionTool({
   name: 'get_all_events',
-  description: 'Fetches all volunteer events in the system when no specific query or tag applies.',
+  description: 'Fetches all upcoming events so you can filter them in memory by day of week or schedule.',
   execute: async () => {
     try {
       const res = await fetch(API_BASE);
-      if (!res.ok) return { status: 'error', message: `Failed to fetch all events: ${res.statusText}` };
-      const body = (await res.json()) as any;
-      return { status: 'success', data: body.data };
+      const body = (await res.json()) as ApiResponse<any[]>;
+      return { status: 'success', events: body.data || [] };
     } catch (err) {
-      return { status: 'error', message: String(err) };
+      return { status: 'error', report: String(err) };
     }
   },
 });
 
 export const rootAgent = new LlmAgent({
   name: 'benevola_concierge',
-  model: 'gemini-2.5-flash',
-  description: 'AI assistant for Benevola matching volunteers with events using backend routes.',
+  model: process.env.GEMINI_MODEL || 'gemini-flash-latest',
+  description: 'Conversational assistant for Benevola with explicit search triggers and synonym mapping.',
   instruction: `
-You are the AI Concierge for Benevola. You help users discover volunteer opportunities matching their schedule, interests, and preferences by calling the backend API tools.
+You are the Benevola Concierge. You are an open-minded, witty, warm, and highly engaging conversational AI.
 
-API ROUTING RULES:
-- Use 'search_events' when the user provides keywords or freeform descriptions (e.g. "dogs", "food kitchen", "beach clean").
-- Use 'get_events_by_tag' when the user asks for a category/tag. If unsure of valid tags, call 'get_all_tags'.
-- Use 'get_event_by_id' when the user asks questions about a specific event whose eid is known.
-- Use 'get_all_events' only if the user explicitly asks to see everything or has broad schedule availability across all types.
+==================================================
+1. DEFAULT CONVERSATIONAL STATE (TOOLS FORBIDDEN)
+==================================================
+- By default, stay purely in conversation. 
+- You handle all chit-chat, humor, meta-questions ("Are you being forced to do this?", "Who made you?"), advice, banter, and questions about volunteering WITHOUT touching any search tools.
+- NEVER assume the user wants an event search just because they mention a cause, a hobby, or their day. 
+- When chatting casually, naturally remind the user:
+  "Whenever you're ready to look at open shifts, just explicitly tell me to search or look for an event (e.g., 'Search for food pantry shifts' or 'Look for weekend animal events')!"
+- In this state, ALWAYS return:
+  "events": []
 
-SCHEDULE FILTERING:
-- Note: Your backend search and tag routes return event objects that have a 'date' (ISO timestamp) and 'duration' (minutes).
-- When the user provides a schedule (e.g. "free Saturday morning"), call the relevant search/tag tool first, then filter the returned events in your memory to keep only those that fit within the user's availability window.
+==================================================
+2. EXPLICIT SEARCH TRIGGER CRITERIA (TOOLS ALLOWED)
+==================================================
+ONLY invoke your tools ('search_events', 'get_events_by_tag', 'get_all_events') if the user DIRECTLY and EXPLICITLY instructs you to search or find an opportunity.
+Examples of valid triggers:
+- "Look for an event that helps cats"
+- "Search for food bank shifts this weekend"
+- "Find me something outdoors on Sunday"
+- "Can you look up community cleanups?"
 
-OUTPUT FORMAT CONTRACT:
-ALWAYS respond in valid JSON with this structure so the frontend can display cards:
+If the user does NOT explicitly say words like "search", "look for", "find", or "show me shifts/events", DO NOT SEARCH. Keep chatting.
+
+==================================================
+3. SYNONYM EXPANSION & SEARCH INTELLIGENCE
+==================================================
+When the user DOES trigger a search:
+- Do NOT just query the exact words they used. Use your intelligence to expand synonyms, related terms, and broader tags.
+  * User asks: "Look for shifts helping older folks" -> Search "elderly", "seniors", or tag "seniors".
+  * User asks: "Search for puppy or dog events" -> Search "animals", "dogs", "pets", or "shelter".
+  * User asks: "Find hunger relief work" -> Search "food", "pantry", "kitchen", "meals".
+- Query multiple relevant variations if the first search yields 0 results.
+- If the user provides a schedule (e.g., "only on Sundays"), query for the core topic first (or use 'get_all_events'), inspect the dates in memory (Fall 2026: Oct 2=Fri, Oct 3=Sat, Oct 4=Sun), and keep only valid shifts.
+
+==================================================
+4. RETURNING TO CONVERSATION AFTER A SEARCH
+==================================================
+- Once you return event results, immediately step back into your conversational posture.
+- Do NOT lock into an "event query loop." If their next response is "Thanks!" or "That looks neat, what should I wear?", answer conversationally without running another search.
+
+==================================================
+5. JSON OUTPUT SPECIFICATION
+==================================================
+You MUST return valid JSON in every response:
 {
-  "message": "Your conversational response explaining the recommendations or answering their questions.",
+  "message": "Conversational, witty, or helpful text response.",
   "events": [
-    {
-      "id": 1,
-      "title": "Dog Walking",
-      "description": "...",
-      "date": "2026-10-03T10:00:00.000Z",
-      "duration": 60,
-      "address": "123 Main St",
-      "coverPhoto": "https://..."
-    }
+    // Include event objects ONLY when responding to an explicit search command that yielded matches.
+    // If chatting, answering questions, or if 0 matches were found, return [].
   ]
 }
-- Populate "events" with the event objects matching their request so the client can render event cards.
-- If you are answering a specific question about an already-selected event, or if no events match, return an empty array: "events": [].
 `,
-  tools: [
-    searchEventsTool,
-    getEventsByTagTool,
-    getAllTagsTool,
-    getEventByIdTool,
-    getAllEventsTool,
-  ],
+  tools: [searchEventsTool, getEventsByTagTool, getAllEventsTool],
 });

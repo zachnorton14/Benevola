@@ -43,7 +43,8 @@ function likePattern(term) {
 // Tags live in a join table and the tag *filter* below already owns that join,
 // so they are matched with a subquery rather than a second include.
 function keywordClause(term) {
-    const pattern = likePattern(term);
+    const cleanedTerm = (term || '').replace(/['"“”]/g, '').trim();
+    const pattern = likePattern(cleanedTerm);
     const like = (column) => literal(`${column} ${LIKE} ${pattern} ESCAPE '\\'`);
 
     return {
@@ -193,7 +194,9 @@ async function fetchEventsWithAllTags(ids) {
 
 async function getEvents(q) {
     const ids = await findEventIdsByFilters(q);
-    const pageIds = ids.slice(q.offset, q.offset + q.limit);
+    const offset = q.offset != null ? Number(q.offset) : 0;
+    const limit = q.limit != null ? Number(q.limit) : 20;
+    const pageIds = ids.slice(offset, offset + limit);
     const rows = await fetchEventsWithAllTags(pageIds);
     return { rows, total: ids.length };
 }
